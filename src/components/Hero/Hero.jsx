@@ -13,7 +13,7 @@ const MotionBox = motion(Box)
 
 function PlayerPanel() {
   return (
-    <VStack align="start" spacing={1}>
+    <VStack align="start" spacing={2}>
       <HStack>
         <Text fontFamily="mono" fontSize="10px" color="brand.gray"
               textTransform="uppercase" letterSpacing="widest">
@@ -28,15 +28,18 @@ function PlayerPanel() {
             color="white" lineHeight={1}>
         #{playerData.number}
       </Text>
-      <HStack spacing={1}>
-        <Text fontSize="md">{playerData.nationalityFlag}</Text>
-        <Text fontFamily="mono" fontSize="sm" color="brand.gray" letterSpacing="wider">
+      <Flex justifyContent='flex-start' alignItems='flex-end' gap={'5px'} spacing={1}>
+        <Image src={playerData.nationalityFlag} w={{base:'20px', md:'15px'}} />
+        <Text mb={'-5px'} fontFamily="mono" fontSize="md" color="brand.gray" letterSpacing="wider">
           {playerData.nationality}
         </Text>
-      </HStack>
-      <Text fontFamily="mono" fontSize="sm" color="whiteAlpha.500" letterSpacing="wider">
-        {playerData.currentClub}
-      </Text>
+      </Flex>
+      <Flex justifyContent='flex-start' alignItems='flex-end' gap={'5px'} spacing={1}>
+        <Image src={playerData.logoCurrentClub} w={{ base: '20px', md: '20px' }} h={'auto'} />
+        <Text fontFamily="mono" fontSize="md" color="whiteAlpha.500" letterSpacing="wider">
+          {playerData.currentClub}
+        </Text>
+      </Flex>
     </VStack>
   )
 }

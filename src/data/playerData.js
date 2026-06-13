@@ -2,7 +2,12 @@ import { FaInstagram, FaEnvelope } from 'react-icons/fa'
 import { FaXTwitter } from 'react-icons/fa6'
 import { IoMdStats } from 'react-icons/io'
 
+//Hero
 import ronald1 from '@assets/ronald1.png'
+import paraguay from '@assets/paraguay.webp'
+import talleres from '@assets/talleres.png'
+
+//Gallery
 import image1 from '@assets/gallery/image1.jpg'
 import image2 from '@assets/gallery/image2.jpg'
 import image3 from '@assets/gallery/image3.jpg'
@@ -11,22 +16,22 @@ import image5 from '@assets/gallery/image5.jpg'
 import image6 from '@assets/gallery/image6.jpg'
 
 export const playerData = {
-  name:            'RONALD',
-  fullName:        'MARTINEZ',
-  number:          77,
-  position:        'Delantero Centro',
-  positionShort:   'DEL',
-  nationality:     'Venezuela',
-  nationalityFlag: '🇻🇪',
-  age:             30,
-  height:          '1.78m',
-  weight:          '75kg',
-  foot:            'Derecho',
-  birthDate:       '25 / 04 / 1996',
-  birthPlace:      'Caracas, Venezuela',
-  currentClub:     'Talleres',
-  logoCurrentClub: null,
-  image:           ronald1,
+  name: 'RONALD',
+  fullName: 'MARTINEZ',
+  number: 77,
+  position: 'Delantero',
+  positionShort: 'DEL',
+  nationality: 'Paraguay',
+  nationalityFlag: paraguay,
+  age: 30,
+  height: '1.78m',
+  weight: '75kg',
+  foot: 'Derecho',
+  birthDate: '25 / 04 / 1996',
+  birthPlace: 'Caracas, Venezuela',
+  currentClub: 'Talleres',
+  logoCurrentClub: talleres,
+  image: ronald1,
 
   stats: [
     { label: 'Velocidad',      value: 91 },

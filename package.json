@@ -26,6 +26,8 @@
     "vite": "^5.2.0"
   },
   "pnpm": {
-    "allowedBuildScripts": ["esbuild"]
+    "allowBuilds": {
+      "esbuild": true
+    }
   }
 }
