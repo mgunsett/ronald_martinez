@@ -1,0 +1,36 @@
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+.marquee-track {
+  animation: marquee 22s linear infinite;
+}
+
+@keyframes float {
+  0%   { transform: translateY(0px)   rotate(0deg); }
+  33%  { transform: translateY(-12px) rotate(0.4deg); }
+  66%  { transform: translateY(-6px)  rotate(-0.4deg); }
+  100% { transform: translateY(0px)   rotate(0deg); }
+}
+
+.player-float {
+  animation: float 7s ease-in-out infinite;
+}
+
+@keyframes vidSheen {
+  0%   { transform: translateX(-100%); }
+  100% { transform: translateX(300%); }
+}
+
+.stat-bar-fill {
+  transform-origin: left;
+  transform: scaleX(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track,
+  .player-float {
+    animation: none;
+  }
+}
