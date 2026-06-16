@@ -13,30 +13,36 @@ const MotionBox = motion(Box)
 
 function PlayerPanel() {
   return (
-    <VStack align="start" spacing={2}>
-      <HStack>
-        <Text fontFamily="mono" fontSize="10px" color="brand.gray"
+    <VStack align="start" spacing={2}>  
+      <Text
+        fontFamily="heading"
+        fontSize={{ base: '60px', md: '120px' }}
+        lineHeight={0.9}
+        color="transparent"
+        sx={{ WebkitTextStroke: '2px #4D93D6' }}
+      >
+        {playerData.number}
+      </Text>
+      <Box h="1px" w={{base:"60px", md: "70px", lg: "80px"}} bg="brand.brown" mb={2} />
+      <Flex gap={1}>
+        <Text fontFamily="mono" fontSize="12px" color="brand.gray"
               textTransform="uppercase" letterSpacing="widest">
           Posición
         </Text>
-        <Text fontFamily="mono" fontSize="10px" color="brand.brown"
+        <Text fontFamily="mono" fontSize="12px" color="brand.brown"
               fontWeight="700" textTransform="uppercase" letterSpacing="widest">
-          {playerData.positionShort}
+          {playerData.position}
         </Text>
-      </HStack>
-      <Text fontFamily="heading" fontSize={{ base: '4xl', lg: '5xl' }}
-            color="white" lineHeight={1}>
-        #{playerData.number}
-      </Text>
-      <Flex justifyContent='flex-start' alignItems='flex-end' gap={'5px'} spacing={1}>
-        <Image src={playerData.nationalityFlag} w={{base:'20px', md:'15px'}} />
+      </Flex>
+      <Flex justifyContent='flex-start' alignItems='flex-end' gap={'6px'} spacing={1}>
+        <Image src={playerData.nationalityFlag} w={{base:'20px', md:'18px'}} />
         <Text mb={'-5px'} fontFamily="mono" fontSize="md" color="brand.gray" letterSpacing="wider">
           {playerData.nationality}
         </Text>
       </Flex>
-      <Flex justifyContent='flex-start' alignItems='flex-end' gap={'5px'} spacing={1}>
-        <Image src={playerData.logoCurrentClub} w={{ base: '20px', md: '20px' }} h={'auto'} />
-        <Text fontFamily="mono" fontSize="md" color="whiteAlpha.500" letterSpacing="wider">
+      <Flex justifyContent='flex-start' alignItems={'flex-end'} gap={'5px'} spacing={1} mt={'3px'} ml={-1}>
+        <Image src={playerData.logoCurrentClub} w={{ base: '20px', md: '25px' }} h={'28px'} />
+        <Text fontFamily="mono" fontSize="md" color="brand.gray" letterSpacing="wider">
           {playerData.currentClub}
         </Text>
       </Flex>
@@ -60,7 +66,6 @@ export default function Hero() {
     const yn = (e.clientY / window.innerHeight - 0.5) * 2
     gsap.to(bgGlowRef.current,   { x: xn * 6,  y: yn * 3,  duration: 1.8, ease: 'power2.out' })
     gsap.to(midLayerRef.current, { x: xn * 14, y: yn * 7,  duration: 1.3, ease: 'power2.out' })
-    gsap.to(photoRef.current,    { x: xn * 28, y: yn * 14, duration: 1.0, ease: 'power2.out' })
   }, [])
 
   useEffect(() => {
@@ -102,7 +107,7 @@ export default function Hero() {
   }, [])
 
   return (
-    <Box ref={outerRef} h="200vh" position="relative" zIndex={1}>
+    <Box ref={outerRef} h="200vh" position="relative" zIndex={1} id= 'hero'>
       <Box
         ref={containerRef}
         position="sticky"
@@ -148,7 +153,7 @@ export default function Hero() {
             fontSize={{ base: '28vw', md: '22vw' }}
             color="transparent"
             lineHeight={0.85}
-            style={{ WebkitTextStroke: '1px rgba(139,69,19,0.12)' }}
+            style={{ WebkitTextStroke: '1px rgba(43, 51, 100, 0.29)' }}
           >
             {playerData.fullName}
           </Text>
@@ -158,11 +163,11 @@ export default function Hero() {
         <Box
           position="absolute"
           inset={0}
-          zIndex={5}
+          zIndex={{base: 5, md: 5,  lg:'9999999 !important'}}
           display="flex"
           alignItems="flex-end"
-          justifyContent={{ base: 'center', lg: 'flex-end' }}
-          pr={{ base: 0, lg: '5%' }}
+          justifyContent={{ base: 'center', lg: 'center' }}
+          pl={{ base: 0, lg: '25%' }}
           pointerEvents="none"
         >
           <Box
@@ -191,11 +196,11 @@ export default function Hero() {
           display="flex"
           flexDir="column"
           alignItems={{ base: 'center', lg: 'flex-start' }}
-          justifyContent={{ base: 'flex-end', lg: 'center' }}
-          pl={{ base: 0, lg: '6%' }}
-          pb={{ base: '180px', lg: 0 }}
+          justifyContent={{ base: 'flex-end', lg: 'flex-start' }}
+          pl={{ base: 0, lg: '10%' }}
+          pt={{ base: '180px', lg: '6%' }}
         >
-          <Box overflow="hidden">
+          <Box overflow="hidden" >
             <Text
               ref={line1Ref}
               fontFamily="heading"
@@ -203,6 +208,8 @@ export default function Hero() {
               color="white"
               lineHeight={0.9}
               style={{ opacity: 0 }}
+              mb={-4}
+              mt={6}
             >
               {playerData.name}
             </Text>
@@ -224,9 +231,8 @@ export default function Hero() {
         {/* Player info — bottom left */}
         <Box
           position="absolute"
-          bottom={{ base: 'auto', lg: '14%' }}
-          top={{ base: '18%', lg: 'auto' }}
-          left={{ base: '5%', lg: '5%' }}
+          bottom={{ base: '18%', lg: '15%' }}
+          left={{ base: '5%', lg: '10.3%' }}
           zIndex={15}
         >
           <PlayerPanel />

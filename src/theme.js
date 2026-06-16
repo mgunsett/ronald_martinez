@@ -3,14 +3,14 @@ import { extendTheme } from '@chakra-ui/react'
 const theme = extendTheme({
   colors: {
     brand: {
-      brown:      '#8B4513',
-      brownDark:  '#5C2D0A',
-      brownLight: '#C4783E',
-      amber:      '#D4A84B',
-      dark:       '#0C0705',
-      gray:       '#8A7B6E',
-      bone:       '#F5EDE0',
-      boneWarm:   '#EDE0CC',
+      brown:      '#1E5FA8', // azul principal
+      brownDark:  '#0B2A4A', // azul profundo
+      brownLight: '#4D93D6', // azul claro
+      amber:      '#D4A84B', // dorado para pequeños detalles
+      dark:       '#050B14', // azul casi negro (fondo)
+      gray:       '#7A8CA3', // azul grisáceo (texto secundario)
+      bone:       '#FFFFFF', // blanco (texto principal)
+      boneWarm:   '#E6EEF7', // blanco azulado (detalles)
     },
   },
   fonts: {
@@ -21,13 +21,13 @@ const theme = extendTheme({
   styles: {
     global: {
       'html, body': {
-        bg: '#0C0705',
+        bg: '#050B14',
         color: 'white',
         overflowX: 'hidden',
       },
       '::-webkit-scrollbar': { width: '4px' },
-      '::-webkit-scrollbar-track': { bg: '#0C0705' },
-      '::-webkit-scrollbar-thumb': { bg: '#8B4513', borderRadius: '2px' },
+      '::-webkit-scrollbar-track': { bg: '#050B14' },
+      '::-webkit-scrollbar-thumb': { bg: '#1E5FA8', borderRadius: '2px' },
     },
   },
   config: {

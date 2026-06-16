@@ -5,8 +5,6 @@ function Shield({ src, name, size = '36px' }) {
   return (
     <Box
       boxSize={size}
-      bg="rgba(139,69,19,0.2)"
-      border="1px solid rgba(139,69,19,0.3)"
       display="flex"
       alignItems="center"
       justifyContent="center"
@@ -96,13 +94,14 @@ export function MatchBox({ last, next, variant = 'card' }) {
     return (
       <Box
         w="280px"
-        bg="rgba(12,7,5,0.7)"
+        bg="brand.dark  "
         backdropFilter="blur(12px)"
-        border="1px solid rgba(139,69,19,0.2)"
+        border="1px solid"
+        borderColor= 'brand.brownDark'
         p={4}
         position="relative"
         transition="transform 0.3s, border-color 0.3s"
-        _hover={{ transform: 'translateY(-3px)', borderColor: 'rgba(139,69,19,0.45)' }}
+        _hover={{ transform: 'translateY(-3px)', borderBottomColor: 'brand.brownLight' }}
         _before={{
           content: '""',
           position: 'absolute',
@@ -124,7 +123,8 @@ export function MatchBox({ last, next, variant = 'card' }) {
     <Box
       bg="rgba(12,7,5,0.82)"
       backdropFilter="blur(10px)"
-      borderTop="1px solid rgba(139,69,19,0.2)"
+      borderTop="1px solid"
+      borderColor='brand.brown'
       px={4}
       py={3}
     >

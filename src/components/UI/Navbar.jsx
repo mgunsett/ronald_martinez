@@ -6,6 +6,7 @@ import { gsap } from 'gsap'
 const MotionBox = motion(Box)
 
 const navLinks = [
+  { label: 'Hero', href: '#hero'},
   { label: 'Estadísticas', href: '#estadisticas' },
   { label: 'Videos',       href: '#videos' },
   { label: 'Galería',      href: '#galeria' },
@@ -52,26 +53,37 @@ export default function Navbar() {
       ref={navRef}
       as="nav"
       position="fixed"
-      top={0}
+      top={{ base: 3, lg: 4 }}
       left={0}
       right={0}
       zIndex={1000}
-      transition="background 0.35s, border-color 0.35s"
-      bg={scrolled ? 'rgba(12,7,5,0.88)' : 'transparent'}
-      backdropFilter={scrolled ? 'blur(16px)' : 'none'}
-      borderBottom={scrolled ? '1px solid rgba(139,69,19,0.25)' : '1px solid transparent'}
-      px={{ base: 5, lg: 10 }}
-      py={4}
+      px={{ base: 4, lg: 4 }}
       style={{ opacity: 0 }}
     >
-      <Flex align="center" justify="space-between" maxW="1400px" mx="auto">
+      <Flex
+        align="center"
+        justify="space-between"
+        maxW="1400px"
+        mx="auto"
+        px={{ base: 4, lg: 7 }}
+        py={{ base: 2.5, lg: 2 }}
+        borderRadius={{ base: '18px', lg: '15px' }}
+        border="1px solid"
+        borderColor={scrolled ? 'rgba(77,147,214,0.30)' : 'rgba(255,255,255,0.12)'}
+        bg={scrolled ? 'rgba(5,11,20,0.55)' : 'rgba(255,255,255,0.04)'}
+        backdropFilter="blur(20px) saturate(140%)"
+        boxShadow={scrolled
+          ? '0 10px 34px rgba(0,0,0,0.40)'
+          : '0 6px 26px rgba(0,0,0,0.22)'}
+        transition="background 0.35s, border-color 0.35s, box-shadow 0.35s"
+      >
         {/* Logo */}
         <Text
           fontFamily="heading"
           fontSize="2xl"
           letterSpacing="wider"
           cursor="pointer"
-          onClick={(e) => handleLink(e, '#estadisticas')}
+          onClick={(e) => handleLink(e, '#hero')}
           color="white"
           _hover={{ color: 'brand.brown' }}
           transition="color 0.2s"
@@ -80,37 +92,46 @@ export default function Navbar() {
         </Text>
 
         {/* Desktop links */}
-        <HStack spacing={8} display={{ base: 'none', lg: 'flex' }}>
+        <HStack spacing={1} display={{ base: 'none', lg: 'flex' }}>
           {navLinks.map((link) => (
-            <Box key={link.href} position="relative" overflow="hidden">
-              <Text
-                as="a"
-                href={link.href}
-                onClick={(e) => handleLink(e, link.href)}
-                fontFamily="mono"
-                fontSize="sm"
-                fontWeight="500"
-                letterSpacing="wider"
-                textTransform="uppercase"
-                color="whiteAlpha.700"
-                cursor="pointer"
-                _hover={{ color: 'white' }}
-                transition="color 0.2s"
-                _after={{
-                  content: '""',
-                  position: 'absolute',
-                  bottom: '-2px',
-                  left: 0,
-                  w: 0,
-                  h: '1px',
-                  bg: 'brand.brown',
-                  transition: 'width 0.25s',
-                }}
-                sx={{ '&:hover::after': { width: '100%' } }}
-              >
+            <Text
+              key={link.href}
+              as="a"
+              href={link.href}
+              onClick={(e) => handleLink(e, link.href)}
+              position="relative"
+              px={4}
+              py={2}
+              borderRadius="10px"
+              fontFamily="mono"
+              fontSize="sm"
+              fontWeight="500"
+              letterSpacing="wider"
+              textTransform="uppercase"
+              color="whiteAlpha.700"
+              cursor="pointer"
+              transition="color 0.25s"
+              _before={{
+                content: '""',
+                position: 'absolute',
+                inset: 0,
+                borderRadius: '10px',
+                bg: 'linear-gradient(135deg, rgba(77,147,214,0.22) 0%, rgba(30,95,168,0.10) 100%)',
+                opacity: 0,
+                transform: 'scale(0.92)',
+                transition: 'opacity 0.25s, transform 0.25s',
+                pointerEvents: 'none',
+              }}   
+              _hover={{
+                color: 'white',
+                _before: { opacity: 1, transform: 'scale(1)' },
+                _after: { width: '40%' },
+              }}
+            >
+              <Box as="span" position="relative" zIndex={1}>
                 {link.label}
-              </Text>
-            </Box>
+              </Box>
+            </Text>
           ))}
         </HStack>
 
@@ -120,9 +141,11 @@ export default function Navbar() {
           href="#contacto"
           onClick={(e) => handleLink(e, '#contacto')}
           display={{ base: 'none', lg: 'block' }}
-          px={5}
-          py={2}
-          border="1px solid rgba(139,69,19,0.6)"
+          px={'12px'}
+          py={'7px'}
+          border="1px solid"
+          borderColor= 'brand.brown'
+          borderRadius={'8px'}
           fontFamily="mono"
           fontSize="sm"
           fontWeight="600"
@@ -131,7 +154,7 @@ export default function Navbar() {
           color="brand.brownLight"
           cursor="pointer"
           transition="all 0.2s"
-          _hover={{ bg: 'brand.brown', color: 'white', borderColor: 'brand.brown' }}
+          _hover={{ bg: 'brand.brown', color: 'white' }}
         >
           Contacto
         </Box>
@@ -168,15 +191,22 @@ export default function Navbar() {
       <AnimatePresence>
         {menuOpen && (
           <MotionBox
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: 'auto', opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.3 }}
-            overflow="hidden"
-            borderTop="1px solid rgba(139,69,19,0.2)"
+            initial={{ opacity: 0, y: -12 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -12 }}
+            transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+            display={{ base: 'block', lg: 'none' }}
+            maxW="1400px"
+            mx="auto"
             mt={3}
+            borderRadius="18px"
+            border="1px solid rgba(255,255,255,0.12)"
+            bg="rgba(5,11,20,0.65)"
+            backdropFilter="blur(20px) saturate(140%)"
+            boxShadow="0 10px 34px rgba(0,0,0,0.40)"
+            overflow="hidden"
           >
-            <VStack align="start" spacing={0} py={4}>
+            <VStack align="stretch" spacing={0} py={2} px={2}>
               {navLinks.map((link, i) => (
                 <MotionBox
                   key={link.href}
@@ -197,10 +227,10 @@ export default function Navbar() {
                     textTransform="uppercase"
                     color="whiteAlpha.800"
                     py={3}
-                    px={2}
-                    borderBottom="1px solid rgba(255,255,255,0.05)"
-                    _hover={{ color: 'brand.brown' }}
-                    transition="color 0.2s"
+                    px={3}
+                    borderRadius="12px"
+                    _hover={{ color: 'brand.brown', bg: 'whiteAlpha.50' }}
+                    transition="color 0.2s, background 0.2s"
                     cursor="pointer"
                   >
                     {link.label}
