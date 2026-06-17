@@ -106,6 +106,7 @@ function SeasonCards() {
 
   return (
     <Grid templateColumns="repeat(2, 1fr)" gap={3}>
+
       {playerData.seasonStats.map((s, i) => (
         <Box
           key={s.label}
