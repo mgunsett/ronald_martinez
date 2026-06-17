@@ -4,7 +4,7 @@ function Shield({ src, name, size = '36px' }) {
   if (src) return <Image src={src} alt={name} boxSize={size} objectFit="contain" />
   return (
     <Box
-      boxSize={size}
+      boxSize={size}  
       display="flex"
       alignItems="center"
       justifyContent="center"

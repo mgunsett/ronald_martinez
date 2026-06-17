@@ -13,40 +13,42 @@ const MotionBox = motion(Box)
 
 function PlayerPanel() {
   return (
-    <VStack align="start" spacing={2}>  
+    <Flex direction={{base:'column', md:'row'}} justifyContent={'flex-start'} alignItems={'flex-start'} gap={{base:2,md:4}}>  
       <Text
         fontFamily="heading"
-        fontSize={{ base: '60px', md: '120px' }}
+        fontSize={{ base: '60px', md: '100px' }}
         lineHeight={0.9}
         color="transparent"
         sx={{ WebkitTextStroke: '2px #4D93D6' }}
       >
         {playerData.number}
       </Text>
-      <Box h="1px" w={{base:"60px", md: "70px", lg: "80px"}} bg="brand.brown" mb={2} />
-      <Flex gap={1}>
-        <Text fontFamily="mono" fontSize="12px" color="brand.gray"
-              textTransform="uppercase" letterSpacing="widest">
-          Posición
-        </Text>
-        <Text fontFamily="mono" fontSize="12px" color="brand.brown"
-              fontWeight="700" textTransform="uppercase" letterSpacing="widest">
-          {playerData.position}
-        </Text>
+      <Box w={{base:'60px',md:"1px"}} h={{base:"1px", md: "70px", lg: "80px"}} bg="brand.brown" />
+      <Flex direction={'column'} justifyContent={'flex-start'} gap={1}>
+        <Flex gap={1}>
+          <Text fontFamily="mono" fontSize="12px" color="brand.gray"
+            textTransform="uppercase" letterSpacing="widest">
+            Posición
+          </Text>
+          <Text fontFamily="mono" fontSize="12px" color="brand.brown"
+            fontWeight="700" textTransform="uppercase" letterSpacing="widest">
+            {playerData.position}
+          </Text>
+        </Flex>
+        <Flex justifyContent='flex-start' alignItems='center' gap={'12px'}>
+          <Image src={playerData.nationalityFlag} w={{ base: '20px', md: '20px' }} />
+          <Text mb={'-5px'} fontFamily="mono" fontSize="md" color="brand.gray" letterSpacing="wider">
+            {playerData.nationality}
+          </Text>
+        </Flex>
+        <Flex justifyContent='flex-start' alignItems={'flex-end'} gap={'10px'} spacing={1} mt={'3px'} ml={-1}>
+          <Image src={playerData.logoCurrentClub} w={{ base: '20px', md: '25px' }} h={'28px'} />
+          <Text fontFamily="mono" fontSize="md" color="brand.gray" letterSpacing="wider">
+            {playerData.currentClub}
+          </Text>
+        </Flex>
       </Flex>
-      <Flex justifyContent='flex-start' alignItems='flex-end' gap={'6px'} spacing={1}>
-        <Image src={playerData.nationalityFlag} w={{base:'20px', md:'18px'}} />
-        <Text mb={'-5px'} fontFamily="mono" fontSize="md" color="brand.gray" letterSpacing="wider">
-          {playerData.nationality}
-        </Text>
-      </Flex>
-      <Flex justifyContent='flex-start' alignItems={'flex-end'} gap={'5px'} spacing={1} mt={'3px'} ml={-1}>
-        <Image src={playerData.logoCurrentClub} w={{ base: '20px', md: '25px' }} h={'28px'} />
-        <Text fontFamily="mono" fontSize="md" color="brand.gray" letterSpacing="wider">
-          {playerData.currentClub}
-        </Text>
-      </Flex>
-    </VStack>
+    </Flex>
   )
 }
 
@@ -115,6 +117,10 @@ export default function Hero() {
         h="100vh"
         overflow="hidden"
         bg="brand.dark"
+        sx={{
+          maskImage: 'linear-gradient(black 90%, transparent)',
+          WebkitMaskImage: 'linear-gradient(black 90%, transparent)',
+        }}
       >
         {/* Warm brown glow — BG layer */}
         <Box
@@ -231,7 +237,7 @@ export default function Hero() {
         {/* Player info — bottom left */}
         <Box
           position="absolute"
-          bottom={{ base: '18%', lg: '15%' }}
+          bottom={{ base: '18%', lg: '25%' }}
           left={{ base: '5%', lg: '10.3%' }}
           zIndex={15}
         >
@@ -259,37 +265,6 @@ export default function Hero() {
           display={{ base: 'block', lg: 'none' }}
         >
           <MatchBox last={matches.last} next={matches.next} variant="strip" />
-        </Box>
-
-        {/* Marquee bar */}
-        <Box
-          position="absolute"
-          bottom={0}
-          left={0}
-          right={0}
-          zIndex={18}
-          h="38px"
-          bg="brand.brown"
-          overflow="hidden"
-          display="flex"
-          alignItems="center"
-        >
-          <Flex className="marquee-track" align="center" whiteSpace="nowrap" flexShrink={0}>
-            {[...playerData.marqueeItems, ...playerData.marqueeItems].map((item, i) => (
-              <Text
-                key={i}
-                fontFamily="mono"
-                fontSize="10px"
-                color="rgba(255,255,255,0.85)"
-                textTransform="uppercase"
-                letterSpacing="widest"
-                fontWeight="600"
-                px={4}
-              >
-                {item}
-              </Text>
-            ))}
-          </Flex>
         </Box>
 
         {/* Scroll indicator */}

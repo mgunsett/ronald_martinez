@@ -6,7 +6,7 @@ import { gsap } from 'gsap'
 const MotionBox = motion(Box)
 
 const navLinks = [
-  { label: 'Hero', href: '#hero'},
+  { label: 'Home', href: '#hero'},
   { label: 'Estadísticas', href: '#estadisticas' },
   { label: 'Videos',       href: '#videos' },
   { label: 'Galería',      href: '#galeria' },
@@ -18,7 +18,7 @@ function scrollTo(href) {
   const target = document.querySelector(href)
   if (!target) return
   if (window.__lenis) {
-    window.__lenis.scrollTo(target, { offset: -80 })
+    window.__lenis.scrollTo(target, { offset: -20 })
   } else {
     target.scrollIntoView({ behavior: 'smooth' })
   }
@@ -53,7 +53,7 @@ export default function Navbar() {
       ref={navRef}
       as="nav"
       position="fixed"
-      top={{ base: 3, lg: 4 }}
+      top={{ base: 3, lg: 2  }}
       left={0}
       right={0}
       zIndex={1000}
@@ -63,11 +63,11 @@ export default function Navbar() {
       <Flex
         align="center"
         justify="space-between"
-        maxW="1400px"
+        maxW="1100px"
         mx="auto"
         px={{ base: 4, lg: 7 }}
-        py={{ base: 2.5, lg: 2 }}
-        borderRadius={{ base: '18px', lg: '15px' }}
+        py={{ base: 1.5, lg: 1 }}
+        borderRadius={{ base: '18px', lg: '10px' }}
         border="1px solid"
         borderColor={scrolled ? 'rgba(77,147,214,0.30)' : 'rgba(255,255,255,0.12)'}
         bg={scrolled ? 'rgba(5,11,20,0.55)' : 'rgba(255,255,255,0.04)'}
@@ -104,7 +104,7 @@ export default function Navbar() {
               py={2}
               borderRadius="10px"
               fontFamily="mono"
-              fontSize="sm"
+              fontSize="2xs"
               fontWeight="500"
               letterSpacing="wider"
               textTransform="uppercase"
@@ -141,13 +141,13 @@ export default function Navbar() {
           href="#contacto"
           onClick={(e) => handleLink(e, '#contacto')}
           display={{ base: 'none', lg: 'block' }}
-          px={'12px'}
-          py={'7px'}
+          px={'10px'}
+          py={'5px'}
           border="1px solid"
           borderColor= 'brand.brown'
-          borderRadius={'8px'}
+          borderRadius={'5px'}
           fontFamily="mono"
-          fontSize="sm"
+          fontSize="xs"
           fontWeight="600"
           letterSpacing="wider"
           textTransform="uppercase"

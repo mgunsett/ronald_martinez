@@ -10,68 +10,78 @@ import { playerData } from '../../data/playerData'
 gsap.registerPlugin(ScrollTrigger)
 
 function BioCard() {
-  const rows = [
-    ['Edad',       `${playerData.age} años`],
-    ['Altura',     playerData.height],
-    ['Peso',       playerData.weight],
-    ['Pie',        playerData.foot],
-    ['Nacimiento', playerData.birthDate],
-    ['Origen',     playerData.birthPlace],
-  ]
+  const BIO = [
+  { label: 'Edad', key: 'age' },
+  { label: 'Altura', key: 'height' },
+  { label: 'Peso', key: 'weight' },
+  { label: 'Pie', key: 'foot' },
+  { label: 'Nacimiento', key: 'birthDate' },
+  { label: 'Lugar', key: 'birthPlace' },
+]
   return (
-    <Box
-      border="1px solid rgba(139,69,19,0.18)"
-      p={6}
-      position="relative"
-      _before={{
-        content: '""', position: 'absolute', top: 0, left: 0,
-        w: '32px', h: '2px', bg: 'brand.brown',
-      }}
-    >
-      <Text fontFamily="mono" fontSize="9px" color="brand.brown"
-            textTransform="uppercase" letterSpacing="widest" mb={4}>
-        Perfil
-      </Text>
-      <VStack align="stretch" spacing={3}>
-        <Box>
-          <Text fontFamily="heading" fontSize="3xl" color="white" lineHeight={1}>
-            {playerData.name}
-          </Text>
-          <Text fontFamily="heading" fontSize="3xl" color="brand.brown" lineHeight={1}>
-            {playerData.fullName}
-          </Text>
-          <HStack mt={2} spacing={2}>
-            <Badge
-              fontFamily="mono" fontSize="9px" letterSpacing="widest"
-              bg="rgba(139,69,19,0.2)" color="brand.brownLight"
-              border="1px solid rgba(139,69,19,0.35)" px={2} py={0.5}
+          <Box>
+            <Text
+                fontFamily="mono"
+                fontSize="11px"
+                letterSpacing="0.28em"
+                textTransform="uppercase"
+                color="whiteAlpha.600"
+                mb={5}
+              >
+                Datos personales
+              </Text>
+            <Box
+              bg="#050B14"
+              border="1px solid"
+              borderColor="whiteAlpha.100"
+              p={{ base: 5, md: 6 }}
+              h="90%"
+              position="relative"
+              sx={{
+                '&::before': {
+                  content: '""',
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  width: '36px',
+                  height: '3px',
+                  bg: 'brand.brown',
+                },
+              }}
             >
-              #{playerData.number}
-            </Badge>
-            <Badge
-              fontFamily="mono" fontSize="9px" letterSpacing="widest"
-              bg="rgba(139,69,19,0.15)" color="brand.gray"
-              border="1px solid rgba(139,69,19,0.2)" px={2} py={0.5}
-            >
-              {playerData.positionShort}
-            </Badge>
-            <Text fontSize="md">{playerData.nationalityFlag}</Text>
-          </HStack>
-        </Box>
-        <Box h="1px" bg="rgba(255,255,255,0.06)" />
-        {rows.map(([label, val]) => (
-          <Flex key={label} justify="space-between" align="center">
-            <Text fontFamily="mono" fontSize="10px" color="brand.gray"
-                  textTransform="uppercase" letterSpacing="widest">
-              {label}
-            </Text>
-            <Text fontFamily="mono" fontSize="11px" color="white" fontWeight="500">
-              {val}
-            </Text>
-          </Flex>
-        ))}
-      </VStack>
-    </Box>
+              <VStack align="stretch" spacing={3}>
+                {BIO.map((row) => (
+                  <Flex
+                    key={row.key}
+                    justify="space-between"
+                    align="center"
+                    borderBottom="1px solid"
+                    borderColor="whiteAlpha.50"
+                    pb={3}
+                    transition="all 0.3s ease"
+                    _hover={{ 
+                      borderColor: 'brand.brown',
+                      transform: 'translateY(-2px)',
+                    }}
+                  >
+                    <Text
+                      fontFamily="mono"
+                      fontSize="11px"
+                      letterSpacing="0.18em"
+                      textTransform="uppercase"
+                      color="whiteAlpha.600"
+                    >
+                      {row.label}
+                    </Text>
+                    <Text fontFamily="mono" fontSize="sm" fontWeight={500}>
+                      {playerData[row.key]}
+                    </Text>
+                  </Flex>
+                ))}
+              </VStack>
+            </Box>
+          </Box>
+
   )
 }
 
@@ -337,7 +347,7 @@ export default function StatsSection() {
     <Box
       id="estadisticas"
       ref={sectionRef}
-      bg="#100A06"
+      bg="##050B14"
       pt={{ base: 16, lg: 20 }}
       pb={{ base: 16, lg: 20 }}
       px={{ base: 5, lg: 10 }}
@@ -349,12 +359,12 @@ export default function StatsSection() {
         {/* Header */}
         <Flex align="flex-end" justify="space-between" mb={10}>
           <Box ref={titleRef}>
-            <Text fontFamily="mono" fontSize="10px" color="brand.brown"
+            <Text fontFamily="mono" fontSize="10px" color="white"
                   textTransform="uppercase" letterSpacing="widest" mb={2}>
               Temporada 2024 / 2025
             </Text>
             <Text fontFamily="heading" fontSize={{ base: '4xl', lg: '6xl' }}
-                  color="white" lineHeight={1}>
+                  color="brand.brown" lineHeight={1}>
               Estadísticas
             </Text>
           </Box>
