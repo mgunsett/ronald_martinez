@@ -6,7 +6,7 @@ import { gsap } from 'gsap'
 const MotionBox = motion(Box)
 
 const navLinks = [
-  { label: 'Hero', href: '#hero'},
+  { label: 'Home', href: '#hero'},
   { label: 'Estadísticas', href: '#estadisticas' },
   { label: 'Videos',       href: '#videos' },
   { label: 'Galería',      href: '#galeria' },
@@ -53,7 +53,7 @@ export default function Navbar() {
       ref={navRef}
       as="nav"
       position="fixed"
-      top={{ base: 3, lg: 4 }}
+      top={{ base: 3, lg: 3 }}
       left={0}
       right={0}
       zIndex={1000}

@@ -13,7 +13,7 @@ const MotionBox = motion(Box)
 
 function PlayerPanel() {
   return (
-    <VStack align="start" spacing={2}>  
+    <Flex align="start" gap={4}>  
       <Text
         fontFamily="heading"
         fontSize={{ base: '60px', md: '120px' }}
@@ -23,30 +23,32 @@ function PlayerPanel() {
       >
         {playerData.number}
       </Text>
-      <Box h="1px" w={{base:"60px", md: "70px", lg: "80px"}} bg="brand.brown" mb={2} />
-      <Flex gap={1}>
-        <Text fontFamily="mono" fontSize="12px" color="brand.gray"
-              textTransform="uppercase" letterSpacing="widest">
-          Posición
-        </Text>
-        <Text fontFamily="mono" fontSize="12px" color="brand.brown"
-              fontWeight="700" textTransform="uppercase" letterSpacing="widest">
-          {playerData.position}
-        </Text>
+      <Box w="1px" h={{base:"60px", md: "70px", lg: "90px"}} bg="brand.brown" mb={2} />
+      <Flex direction={'column'} gap={2}>
+        <Flex gap={1}>
+          <Text fontFamily="mono" fontSize="12px" color="brand.gray"
+            textTransform="uppercase" letterSpacing="widest">
+            Posición
+          </Text>
+          <Text fontFamily="mono" fontSize="12px" color="brand.brown"
+            fontWeight="700" textTransform="uppercase" letterSpacing="widest">
+            {playerData.position}
+          </Text>
+        </Flex>
+        <Flex justifyContent='flex-start' alignItems='flex-end' gap={'10px'} spacing={1}>
+          <Image src={playerData.nationalityFlag} w={{ base: '20px', md: '18px' }} />
+          <Text mb={'-5px'} fontFamily="mono" fontSize="md" color="brand.gray" letterSpacing="wider">
+            {playerData.nationality}
+          </Text>
+        </Flex>
+        <Flex justifyContent='flex-start' alignItems={'flex-end'} gap={'7px'} spacing={1} mt={'3px'} ml={-1}>
+          <Image src={playerData.logoCurrentClub} w={{ base: '20px', md: '25px' }} h={'28px'} />
+          <Text fontFamily="mono" fontSize="md" color="brand.gray" letterSpacing="wider">
+            {playerData.currentClub}
+          </Text>
+        </Flex>
       </Flex>
-      <Flex justifyContent='flex-start' alignItems='flex-end' gap={'6px'} spacing={1}>
-        <Image src={playerData.nationalityFlag} w={{base:'20px', md:'18px'}} />
-        <Text mb={'-5px'} fontFamily="mono" fontSize="md" color="brand.gray" letterSpacing="wider">
-          {playerData.nationality}
-        </Text>
-      </Flex>
-      <Flex justifyContent='flex-start' alignItems={'flex-end'} gap={'5px'} spacing={1} mt={'3px'} ml={-1}>
-        <Image src={playerData.logoCurrentClub} w={{ base: '20px', md: '25px' }} h={'28px'} />
-        <Text fontFamily="mono" fontSize="md" color="brand.gray" letterSpacing="wider">
-          {playerData.currentClub}
-        </Text>
-      </Flex>
-    </VStack>
+    </Flex>
   )
 }
 
@@ -178,7 +180,7 @@ export default function Hero() {
             <Image
               src={playerData.image}
               alt={`${playerData.name} ${playerData.fullName}`}
-              h="100%"
+              h="99%"
               maxW={{ base: '95vw', lg: '50vw' }}
               objectFit="contain"
               objectPosition="bottom center"
@@ -231,7 +233,7 @@ export default function Hero() {
         {/* Player info — bottom left */}
         <Box
           position="absolute"
-          bottom={{ base: '18%', lg: '15%' }}
+          bottom={{ base: '18%', lg: '22%' }}
           left={{ base: '5%', lg: '10.3%' }}
           zIndex={15}
         >
