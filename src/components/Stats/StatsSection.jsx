@@ -313,7 +313,8 @@ function ClubNode({ club, isFirst, isLast, isActive }) {
         mt={5}
         mx={2}
         px={4}
-        py={5}
+        pt={5}
+        pb={8}
         bg="#070F1A"
         border="1px solid"
         borderColor="whiteAlpha.100"
@@ -514,7 +515,7 @@ export default function StatsSection() {
           <Box ref={titleRef}>
             <Text fontFamily="mono" fontSize="10px" color="white"
                   textTransform="uppercase" letterSpacing="widest" mb={2}>
-              Temporada 2024 / 2025
+              Temporada 2025 / 2026
             </Text>
             <Text fontFamily="heading" fontSize={{ base: '4xl', lg: '6xl' }}
                   color="brand.brown" lineHeight={1}>

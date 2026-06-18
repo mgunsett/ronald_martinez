@@ -24,6 +24,9 @@ import image4 from '@assets/gallery/image4.jpg'
 import image5 from '@assets/gallery/image5.jpg'
 import image6 from '@assets/gallery/image6.jpg'
 
+//Video
+import photoGraph from '@assets/perfil_video.webp'
+
 export const playerData = {
   name: 'RONALD',
   fullName: 'MARTINEZ',
@@ -120,7 +123,20 @@ export const playerData = {
     },
   ],
 
-  videos: [],
+  videos: [
+    {
+      id: 'v1',
+      title: 'Platense 2025',
+      fullTitle: 'Ronaldo Martinez | Platense 2025 [Highlights]',
+      youtubeId: 'HAr4MZtD7sY',
+      duration: '4:01',
+      season: 'Temporada 2025',
+      league: 'Liga Argentina',
+      thumbnail: photoGraph,
+      cover: photoGraph,
+      category: 'Highlights',
+    },
+  ],
 
   press: [
     {
