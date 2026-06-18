@@ -7,6 +7,15 @@ import ronald1 from '@assets/ronald1.png'
 import paraguay from '@assets/paraguay.webp'
 import talleres from '@assets/talleres.png'
 
+//Escudos trayectoria
+import escudoTalleres from '@assets/escudos/escudo_talleres.webp'
+import escudoPlatense from '@assets/escudos/escudo_platense.webp'
+import escudoResistencia from '@assets/escudos/escudo_resistencia.webp'
+import escudoStrongest from '@assets/escudos/escudo_strongest.webp'
+import escudoCentralNorte from '@assets/escudos/escudo_central_norte.webp'
+import escudoCapiata from '@assets/escudos/escudo_capiata.webp'
+import escudoCerro from '@assets/escudos/escudo_cerro.webp'
+
 //Gallery
 import image1 from '@assets/gallery/image1.jpg'
 import image2 from '@assets/gallery/image2.jpg'
@@ -43,44 +52,71 @@ export const playerData = {
   ],
 
   seasonStats: [
-    { label: 'Partidos',    value: 28 },
-    { label: 'Goles',       value: 14 },
-    { label: 'Asistencias', value: 7  },
-    { label: 'Min / Part.', value: "78'" },
+    { label: 'Partidos',    value: 19 },
+    { label: 'Goles',       value: 3 },
+    { label: 'Asistencias', value: 2  },
+    { label: 'Tiros al árco', value: 28  },
+    { label: 'Min / Part.', value: "1,470'" },
+    { label: 'Valoración', value: 7.4  },
+
   ],
 
   clubs: [
     {
       name:    'Talleres',
       country: 'Argentina',
-      years:   '2023 — Presente',
-      logo:    null,
-      titles:  ['Copa Argentina 2024'],
-      info:    '',
-    },
-    {
-      name:    'Atlético Tucumán',
-      country: 'Argentina',
-      years:   '2021 — 2023',
-      logo:    null,
+      years:   '2025 — Actualidad',
+      logo:    escudoTalleres,
       titles:  [],
       info:    '',
     },
     {
-      name:    'Racing Club',
+      name:    'Platense',
       country: 'Argentina',
-      years:   '2019 — 2021',
-      logo:    null,
-      titles:  ['Superliga 2019'],
+      years:   '2024 — 2025',
+      logo:    escudoPlatense,
+      titles:  ['Torneo Apertura 2025'],
+      info:    'Goleador del Torneo',
+    },
+    {
+      name:    'Resistencia SC',
+      country: 'Paraguay',
+      years:   '2022',
+      logo:    escudoResistencia,
+      titles:  [],
       info:    '',
     },
     {
-      name:    'Caracas FC',
-      country: 'Venezuela',
-      years:   '2014 — 2019',
-      logo:    null,
-      titles:  ['Liga FUTVE 2016', 'Liga FUTVE 2018'],
-      info:    'Debut profesional y base de su carrera.',
+      name:    'The Strongest',
+      country: 'Bolivia',
+      years:   '2021',
+      logo:    escudoStrongest,
+      titles:  [],
+      info:    'Préstamo',
+    },
+    {
+      name:    'Central Norte',
+      country: 'Argentina',
+      years:   '2019',
+      logo:    escudoCentralNorte,
+      titles:  ['Torneo Regional Federal 2019'],
+      info:    'Préstamo',
+    },
+    {
+      name:    'Capiatá',
+      country: 'Paraguay',
+      years:   '2018',
+      logo:    escudoCapiata,
+      titles:  [],
+      info:    'Préstamo',
+    },
+    {
+      name:    'Cerro Porteño',
+      country: 'Paraguay',
+      years:   '2015 — 2021',
+      logo:    escudoCerro,
+      titles:  ['Torneo Apertura 2015', 'Torneo Clausura 2017', 'Torneo Apertura 2020'],
+      info:    'Debut profesional ',
     },
   ],
 

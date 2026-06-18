@@ -147,7 +147,7 @@ export default function Navbar() {
           borderColor= 'brand.brown'
           borderRadius={'5px'}
           fontFamily="mono"
-          fontSize="xs"
+          fontSize="2xs"
           fontWeight="600"
           letterSpacing="wider"
           textTransform="uppercase"
