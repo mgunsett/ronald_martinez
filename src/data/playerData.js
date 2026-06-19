@@ -6,7 +6,6 @@ import { IoMdStats } from 'react-icons/io'
 import ronald1 from '@assets/ronald1.png'
 import paraguay from '@assets/paraguay.webp'
 import talleres from '@assets/talleres.png'
-
 //Escudos trayectoria
 import escudoTalleres from '@assets/escudos/escudo_talleres.webp'
 import escudoPlatense from '@assets/escudos/escudo_platense.webp'
@@ -15,7 +14,6 @@ import escudoStrongest from '@assets/escudos/escudo_strongest.webp'
 import escudoCentralNorte from '@assets/escudos/escudo_central_norte.webp'
 import escudoCapiata from '@assets/escudos/escudo_capiata.webp'
 import escudoCerro from '@assets/escudos/escudo_cerro.webp'
-
 //Gallery
 import image1 from '@assets/gallery/image1.jpg'
 import image2 from '@assets/gallery/image2.jpg'
@@ -23,9 +21,12 @@ import image3 from '@assets/gallery/image3.jpg'
 import image4 from '@assets/gallery/image4.jpg'
 import image5 from '@assets/gallery/image5.jpg'
 import image6 from '@assets/gallery/image6.jpg'
-
 //Video
 import photoGraph from '@assets/perfil_video.webp'
+//Prensa
+import logo1 from '@assets/logos/logo1.jpg'
+import logo2 from '@assets/logos/logo2.jpg'
+import logo3 from '@assets/logos/logo3.png'
 
 export const playerData = {
   name: 'RONALD',
@@ -140,25 +141,25 @@ export const playerData = {
 
   press: [
     {
-      media: 'La Voz del Interior',
-      logo:  null,
-      title: 'Martínez, el delantero que Talleres necesitaba',
-      date:  'Marzo 2025',
-      url:   '#',
+      media: 'El Gráfico',
+      logo:  logo1,
+      title: 'Se ha inmortalizado en los libros de récords al convertirse en el máximo goleador del Torneo Clausura 2025',
+      date:  'Diciembre 2025',
+      url:   'https://www.elgrafico.com.ar/articulo/primera-division/95962/cuantas-veces-platense-tuvo-al-goleador-del-campeonato-de-primera-division',
     },
     {
-      media: 'TyC Sports',
-      logo:  null,
-      title: 'El venezolano que conquistó Córdoba con sus goles',
-      date:  'Enero 2025',
-      url:   '#',
+      media: 'La Voz',
+      logo:  logo2,
+      title: 'El delantero paraguayo puso el 1-0 y fue clave en la noche feliz de la “T” ante Newell’s.',
+      date:  'Enero 2026',
+      url:   'https://www.lavoz.com.ar/deportes/futbol/ronaldo-martinez-figura-de-talleres-como-esta-de-la-lesion-y-por-que-festejo-a-lo-cristiano/',
     },
     {
-      media: 'Olé',
-      logo:  null,
-      title: '"Quiero marcar historia en Talleres" — Ronald Martínez',
-      date:  'Noviembre 2024',
-      url:   '#',
+      media: 'Cba24N',
+      logo:  logo3,
+      title: 'Convocado por la selección de Paraguay para participar en la próxima ventana internacional de la fecha FIFA',
+      date:  'Marzo 2026',
+      url:   'https://www.cba24n.com.ar/deportes/futbol/talleres/ronaldo-martinez--convocado-a-la-seleccion-de-paraguay-para-la-proxima-ventana-internacional_a69ac304f2128774661b1005d',
     },
   ],
 
@@ -175,24 +176,24 @@ export const playerData = {
     {
       label:      'Instagram',
       icon:       FaInstagram,
-      handle:     '@ronaldmartinez77',
-      url:        'https://instagram.com/ronaldmartinez77',
-      hoverColor: 'rgba(139,69,19,0.18)',
+      handle:     '@ronaldoivan',
+      url:        'https://www.instagram.com/ronaldoivan/',
+      hoverColor: 'brand.brownDark',
     },
     {
-      label:      'X / Twitter',
-      icon:       FaXTwitter,
+      label:      'TransferMarkt',
+      icon:       IoMdStats,
       handle:     '@ronaldm77',
-      url:        'https://x.com/ronaldm77',
-      hoverColor: 'rgba(139,69,19,0.18)',
+      url:        'https://www.transfermarkt.com.ar/ronaldo-martinez/profil/spieler/567736',
+      hoverColor: 'brand.brownDark',
     },
   ],
 
   contact: [
     {
       title:      'Representante Deportivo',
-      label:      'Sport Management SA',
-      icon:       IoMdStats,
+      label:      'Representante',
+      icon:       FaEnvelope,
       handle:     'management@rmartinez77.com',
       url:        'mailto:management@rmartinez77.com',
       hoverColor: 'rgba(139,69,19,0.18)',

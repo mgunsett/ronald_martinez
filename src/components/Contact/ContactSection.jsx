@@ -1,167 +1,264 @@
 import { useRef } from 'react'
-import { Box, Grid, Text, Flex, VStack, HStack, Link, Icon } from '@chakra-ui/react'
-import useScrubReveal from '../../hooks/useScrubReveal'
+import { Box, Flex, Text, SimpleGrid, Grid, Image } from '@chakra-ui/react'
 import { playerData } from '../../data/playerData'
+import { useScrubReveal } from '../../hooks/useScrubReveal'
 
-function SocialCard({ item, index }) {
-  const IconComponent = item.icon
+function SocialCard({ item }) {
+  const Icon = item.icon
   return (
     <Box
-      as={Link}
+      as="a"
       href={item.url}
-      isExternal
-      display="block"
-      textDecoration="none"
-      border="1px solid rgba(139,69,19,0.18)"
-      p={{ base: 6, lg: 8 }}
+      target={item.url?.startsWith('http') ? '_blank' : undefined}
+      rel="noopener noreferrer"
       position="relative"
       overflow="hidden"
-      transition="border-color 0.3s, background 0.3s"
-      _hover={{ borderColor: 'rgba(139,69,19,0.5)', bg: item.hoverColor, textDecoration: 'none' }}
-      _before={{
-        content: '""', position: 'absolute', top: 0, left: 0,
-        w: '32px', h: '2px', bg: 'brand.brown',
+      bg="rgba(255,255,255,0.02)"
+      border="1px solid"
+      borderColor="whiteAlpha.100"
+      p={{ base: 6, md: 8 }}
+      transition="all 0.3s ease"
+      role="group"
+      _hover={{
+        transform: 'translateY(-3px)',
+        borderColor: 'rgba(156,117,90,0.5)',
       }}
     >
-      {/* Watermark icon */}
+      {/* watermark gigante */}
       <Box
         position="absolute"
-        right={{ base: '-10px', lg: '-20px' }}
-        bottom={{ base: '-20px', lg: '-30px' }}
+        right="-10px"
+        bottom="-40px"
         opacity={0.05}
+        transition="all 0.4s ease"
+        _groupHover={{ opacity: 0.18, color: (item.hoverColor) }}
+        color="white"
         pointerEvents="none"
       >
-        <Icon as={IconComponent} fontSize={{ base: '120px', lg: '160px' }} color="brand.brown" />
+        <Box as={Icon} fontSize="180px" />
       </Box>
+      <Box position="relative">
+        {item.icon && (
+        <Box
+          as={Icon}
+          fontSize="28px"
+          mb={6}
+          color="whiteAlpha.700"
+          transition="color 0.3s ease"
+          _groupHover={{ color: item.hoverColor }}
+        />
+        )}
+        {item.image && (
+          <Image
+          src={item.image}
+          w={'30px'}
+          h={'30px'}
+          mb={6}
+          filter="brightness(0.3)"
+          color="whiteAlpha.700"
+          transition="all 0.3s ease"
+          _groupHover={{ color: item.hoverColor, filter:"brightness(0.9)"}}
+        />
+        )}
+        <Text
+          fontFamily="condensed"
+          fontSize="10px"
+          letterSpacing="0.24em"
+          textTransform="uppercase"
+          color="whiteAlpha.500"
+          mb={1}
+        >
+          {item.label}
+        </Text>
+        <Text fontFamily="heading" fontSize="2xl">
+          {item.handle}
+        </Text>
+      </Box>
+    </Box>
+  )
+}
 
-      <VStack align="start" spacing={3} position="relative" zIndex={1}>
-        <Icon as={IconComponent} fontSize="28px" color="brand.brownLight" />
-        <Box>
-          <Text fontFamily="heading" fontSize="2xl" color="white" lineHeight={1}>
+function ContactRow({ item, gold }) {
+  const Icon = item.icon
+  return (
+    <Box
+      as="a"
+      href={item.url}
+      target={item.url?.startsWith('http') ? '_blank' : undefined}
+      rel="noopener noreferrer"
+      display="block"
+      bg="rgba(255,255,255,0.02)"
+      border="1px solid"
+      borderColor="whiteAlpha.100"
+      borderLeftColor= {gold ? 'brand.amber' : 'rgba(156,117,90,0.5)'}
+      borderLeftWidth= '4px'
+      borderLeftStyle= 'solid'
+      p={{ base: 5, md: 8 }}
+      transition="all 0.3s ease"
+      role="group"
+      _hover={{
+        transform: 'translateY(-3px)',
+        borderColor: gold ? 'brand.amber' : 'rgba(156,117,90,0.5)',
+      }}
+    >
+      <Flex align="center" gap={4}>
+        {item.icon && (
+          <Box
+            ml={3}
+            as={Icon}
+            fontSize="40px"
+            color='brand.brown'
+            opacity={0.4}
+            _groupHover={{ opacity: 1, color: 'rgba(156, 118, 90, 0.66)' }}
+          />
+        )}
+        {item.image && (
+          <Box boxSize="60px" overflow="hidden" transition="all 0.5s ease" >
+            <Image 
+            src={item.image} 
+            alt={item.label} 
+            w="100%"
+            filter="brightness(0.3)"
+            transition="all 0.3s ease"
+            _groupHover={{ 
+              filter: 'brightness(0.9)',
+             }}
+             />
+          </Box>
+        )}
+        <Box ml={gold ? '8px' : '16px'}>
+          <Text
+            fontFamily="condensed"
+            fontSize="10px"
+            letterSpacing="0.24em"
+            textTransform="uppercase"
+            color="whiteAlpha.500"
+          >
             {item.label}
           </Text>
-          <Text fontFamily="mono" fontSize="sm" color="brand.brownLight" letterSpacing="wider" mt={1}>
+          <Text fontFamily="heading" fontSize="2xl" fontWeight={500}>
             {item.handle}
           </Text>
         </Box>
-        <HStack spacing={2} mt={2}>
-          <Text fontFamily="mono" fontSize="10px" color="brand.gray"
-                textTransform="uppercase" letterSpacing="widest">
-            Seguir
-          </Text>
-          <Text color="brand.brown" fontSize="sm">→</Text>
-        </HStack>
-      </VStack>
+      </Flex>
     </Box>
   )
 }
 
-function ContactCard({ item }) {
-  const isMarketing = item.title.toLowerCase().includes('marketing')
-  const IconComponent = item.icon
-
-  return (
-    <Box
-      as={Link}
-      href={item.url}
-      display="block"
-      textDecoration="none"
-      border="1px solid"
-      borderColor={isMarketing ? 'rgba(212,168,75,0.35)' : 'rgba(139,69,19,0.18)'}
-      borderLeft={isMarketing ? '2px solid' : '1px solid'}
-      borderLeftColor={isMarketing ? 'brand.amber' : 'rgba(139,69,19,0.18)'}
-      p={6}
-      position="relative"
-      transition="border-color 0.3s, background 0.3s"
-      _hover={{
-        borderColor: isMarketing ? 'rgba(212,168,75,0.6)' : 'rgba(139,69,19,0.5)',
-        bg: item.hoverColor,
-        textDecoration: 'none',
-      }}
-    >
-      <HStack spacing={4}>
-        <Icon
-          as={IconComponent}
-          fontSize="24px"
-          color={isMarketing ? 'brand.amber' : 'brand.brownLight'}
-        />
-        <VStack align="start" spacing={0.5}>
-          <Text fontFamily="mono" fontSize="9px"
-                color={isMarketing ? 'brand.amber' : 'brand.brown'}
-                textTransform="uppercase" letterSpacing="widest">
-            {item.title}
-          </Text>
-          <Text fontFamily="heading" fontSize="xl" color="white" lineHeight={1.1}>
-            {item.label}
-          </Text>
-          <Text fontFamily="mono" fontSize="xs" color="brand.gray" letterSpacing="wider">
-            {item.handle}
-          </Text>
-        </VStack>
-      </HStack>
-    </Box>
+export function ContactSection() {
+  const professional = playerData.contact.filter(
+    (c) => c.title === 'Representante Deportivo'
   )
-}
+  const representative = playerData.contact.filter(
+    (c) => c.title === 'Contacto Marketing'
+  )
 
-export default function ContactSection() {
   const sectionRef = useRef(null)
-  const titleRef   = useRef(null)
-  const gridRef    = useRef(null)
-  const contactRef = useRef(null)
+  const headerRef  = useRef(null)
+  const socialRef  = useRef(null)
+  const proRef     = useRef(null)
+  const repRef     = useRef(null)
 
   useScrubReveal(sectionRef, {
     elements: [
-      { ref: titleRef,   fromVars: { y: 50, opacity: 0 }, vars: { y: 0, opacity: 1 }, position: '<' },
-      { ref: gridRef,    fromVars: { y: 40, opacity: 0 }, vars: { y: 0, opacity: 1 }, position: '-=0.3' },
-      { ref: contactRef, fromVars: { y: 30, opacity: 0 }, vars: { y: 0, opacity: 1 }, position: '-=0.2' },
+      { ref: headerRef, fromVars: { y: 50, opacity: 0 }, vars: { y: 0, opacity: 1 } },
+      { ref: socialRef, fromVars: { y: 40, opacity: 0 }, vars: { y: 0, opacity: 1 } },
+      { ref: proRef,    fromVars: { y: 40, opacity: 0 }, vars: { y: 0, opacity: 1 } },
+      { ref: repRef,    fromVars: { y: 40, opacity: 0 }, vars: { y: 0, opacity: 1 } },
     ],
     start: 'top 80%',
-    end:   'top 30%',
+    end:   'top 35%',
   })
 
   return (
     <Box
-      id="contacto"
+      as="section"
+      id="contact"
       ref={sectionRef}
-      bg="brand.dark"
-      py={{ base: 16, lg: 20 }}
-      px={{ base: 5, lg: 10 }}
+      position="relative"
+      bg="#080C12"
+      px={{ base: 6, md: 12, lg: 20 }}
+      py={{ base: 20, md: 28 }}
+      overflow="hidden"
     >
-      <Box maxW="1400px" mx="auto">
+      <Box className="deco-grid" />
+
+      <Box
+        position="absolute"
+        top="0"
+        right="-5%"
+        w="50vw"
+        h="50vw"
+        background="radial-gradient(ellipse, rgba(156,117,90,0.06) 0%, transparent 70%)"
+        pointerEvents="none"
+      />
+
+      <Box position="relative" zIndex={1} maxW="1400px" mx="auto">
         {/* Header */}
-        <Box mb={12} ref={titleRef}>
-          <Text fontFamily="mono" fontSize="10px" color="brand.brown"
-                textTransform="uppercase" letterSpacing="widest" mb={2}>
-            Contacto
+        <Box ref={headerRef} mb={{ base: 8, md: 10 }}>
+          <Text fontFamily="mono" fontSize="10px" color="white"
+                  textTransform="uppercase" letterSpacing="widest">
+            #Redes
           </Text>
-          <Text fontFamily="heading" fontSize={{ base: '4xl', lg: '6xl' }}
-                color="white" lineHeight={1}>
-            Conectá
+          <Text fontFamily="heading" fontSize={{ base: '5xl', lg: '6xl' }}
+                  color="brand.brown" lineHeight={1}>
+            Contacto
           </Text>
         </Box>
 
-        {/* Social media grid */}
-        <Box ref={gridRef} mb={8}>
-          <Text fontFamily="mono" fontSize="9px" color="brand.gray"
-                textTransform="uppercase" letterSpacing="widest" mb={4}>
-            Redes Sociales
+        {/* Social media */}
+        <Box ref={socialRef} mb={4}>
+          <Text
+            fontFamily="mono"
+                fontSize="11px"
+                letterSpacing="0.28em"
+                textTransform="uppercase"
+                color="whiteAlpha.600"
+                mb={5}
+          >
+            Redes sociales
           </Text>
-          <Grid templateColumns={{ base: '1fr', md: 'repeat(2, 1fr)' }} gap={4}>
-            {playerData.socialMedia.map((item, i) => (
-              <SocialCard key={item.label} item={item} index={i} />
+          <SimpleGrid columns={{ base: 1, sm: 2, lg: 2 }} spacing={4}>
+            {playerData.socialMedia.map((s, i) => (
+              <SocialCard key={i} item={s} />
+            ))}
+          </SimpleGrid>
+        </Box>
+
+        {/* Contacto profesional */}
+        <Box ref={proRef} mb={4}>
+          <Text
+            fontFamily="mono"
+                fontSize="11px"
+                letterSpacing="0.28em"
+                textTransform="uppercase"
+                color="whiteAlpha.600"
+                mb={5}
+          >
+            Representante Deportivo
+          </Text>
+          <Grid templateColumns={{ base: '1fr', md: '1fr' }} gap={4}>
+            {professional.map((c, i) => (
+              <ContactRow key={i} item={c} />
             ))}
           </Grid>
         </Box>
 
-        {/* Professional contact */}
-        <Box ref={contactRef}>
-          <Text fontFamily="mono" fontSize="9px" color="brand.gray"
-                textTransform="uppercase" letterSpacing="widest" mb={4}>
-            Contacto Profesional
+        {/* Representante */}
+        <Box ref={repRef}>
+          <Text
+            fontFamily="mono"
+                fontSize="11px"
+                letterSpacing="0.28em"
+                textTransform="uppercase"
+                color="brand.amber"
+                mb={5}
+          >
+            Representante de marketing
           </Text>
-          <Grid templateColumns={{ base: '1fr', md: 'repeat(2, 1fr)' }} gap={4}>
-            {playerData.contact.map((item) => (
-              <ContactCard key={item.title} item={item} />
+          <Grid templateColumns={{ base: '1fr', md: '1fr' }} gap={4}>
+            {representative.map((c, i) => (
+              <ContactRow key={i} item={c} gold />
             ))}
           </Grid>
         </Box>
@@ -169,3 +266,5 @@ export default function ContactSection() {
     </Box>
   )
 }
+
+export default ContactSection

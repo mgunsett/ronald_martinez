@@ -4,7 +4,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger'
 
 gsap.registerPlugin(ScrollTrigger)
 
-export default function useScrubReveal(sectionRef, config = {}) {
+export function useScrubReveal(sectionRef, config = {}) {
   useEffect(() => {
     if (!sectionRef.current) return
 
@@ -44,3 +44,5 @@ export default function useScrubReveal(sectionRef, config = {}) {
     return () => ctx.revert()
   }, [])
 }
+
+export default useScrubReveal

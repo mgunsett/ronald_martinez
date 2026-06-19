@@ -7,6 +7,7 @@ import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 
 import { playerData } from '../../data/playerData'
+import useScrubReveal from '../../hooks/useScrubReveal'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -43,13 +44,21 @@ const NOTCH = 'polygon(0 0, calc(100% - 46px) 0, 100% 46px, 100% 100%, 0 100%)'
 
 export default function VideosSection() {
   const video = playerData.videos[0]
-  const sectionRef = useRef(null)
-  const headerRef = useRef(null)
+
   const ghostRef = useRef(null)
   const wrapRef = useRef(null)
   const revealRef = useRef(null)
   const [hovered, setHovered] = useState(false)
   const [open, setOpen] = useState(false)
+
+  const sectionRef = useRef(null)
+  const headerRef   = useRef(null)
+  
+  useScrubReveal(sectionRef, {
+    elements: [{ ref: headerRef, fromVars: { y: 50, opacity: 0 }, vars: { y: 0, opacity: 1 } }],
+    start: 'top 80%',
+    end: 'top 40%',
+  })
 
   useEffect(() => {
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
@@ -112,32 +121,10 @@ export default function VideosSection() {
       position="relative"
       minH="100vh"
       bg="brand.dark"
-      px={{ base: 5, md: 12, lg: 20 }}
+      px={{ base: 5, md: 12, lg: 40 }}
       py={{ base: 20, md: 28 }}
       overflow="hidden"
     >
-      {/* ── Header ── */}
-      <Flex
-        ref={headerRef}
-        justify="space-between"
-        align="flex-end"
-        flexDir={{ base: 'column', md: 'row' }}
-        gap={{ base: 5, md: 6 }}
-        mb={{ base: 8, md: 6 }}
-      >
-        <Flex align="flex-end" justify="space-between" mb={2}>
-          <Box>
-            <Text fontFamily="mono" fontSize="10px" color="white"
-              textTransform="uppercase" letterSpacing="widest">
-              HIGHLIGHTS
-            </Text>
-            <Text fontFamily="heading" fontSize={{ base: '4xl', lg: '6xl' }}
-              color="brand.brown" lineHeight={1}>
-              VIDEOS
-            </Text>
-          </Box>
-        </Flex>
-      </Flex>
       {/* glows ambientales */}
       <Box
         position="absolute"
@@ -163,7 +150,7 @@ export default function VideosSection() {
         ref={ghostRef}
         aria-hidden
         position="absolute"
-        top={{ base: '4%', md: '4%' }}
+        top={{ base: '4%', md: '12%' }}
         right={{ base: '-6%', md: '2%' }}
         fontFamily="heading"
         fontSize={{ base: '38vw', md: '30vw' }}
@@ -176,12 +163,25 @@ export default function VideosSection() {
       >
         {playerData.number}
       </Text>
-
+    
       <Box maxW="1240px" mx="auto" position="relative" zIndex={1}>
+
+        {/* ── Header ── */}
+        <Flex direction={'column'} align="flex-start" justify="flex-start" ref={headerRef} mb={{ base: 8, md: 10 }} ml={{base:0 , md:'-30px', lg:'-90px'}}>
+           <Text fontFamily="mono" fontSize="10px" color="white"
+              textTransform="uppercase" letterSpacing="widest">
+              HIGHLIGHTS
+            </Text>
+            <Text fontFamily="heading" fontSize={{ base: '4xl', lg: '6xl' }}
+              color="brand.brown" lineHeight={1}>
+              VIDEOS
+            </Text>
+        </Flex>
 
         {/* ── Player ── */}
         <Box ref={wrapRef} position="relative">
           {/* riel vertical (solo desktop grande) */}
+          
           <Flex
             display={{ base: 'none', lg: 'flex' }}
             position="absolute"
@@ -203,7 +203,7 @@ export default function VideosSection() {
               {video.season} — {playerData.name} {playerData.fullName}
             </Text>
           </Flex>
-
+          
           {/* wrapper con sombra que sigue el bisel */}
           <Box
             ref={revealRef}
@@ -221,6 +221,7 @@ export default function VideosSection() {
                 : 'drop-shadow(0 28px 60px rgba(0,0,0,0.5))',
             }}
           >
+            
             <AspectRatio ratio={{ base: 4 / 5, md: 15 / 7 }}>
               <Box
                 position="relative"

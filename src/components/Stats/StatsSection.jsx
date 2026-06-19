@@ -514,10 +514,10 @@ export default function StatsSection() {
         <Flex align="flex-end" justify="space-between" mb={10}>
           <Box ref={titleRef}>
             <Text fontFamily="mono" fontSize="10px" color="white"
-                  textTransform="uppercase" letterSpacing="widest" mb={2}>
+                  textTransform="uppercase" letterSpacing="widest" >
               Temporada 2025 / 2026
             </Text>
-            <Text fontFamily="heading" fontSize={{ base: '4xl', lg: '6xl' }}
+            <Text fontFamily="heading" fontSize={{ base: '5xl', lg: '6xl' }}
                   color="brand.brown" lineHeight={1}>
               Estadísticas
             </Text>

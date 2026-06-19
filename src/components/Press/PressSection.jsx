@@ -1,5 +1,6 @@
 import { useRef, useEffect } from 'react'
-import { Box, Grid, Text, Flex, VStack, HStack, Link } from '@chakra-ui/react'
+import { Box, Grid, Text, Flex, VStack, HStack, Link, Image } from '@chakra-ui/react'
+import { FaStar } from 'react-icons/fa'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import useScrubReveal from '../../hooks/useScrubReveal'
@@ -7,10 +8,26 @@ import { playerData } from '../../data/playerData'
 
 gsap.registerPlugin(ScrollTrigger)
 
-const mediaLogos = [
-  'La Voz', 'TyC Sports', 'Olé', 'Clarín', 'Infobae', 'ESPN',
-  'La Nación', 'TNT Sports', 'DirecTV', 'Canal 12',
-]
+function getInitials(name = '') {
+  return name
+    .trim()
+    .split(/\s+/)
+    .slice(0, 2)
+    .map((w) => w[0])
+    .join('')
+    .toUpperCase()
+}
+
+function Stars({ count = 5 }) {
+  return (
+    <HStack spacing={1}>
+      {Array.from({ length: 5 }).map((_, i) => (
+        <Box key={i} as={FaStar} boxSize="14px"
+          color={i < count ? 'brand.amber' : 'whiteAlpha.200'} />
+      ))}
+    </HStack>
+  )
+}
 
 function PressCard({ article, index }) {
   const cardRef = useRef(null)
@@ -31,66 +48,108 @@ function PressCard({ article, index }) {
   }, [index])
 
   return (
-    <Box
-      ref={cardRef}
-      as={Link}
-      href={article.url}
-      isExternal
-      display="block"
-      textDecoration="none"
-      border="1px solid rgba(139,69,19,0.18)"
-      p={6}
-      position="relative"
-      transition="transform 0.3s, border-color 0.3s, background 0.3s"
-      _hover={{
-        transform: 'translateY(-4px)',
-        borderColor: 'rgba(139,69,19,0.5)',
-        bg: 'rgba(139,69,19,0.04)',
-        textDecoration: 'none',
-      }}
-      style={{ opacity: 0 }}
-      _before={{
-        content: '""', position: 'absolute', top: 0, left: 0,
-        w: '28px', h: '2px', bg: 'brand.brown',
-      }}
-      _after={{
-        content: '""', position: 'absolute', bottom: 0, left: 0,
-        w: '0', h: '2px',
-        background: 'linear-gradient(90deg, #8B4513, #D4A84B)',
-        transition: 'width 0.4s',
-      }}
-      sx={{ '&:hover::after': { width: '100%' } }}
-    >
-      <VStack align="start" spacing={4} h="100%">
-        <Flex justify="space-between" align="center" w="100%">
-          <Box
-            px={3} py={1}
-            bg="rgba(139,69,19,0.12)"
-            border="1px solid rgba(139,69,19,0.3)"
-          >
-            <Text fontFamily="mono" fontSize="9px" color="brand.brownLight"
-                  textTransform="uppercase" letterSpacing="widest">
-              {article.media}
-            </Text>
-          </Box>
-          <Text
-            fontFamily="mono" fontSize="xl" color="brand.gray"
-            transition="transform 0.2s, color 0.2s"
-            sx={{ 'a:hover &': { transform: 'translate(3px, -3px)', color: 'brand.brownLight' } }}
-          >
-            ↗
+    <Box ref={cardRef} role="group" style={{ opacity: 0 }}>
+      {/* Burbuja */}
+      <Box
+        as={Link}
+        href={article.url}
+        isExternal
+        display="block"
+        textDecoration="none"
+        bg="#070F1A"
+        border="1px solid"
+        borderColor="whiteAlpha.100"
+        borderRadius="lg"
+        p={6}
+        position="relative"
+        transition="border-color 0.35s, transform 0.35s, background 0.35s"
+        _after={{
+          content: '""', position: 'absolute', bottom: '-9px', left: 8,
+          w: 0, h: 0,
+          borderLeft: '10px solid transparent',
+          borderRight: '10px solid transparent',
+          borderTop: '10px solid #070F1A',
+          filter: 'drop-shadow(0 1px 0 rgba(255,255,255,0.06))',
+        }}
+        _groupHover={{
+          borderColor: 'rgba(30,95,168,0.5)',
+          transform: 'translateY(-4px)',
+          bg: 'brand.dark',
+          _before: { width: '40px' },
+          textDecoration: 'none',
+        }}
+      >
+        <VStack align="start" spacing={4}>
+          <Flex justify="space-between" align="center" w="100%">
+            <Stars count={article.rating ?? 5} />
+            <Box
+              px={2.5} py={1}
+              bg="rgba(30,95,168,0.10)"
+              border="1px solid rgba(30,95,168,0.28)"
+              borderRadius="sm"
+            >
+              <Text fontFamily="mono" fontSize="9px" color="brand.brownLight"
+                textTransform="uppercase" letterSpacing="0.18em">
+                {article.media}
+              </Text>
+            </Box>
+          </Flex>
+
+          <Text fontFamily="body" fontSize={{base:'xs',md:"md"}} color="boneWarm" lineHeight={1.55}>
+            “{article.title}”
           </Text>
+
+          <Text fontFamily="mono" fontSize="11px" color="brand.brownLight"
+            textTransform="uppercase" letterSpacing="0.18em"
+            transition="color 0.25s"
+            _groupHover={{ color: 'white' }}>
+            Leer más →
+          </Text>
+        </VStack>
+      </Box>
+
+      {/* Autor */}
+      <HStack spacing={3} mt={5} pl={2}>
+        <Flex
+          boxSize="42px"
+          flexShrink={0}
+          borderRadius="full"
+          overflow="hidden"
+          align="center"
+          justify="center"
+          bg="linear-gradient(135deg, #0B2A4A, #1E5FA8)"
+          border="1px solid"
+          borderColor="whiteAlpha.200"
+          transition="border-color 0.35s, box-shadow 0.35s"
+          _groupHover={{
+            borderColor: 'brand.brown',
+            boxShadow: '0 0 0 3px rgba(30,95,168,0.16)',
+          }}
+        >
+          {article.logo ? (
+            <Image
+              src={article.logo}
+              alt={article.media}
+              boxSize="100%"
+              objectFit="cover"
+              objectPosition="center"
+            />
+          ) : (
+            <Text fontFamily="heading" fontSize="lg" color="white" lineHeight={1}>
+              {getInitials(article.media)}
+            </Text>
+          )}
         </Flex>
-
-        <Text fontFamily="heading" fontSize="xl" color="white" lineHeight={1.2} flex={1}>
-          {article.title}
-        </Text>
-
-        <Text fontFamily="mono" fontSize="10px" color="brand.gray"
-              letterSpacing="wider" textTransform="uppercase">
-          {article.date}
-        </Text>
-      </VStack>
+        <Box>
+          <Text fontFamily="heading" fontSize="lg" color="white" lineHeight={1}>
+            {article.media}
+          </Text>
+          <Text fontFamily="mono" fontSize="10px" color="brand.gray"
+            textTransform="uppercase" letterSpacing="0.18em" mt={0.5}>
+            {article.date}
+          </Text>
+        </Box>
+      </HStack>
     </Box>
   )
 }
@@ -109,61 +168,32 @@ export default function PressSection() {
     <Box
       id="prensa"
       ref={sectionRef}
-      bg="#100A06"
-      py={{ base: 16, lg: 20 }}
+      bg="#050B14"
+      pb={{ base: 16, lg: 20 }}
+      pt={0}
       px={{ base: 5, lg: 10 }}
     >
       <Box maxW="1400px" mx="auto">
         {/* Header */}
-        <Flex align="flex-end" justify="space-between" mb={10} ref={titleRef}>
+        <Flex align="flex-end" justify="space-between" mb={4} ref={titleRef}>
           <Box>
-            <Text fontFamily="mono" fontSize="10px" color="brand.brown"
-                  textTransform="uppercase" letterSpacing="widest" mb={2}>
-              Medios
+            <Text fontFamily="mono" fontSize={{base:'12px',md:"10px"}} color="white"
+                  textTransform="uppercase" letterSpacing="widest">
+              Testimonios
             </Text>
-            <Text fontFamily="heading" fontSize={{ base: '4xl', lg: '6xl' }}
-                  color="white" lineHeight={1}>
+            <Text fontFamily="heading" fontSize={{ base: '5xl', lg: '6xl' }}
+                  color="brand.brown" lineHeight={1}>
               Prensa
             </Text>
           </Box>
         </Flex>
 
         {/* Cards */}
-        <Grid templateColumns={{ base: '1fr', md: 'repeat(3, 1fr)' }} gap={5} mb={14}>
+        <Grid templateColumns={{ base: '1fr', md: 'repeat(3, 1fr)' }} gap={6} mb={4}>
           {playerData.press.map((article, i) => (
             <PressCard key={article.title} article={article} index={i} />
           ))}
         </Grid>
-
-        {/* Media logos marquee */}
-        <Box
-          borderTop="1px solid rgba(139,69,19,0.12)"
-          pt={8}
-          overflow="hidden"
-        >
-          <Text fontFamily="mono" fontSize="9px" color="brand.gray"
-                textTransform="uppercase" letterSpacing="widest" mb={5} textAlign="center">
-            Presencia en medios
-          </Text>
-          <Box overflow="hidden">
-            <Flex className="marquee-track" align="center" whiteSpace="nowrap" flexShrink={0}>
-              {[...mediaLogos, ...mediaLogos].map((name, i) => (
-                <HStack key={i} spacing={3} px={6}>
-                  <Box w="4px" h="4px" bg="rgba(139,69,19,0.5)" flexShrink={0} />
-                  <Text
-                    fontFamily="heading"
-                    fontSize="lg"
-                    color="rgba(255,255,255,0.2)"
-                    letterSpacing="widest"
-                    textTransform="uppercase"
-                  >
-                    {name}
-                  </Text>
-                </HStack>
-              ))}
-            </Flex>
-          </Box>
-        </Box>
       </Box>
     </Box>
   )
