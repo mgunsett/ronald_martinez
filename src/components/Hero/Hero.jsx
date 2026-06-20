@@ -13,10 +13,15 @@ const MotionBox = motion(Box)
 
 function PlayerPanel() {
   return (
-    <Flex direction={{base:'column', md:'row'}} justifyContent={'flex-start'} alignItems={'flex-start'} gap={{base:2,md:4}}>  
+    <Flex 
+    direction={{base:'column', md:'row'}} 
+    justifyContent={'flex-start'} 
+    alignItems={'flex-start'} 
+    gap={{base:2,md:4}}
+    >  
       <Text
         fontFamily="heading"
-        fontSize={{ base: '60px', md: '100px' }}
+        fontSize={{ base: '70px', md: '100px' }}
         lineHeight={0.9}
         color="transparent"
         sx={{ WebkitTextStroke: '2px #4D93D6' }}
@@ -26,24 +31,24 @@ function PlayerPanel() {
       <Box w={{base:'60px',md:"1px"}} h={{base:"1px", md: "70px", lg: "80px"}} bg="brand.brown" />
       <Flex direction={'column'} justifyContent={'flex-start'} gap={1}>
         <Flex gap={1}>
-          <Text fontFamily="mono" fontSize="12px" color="brand.gray"
+          <Text fontFamily="mono" fontSize={{base:'9px',md:"12px"}} color="brand.gray"
             textTransform="uppercase" letterSpacing="widest">
             Posición
           </Text>
-          <Text fontFamily="mono" fontSize="12px" color="brand.brown"
+          <Text fontFamily="mono" fontSize={{base:'9px',md:"12px"}} color="brand.brown"
             fontWeight="700" textTransform="uppercase" letterSpacing="widest">
             {playerData.position}
           </Text>
         </Flex>
-        <Flex justifyContent='flex-start' alignItems='center' gap={'12px'}>
-          <Image src={playerData.nationalityFlag} w={{ base: '20px', md: '20px' }} />
-          <Text mb={'-5px'} fontFamily="mono" fontSize="md" color="brand.gray" letterSpacing="wider">
+        <Flex justifyContent='flex-start' alignItems='center' gap={{base:'8px',md:'12px'}}>
+          <Image src={playerData.nationalityFlag} w={{ base: '15px', md: '20px' }} />
+          <Text mb={'-5px'} fontFamily="mono" fontSize={{base:'xs',md:"md"}} color="brand.gray" letterSpacing="wider">
             {playerData.nationality}
           </Text>
         </Flex>
-        <Flex justifyContent='flex-start' alignItems={'flex-end'} gap={'10px'} spacing={1} mt={'3px'} ml={-1}>
-          <Image src={playerData.logoCurrentClub} w={{ base: '20px', md: '25px' }} h={'28px'} />
-          <Text fontFamily="mono" fontSize="md" color="brand.gray" letterSpacing="wider">
+        <Flex justifyContent='flex-start' alignItems={'flex-end'} gap={{base:'8px',md:'10px'}} spacing={1} mt={'3px'} ml={-1}>
+          <Image src={playerData.logoCurrentClub} ml={{base:'2px',md:'none'}} w={{ base: '16px', md: '25px' }} h={{base:'20px',md:'28px'}} />
+          <Text fontFamily="mono" fontSize={{base:'xs',md:"md"}} color="brand.gray" letterSpacing="wider">
             {playerData.currentClub}
           </Text>
         </Flex>
@@ -120,6 +125,8 @@ export default function Hero() {
         sx={{
           maskImage: 'linear-gradient(black 90%, transparent)',
           WebkitMaskImage: 'linear-gradient(black 90%, transparent)',
+          // dvh evita el salto al colapsar la barra del navegador en mobile; vh queda de fallback
+          '@supports (height: 100dvh)': { height: '100dvh' },
         }}
       >
         {/* Warm brown glow — BG layer */}
@@ -129,7 +136,7 @@ export default function Hero() {
           inset="-10%"
           zIndex={1}
           pointerEvents="none"
-          background="radial-gradient(ellipse 70% 60% at 65% 50%, rgba(139,69,19,0.14) 0%, transparent 70%)"
+          background="radial-gradient(ellipse 70% 60% at 65% 50%, rgba(46, 122, 209, 0.14) 0%, transparent 70%)"
         />
 
         {/* Ghost text — MID layer */}
@@ -141,13 +148,14 @@ export default function Hero() {
           display="flex"
           flexDir="column"
           alignItems="center"
-          justifyContent="center"
+          justifyContent={"center"}
+          mt={{base:-10}}
           pointerEvents="none"
           userSelect="none"
         >
           <Text
             fontFamily="heading"
-            fontSize={{ base: '28vw', md: '22vw' }}
+            fontSize={{ base: '30vw', md: '22vw' }}
             color="transparent"
             lineHeight={0.85}
             style={{ WebkitTextStroke: '1px rgba(255,255,255,0.055)' }}
@@ -156,7 +164,7 @@ export default function Hero() {
           </Text>
           <Text
             fontFamily="heading"
-            fontSize={{ base: '28vw', md: '22vw' }}
+            fontSize={{ base: '40vw', md: '22vw' }}
             color="transparent"
             lineHeight={0.85}
             style={{ WebkitTextStroke: '1px rgba(43, 51, 100, 0.29)' }}
@@ -169,7 +177,7 @@ export default function Hero() {
         <Box
           position="absolute"
           inset={0}
-          zIndex={{base: 5, md: 5,  lg:'9999999 !important'}}
+          zIndex={{base: 2, md: 5,  lg:'9999999 !important'}}
           display="flex"
           alignItems="flex-end"
           justifyContent={{ base: 'center', lg: 'center' }}
@@ -179,6 +187,13 @@ export default function Hero() {
           <Box
             ref={photoRef}
             h={{ base: '78vh', lg: '94vh' }}
+            sx={{
+              // dvh evita el salto al colapsar la barra del navegador en mobile; vh queda de fallback
+              '@supports (height: 100dvh)': {
+                height: '78dvh',
+                '@media (min-width: 62em)': { height: '94dvh' },
+              },
+            }}
             style={{ clipPath: 'inset(100% 0 0 0)', opacity: 0 }}
           >
             <Image
@@ -197,20 +212,20 @@ export default function Hero() {
         <Box
           position="absolute"
           inset={0}
-          zIndex={10}
+          zIndex={1}
           pointerEvents="none"
           display="flex"
           flexDir="column"
           alignItems={{ base: 'center', lg: 'flex-start' }}
-          justifyContent={{ base: 'flex-end', lg: 'flex-start' }}
+          justifyContent={{ base: 'flex-start', lg: 'flex-start' }}
           pl={{ base: 0, lg: '10%' }}
-          pt={{ base: '180px', lg: '6%' }}
+          pt={{ base: '40%', lg: '6%' }}
         >
           <Box overflow="hidden" >
             <Text
               ref={line1Ref}
               fontFamily="heading"
-              fontSize={{ base: '18vw', md: '16vw', lg: '13vw' }}
+              fontSize={{ base: '25vw', md: '16vw', lg: '13vw' }}
               color="white"
               lineHeight={0.9}
               style={{ opacity: 0 }}
@@ -224,7 +239,7 @@ export default function Hero() {
             <Text
               ref={line2Ref}
               fontFamily="heading"
-              fontSize={{ base: '18vw', md: '16vw', lg: '13vw' }}
+              fontSize={{ base: '34vw', md: '16vw', lg: '13vw' }}
               color="brand.brown"
               lineHeight={0.9}
               style={{ opacity: 0 }}
@@ -237,7 +252,7 @@ export default function Hero() {
         {/* Player info — bottom left */}
         <Box
           position="absolute"
-          bottom={{ base: '18%', lg: '25%' }}
+          bottom={{ base: '26%', lg: '25%' }}
           left={{ base: '5%', lg: '10.3%' }}
           zIndex={15}
         >
@@ -249,7 +264,7 @@ export default function Hero() {
           position="absolute"
           bottom="12%"
           right="3%"
-          zIndex={15}
+          zIndex={10}
           display={{ base: 'none', lg: 'block' }}
         >
           <MatchBox last={matches.last} next={matches.next} variant="card" />
@@ -258,7 +273,7 @@ export default function Hero() {
         {/* MatchBox mobile */}
         <Box
           position="absolute"
-          bottom="40px"
+          bottom={{base:"30px",md:"40px"}}
           left={0}
           right={0}
           zIndex={15}

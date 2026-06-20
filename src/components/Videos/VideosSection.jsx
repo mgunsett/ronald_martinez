@@ -122,26 +122,18 @@ export default function VideosSection() {
       minH="100vh"
       bg="brand.dark"
       px={{ base: 5, md: 12, lg: 40 }}
-      py={{ base: 20, md: 28 }}
+      pt={{ base: 20, md: '10%' }}
+      pb={{base: 12, md: '10%'}}
       overflow="hidden"
     >
       {/* glows ambientales */}
       <Box
         position="absolute"
-        top="-5%"
+        top={{base:'10%',md:"-5%"}}
         right="-12%"
         w="55vw"
         h="55vw"
         background="radial-gradient(ellipse, rgba(30,95,168,0.16) 0%, transparent 70%)"
-        pointerEvents="none"
-      />
-      <Box
-        position="absolute"
-        bottom="-12%"
-        left="-10%"
-        w="48vw"
-        h="48vw"
-        background="radial-gradient(ellipse, rgba(212,168,75,0.06) 0%, transparent 70%)"
         pointerEvents="none"
       />
 
@@ -150,10 +142,10 @@ export default function VideosSection() {
         ref={ghostRef}
         aria-hidden
         position="absolute"
-        top={{ base: '4%', md: '12%' }}
+        top={{ base: '10%', md: '12%' }}
         right={{ base: '-6%', md: '2%' }}
         fontFamily="heading"
-        fontSize={{ base: '38vw', md: '30vw' }}
+        fontSize={{ base: '40vw', md: '30vw' }}
         lineHeight={0.8}
         color="transparent"
         pointerEvents="none"
@@ -172,7 +164,7 @@ export default function VideosSection() {
               textTransform="uppercase" letterSpacing="widest">
               HIGHLIGHTS
             </Text>
-            <Text fontFamily="heading" fontSize={{ base: '4xl', lg: '6xl' }}
+            <Text fontFamily="heading" fontSize={{ base: '5xl', lg: '6xl' }}
               color="brand.brown" lineHeight={1}>
               VIDEOS
             </Text>
@@ -239,6 +231,7 @@ export default function VideosSection() {
                   inset={0}
                   w="100%"
                   h="100%"
+                  borderRadius={'10px'}
                   objectFit="cover"
                   objectPosition="center 38%"
                   opacity={hovered ? 0 : 1}
@@ -379,11 +372,11 @@ export default function VideosSection() {
                   transition="opacity 0.45s ease 0.05s, transform 0.45s cubic-bezier(0.22,1,0.36,1) 0.05s"
                   pointerEvents="none"
                 >
-                  <Text fontFamily="mono" fontSize="10px" letterSpacing="0.28em" textTransform="uppercase" color="brand.brownLight" mb={1}>
+                  <Text fontFamily="mono" fontSize={{base:'8px',md:"10px"}} letterSpacing="0.28em" textTransform="uppercase" color="brand.brownLight" mb={1}>
                     Jugadas destacadas
                   </Text>
-                  <Text fontFamily="heading" fontSize={{ base: '2xl', md: '4xl' }} lineHeight={1} color="white" letterSpacing="0.01em" noOfLines={1}>
-                    {playerData.name} {playerData.fullName}
+                  <Text fontFamily="heading" fontSize={{ base: '3xl', md: '4xl' }} lineHeight={1} color="white" letterSpacing="0.01em" noOfLines={1}>
+                    {video.season}
                   </Text>
                 </Box>
 
@@ -401,21 +394,10 @@ export default function VideosSection() {
         {/* ── Línea de tiempo / footer broadcast ── */}
         <Flex
           mt={{ base: 6, md: 8 }}
+          justifyContent={'flex-end'}
           align="center"
           gap={{ base: 4, md: 8 }}
-          flexDir={{ base: 'column', md: 'row' }}
         >
-          <Box flexShrink={0} alignSelf={{ base: 'flex-start', md: 'auto' }}>
-            <Text fontFamily="heading" fontSize={{ base: 'xl', md: '2xl' }} lineHeight={1} color="white">
-              {video.season}
-            </Text>
-            <Text fontFamily="mono" fontSize="10px" letterSpacing="0.2em" textTransform="uppercase" color="whiteAlpha.500" mt="2px">
-              {video.league}
-            </Text>
-          </Box>
-
-          <Box flex={1} h="1px" bg="whiteAlpha.200" display={{ base: 'none', md: 'block' }} />
-
           <Flex
             as="button"
             onClick={() => setOpen(true)}

@@ -183,8 +183,8 @@ function GalleryCard({ photo, offset, abs, cardW, spacing, total, index, onFocus
         {/* Lupa al hover en la central */}
         {isCenter && (
           <Flex
-            position="absolute" top={4} left={4}
-            boxSize="34px"
+            position="absolute" top={2} left={2}
+            boxSize={{base: '24px',md:"34px"}}
             align="center" justify="center"
             borderRadius="full"
             bg="rgba(5,11,20,0.5)"
@@ -195,7 +195,7 @@ function GalleryCard({ photo, offset, abs, cardW, spacing, total, index, onFocus
             transition="opacity 0.3s ease"
             sx={{ '[role=group]:hover &': { opacity: 1 } }}
           >
-            <Text fontFamily="heading" fontSize="lg" color="white" lineHeight={1}>⤢</Text>
+            <Text fontFamily="heading" fontSize="xs" color="white" lineHeight={1}>⤢</Text>
           </Flex>
         )}
       </Box>
@@ -276,7 +276,7 @@ export default function GallerySection() {
     >
       {/* glow ambiental */}
       <Box
-        position="absolute" top="10%" left="50%" transform="translateX(-50%)"
+        position="absolute" top={{base:'16%',md:"10%"}} left="50%" transform="translateX(-50%)"
         w="70vw" h="40vw" maxW="900px"
         background="radial-gradient(ellipse, rgba(30,95,168,0.14) 0%, transparent 70%)"
         pointerEvents="none"
@@ -369,7 +369,7 @@ export default function GallerySection() {
             _hover={{ bg: 'brand.brown', borderColor: 'brand.brown', color: 'white' }}
             _active={{ transform: 'scale(0.92)' }}
           >
-            <Text fontFamily="heading" fontSize="xl" lineHeight={1}>‹</Text>
+            <Text fontFamily="heading" fontSize="4xl" lineHeight={1}>‹</Text>
           </Box>
 
           {/* Tira de miniaturas */}
@@ -412,7 +412,7 @@ export default function GallerySection() {
             _hover={{ bg: 'brand.brown', borderColor: 'brand.brown', color: 'white' }}
             _active={{ transform: 'scale(0.92)' }}
           >
-            <Text fontFamily="heading" fontSize="xl" lineHeight={1}>›</Text>
+            <Text fontFamily="heading" fontSize="4xl" lineHeight={1}>›</Text>
           </Box>
         </Flex>
       </Box>

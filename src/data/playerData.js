@@ -14,6 +14,7 @@ import escudoStrongest from '@assets/escudos/escudo_strongest.webp'
 import escudoCentralNorte from '@assets/escudos/escudo_central_norte.webp'
 import escudoCapiata from '@assets/escudos/escudo_capiata.webp'
 import escudoCerro from '@assets/escudos/escudo_cerro.webp'
+import escudoParaguay from '@assets/escudos/escudo_paraguay.webp'
 //Gallery
 import image1 from '@assets/gallery/image1.jpg'
 import image2 from '@assets/gallery/image2.jpg'
@@ -27,9 +28,13 @@ import photoGraph from '@assets/perfil_video.webp'
 import logo1 from '@assets/logos/logo1.jpg'
 import logo2 from '@assets/logos/logo2.jpg'
 import logo3 from '@assets/logos/logo3.png'
+//Redes
+import transfermkt from '@assets/contact2.svg'
+import ledsports from '@assets/contact3.webp'
+
 
 export const playerData = {
-  name: 'RONALD',
+  name: 'RONALDO',
   fullName: 'MARTINEZ',
   number: 77,
   position: 'Delantero',
@@ -41,7 +46,7 @@ export const playerData = {
   weight: '75kg',
   foot: 'Derecho',
   birthDate: '25 / 04 / 1996',
-  birthPlace: 'Caracas, Venezuela',
+  birthPlace: 'Eusebio Ayala, Paraguay',
   currentClub: 'Talleres',
   logoCurrentClub: talleres,
   image: ronald1,
@@ -71,6 +76,14 @@ export const playerData = {
       country: 'Argentina',
       years:   '2025 — Actualidad',
       logo:    escudoTalleres,
+      titles:  [],
+      info:    '',
+    },
+    {
+      name:    'Seleccion Mayor',
+      country: 'Paraguay',
+      years:   '2024 — 2026',
+      logo:    escudoParaguay,
       titles:  [],
       info:    '',
     },
@@ -131,7 +144,7 @@ export const playerData = {
       fullTitle: 'Ronaldo Martinez | Platense 2025 [Highlights]',
       youtubeId: 'HAr4MZtD7sY',
       duration: '4:01',
-      season: 'Temporada 2025',
+      season: 'Temporada',
       league: 'Liga Argentina',
       thumbnail: photoGraph,
       cover: photoGraph,
@@ -164,7 +177,7 @@ export const playerData = {
   ],
 
   gallery: [
-    { id: 1, src: image1, alt: 'Ronald Martínez en acción', caption: 'Liga Profesional 2024', category: 'Partido', aspect: 'wide' },
+    { id: 1, src: image1, alt: 'Ronaldo Martínez en acción', caption: 'Liga Profesional 2024', category: 'Partido', aspect: 'wide' },
     { id: 2, src: image2, alt: 'Festejo de gol',            caption: 'Festejo ante Racing',    category: 'Festejo', aspect: 'tall' },
     { id: 3, src: image3, alt: 'Entrenamiento',             caption: 'Pretemporada 2025',       category: 'Entrenamiento', aspect: 'square' },
     { id: 4, src: image4, alt: 'Copa Argentina',            caption: 'Copa Argentina 2024',     category: 'Partido', aspect: 'wide' },
@@ -174,17 +187,20 @@ export const playerData = {
 
   socialMedia: [
     {
-      label:      'Instagram',
-      icon:       FaInstagram,
-      handle:     '@ronaldoivan',
-      url:        'https://www.instagram.com/ronaldoivan/',
-      hoverColor: 'brand.brownDark',
+      label: 'Instagram',
+      icon: FaInstagram,
+      iconBg: FaInstagram,
+      handle: '@ronaldoivan',
+      url: 'https://www.instagram.com/ronaldoivan/',
+      hoverColor: '#E1306C',
+      hoverGradient: 'insta-gradient',
     },
     {
-      label:      'TransferMarkt',
-      icon:       IoMdStats,
-      handle:     '@ronaldm77',
-      url:        'https://www.transfermarkt.com.ar/ronaldo-martinez/profil/spieler/567736',
+      label: 'TransferMarkt',
+      image: transfermkt,
+      iconBg: IoMdStats,
+      handle: '@ronaldo-martinez',
+      url: 'https://www.transfermarkt.com.ar/ronaldo-martinez/profil/spieler/567736',
       hoverColor: 'brand.brownDark',
     },
   ],
@@ -192,25 +208,19 @@ export const playerData = {
   contact: [
     {
       title:      'Representante Deportivo',
-      label:      'Representante',
+      label:      'Universal Twenty Two',
       icon:       FaEnvelope,
-      handle:     'management@rmartinez77.com',
-      url:        'mailto:management@rmartinez77.com',
+      handle:     '@twentytwo_sm',
+      url:        'https://www.instagram.com/twentytwo_sm/',
       hoverColor: 'rgba(139,69,19,0.18)',
     },
     {
       title:      'Contacto Marketing',
-      label:      'Prensa & Sponsors',
-      icon:       FaEnvelope,
-      handle:     'prensa@rmartinez77.com',
-      url:        'mailto:prensa@rmartinez77.com',
+      label:      'led sports marketing',
+      image: ledsports,
+      handle:     '@_ledsports',
+      url:        'https://www.instagram.com/_ledsports/',
       hoverColor: 'rgba(212,168,75,0.18)',
     },
-  ],
-
-  marqueeItems: [
-    'DELANTERO', '·', '#77', '·', 'TALLERES', '·', 'CÓRDOBA', '·',
-    'VENEZUELA', '·', '14 GOLES', '·', '7 ASISTENCIAS', '·',
-    'RONALD', '·', 'MARTINEZ', '·', 'LIGA PRO 2024', '·',
   ],
 }

@@ -1,7 +1,8 @@
-import { useRef, useEffect } from 'react'
-import { Box, Flex, Text } from '@chakra-ui/react'
+import { useEffect, useRef } from 'react'
+import { Box, Flex, Text, HStack, Link } from '@chakra-ui/react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { LiaLaptopCodeSolid } from 'react-icons/lia'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -11,14 +12,24 @@ export default function Footer() {
   useEffect(() => {
     const ctx = gsap.context(() => {
       gsap.fromTo(ref.current,
-        { y: 30, opacity: 0 },
+        { opacity: 0, y: 30 },
         {
-          y: 0, opacity: 1,
-          clearProps: 'transform',
-          scrollTrigger: { trigger: ref.current, start: 'top 95%', once: true },
+          opacity: 1,
+          y: 0,
+          duration: 0.8,
+          ease: 'power2.out',
+          force3D: false, // avoid a leftover 3D layer that blurs text
+          scrollTrigger: {
+            trigger: ref.current,
+            start: 'top 95%',
+            toggleActions: 'play none none none',
+            once: true,
+          },
+          // strip the inline transform once done → text renders crisp
+          onComplete: () => gsap.set(ref.current, { clearProps: 'transform' }),
         }
       )
-    }, ref)
+    })
     return () => ctx.revert()
   }, [])
 
@@ -26,31 +37,60 @@ export default function Footer() {
     <Box
       ref={ref}
       as="footer"
-      bg="#0A0604"
-      borderTop="1px solid rgba(139,69,19,0.15)"
-      py={8}
-      px={{ base: 6, lg: 10 }}
+      bg="#050810"
+      py={16}
+      px={{ base: 6, md: 12, lg: 20 }}
+       sx={{
+          maskImage: 'linear-gradient(to bottom, transparent 0%, black 12%)',
+          WebkitMaskImage: 'linear-gradient(to bottom, transparent 0%, black 12%)',
+        }}
     >
       <Flex
-        maxW="1400px"
-        mx="auto"
+        direction={{ base: 'column', md: 'row' }}
         align="center"
         justify="space-between"
-        flexDir={{ base: 'column', md: 'row' }}
-        gap={3}
+        flexWrap="wrap"
+        gap={4}
       >
-        <Text fontFamily="heading" fontSize="xl" color="white" letterSpacing="wider">
-          RM<Box as="span" color="brand.brown">_</Box>
+        <Box
+          as="a"
+          href="#hero"
+          style={{ textDecoration: 'none' }}
+        >
+          <Text
+            fontFamily="'Bebas Neue', sans-serif"
+            fontSize="36px"
+            letterSpacing="0.08em"
+            color="white"
+          >
+            RM
+            <Box as="span" color="brand.brown" ml="1px">_</Box>
+          </Text>
+        </Box>
+
+        <Text
+          fontFamily="'Barlow Condensed', sans-serif"
+          fontSize="12px"
+          letterSpacing="0.12em"
+          textTransform="uppercase"
+          color="whiteAlpha.300"
+          textAlign="center"
+        >
+          © 2026 Ronaldo Martinez · Todos los derechos reservados
         </Text>
-        <Text fontFamily="mono" fontSize="xs" color="brand.gray" letterSpacing="wider">
-          © 2025 Ronald Martínez. Todos los derechos reservados.
-        </Text>
-        <Text fontFamily="mono" fontSize="xs" color="brand.gray" letterSpacing="wider">
-          Diseño & Desarrollo —{' '}
-          <Box as="span" color="brand.brownLight">
-            matiasgunsett.com
-          </Box>
-        </Text>
+
+        <Text fontSize="12px" color="rgba(255,255,255,0.3)" letterSpacing="0.05em">
+            Desarrollo Web -{' '} 
+            <Link 
+            href="https://matiasgunsett.netlify.app/" 
+            isExternal 
+            color="#2D5A47" 
+            _hover={{ borderColor: '#e8d5a370', color: '#e8d5a380' }}
+            transition="color 0.3s"
+            >
+              Matias Gunsett <LiaLaptopCodeSolid style={{ marginLeft: '4px', display: 'inline-block', verticalAlign: 'middle', fontSize: '20px', color: '#E8D5A3' }} />
+            </Link>
+          </Text>
       </Flex>
     </Box>
   )

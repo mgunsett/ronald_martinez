@@ -35,6 +35,7 @@ function BioCard() {
               bg="#050B14"
               border="1px solid"
               borderColor="whiteAlpha.100"
+              borderRadius={'10px'}
               p={{ base: 5, md: 6 }}
               h="90%"
               position="relative"
@@ -43,7 +44,7 @@ function BioCard() {
                   content: '""',
                   position: 'absolute',
                   top: 0,
-                  left: 0,
+                  left: 2,
                   width: '36px',
                   height: '3px',
                   bg: 'brand.brown',
@@ -124,6 +125,7 @@ function SeasonCards() {
             ref={(el) => (cardRefs.current[i] = el)}
             border="1px solid"
             borderColor="whiteAlpha.100"
+            borderRadius={'10px'}
             p={5}
             position="relative"
             cursor="default"
@@ -133,10 +135,11 @@ function SeasonCards() {
               bg: 'rgba(19, 67, 139, 0.05)',
             }}
             _before={{
-              content: '""', position: 'absolute', bottom: 0, left: 0,
-              w: '0', h: '2px', bg: 'brand.brown', transition: 'width 0.35s',
+              content: '""', position: 'absolute', bottom: '0px', left: '10px',
+              w: '0', h: '2px', bg: 'brand.brown', borderRadius: 'full',
+              transition: 'width 0.35s',
             }}
-            sx={{ '&:hover::before': { width: '100%' } }}
+            sx={{ '&:hover::before': { width: 'calc(100% - 20px)' } }}
           >
             <Text fontFamily="heading" fontSize="4xl" color="white" lineHeight={1} mb={1}>
               {s.value}
@@ -202,10 +205,11 @@ function StatBars() {
       <Box
         border="1px solid"
         borderColor="whiteAlpha.100"
+        borderRadius={'10px'}
         p={6}
         position="relative"
         _before={{
-          content: '""', position: 'absolute', top: 0, left: 0,
+          content: '""', position: 'absolute', top: 0, left: 2,
           w: '32px', h: '2px', bg: 'brand.brown',
         }}
       >
@@ -432,10 +436,10 @@ function ClubTimeline() {
       <Flex align="flex-end" justify="space-between" mb={7}>
         <Box>
           <Text fontFamily="mono" fontSize="10px" color="white"
-                  textTransform="uppercase" letterSpacing="widest" mb={2}>
+                  textTransform="uppercase" letterSpacing="widest">
             Trayectoria
           </Text>
-          <Text fontFamily="heading" fontSize={{ base: '4xl', lg: '6xl' }}
+          <Text fontFamily="heading" fontSize={{ base: '5xl', lg: '6xl' }}
                   color="brand.brown" lineHeight={1}>
             Clubes
           </Text>

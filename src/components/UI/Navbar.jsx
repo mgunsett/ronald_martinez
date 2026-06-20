@@ -10,8 +10,7 @@ const navLinks = [
   { label: 'Estadísticas', href: '#estadisticas' },
   { label: 'Videos',       href: '#videos' },
   { label: 'Galería',      href: '#galeria' },
-  { label: 'Prensa',       href: '#prensa' },
-  { label: 'Contacto',     href: '#contacto' },
+  { label: 'Prensa',       href: '#prensa' },,
 ]
 
 function scrollTo(href) {
@@ -138,8 +137,8 @@ export default function Navbar() {
         {/* CTA desktop */}
         <Box
           as="a"
-          href="#contacto"
-          onClick={(e) => handleLink(e, '#contacto')}
+          href="#contact"
+          onClick={(e) => handleLink(e, '#contact')}
           display={{ base: 'none', lg: 'block' }}
           px={'10px'}
           py={'5px'}

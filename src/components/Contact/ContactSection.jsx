@@ -4,7 +4,10 @@ import { playerData } from '../../data/playerData'
 import { useScrubReveal } from '../../hooks/useScrubReveal'
 
 function SocialCard({ item }) {
-  const Icon = item.icon
+  const Icon = item.iconBg
+  const gradientFill = item.hoverGradient
+    ? { '[role=group]:hover & path': { fill: `url(#${item.hoverGradient})` } }
+    : undefined
   return (
     <Box
       as="a"
@@ -16,12 +19,14 @@ function SocialCard({ item }) {
       bg="rgba(255,255,255,0.02)"
       border="1px solid"
       borderColor="whiteAlpha.100"
+      borderRadius={'10px'}
       p={{ base: 6, md: 8 }}
       transition="all 0.3s ease"
       role="group"
       _hover={{
         transform: 'translateY(-3px)',
-        borderColor: 'rgba(156,117,90,0.5)',
+          borderColor: 'brand.brownDark',
+          bg: 'brand.dark'
       }}
     >
       {/* watermark gigante */}
@@ -34,6 +39,7 @@ function SocialCard({ item }) {
         _groupHover={{ opacity: 0.18, color: (item.hoverColor) }}
         color="white"
         pointerEvents="none"
+        sx={gradientFill}
       >
         <Box as={Icon} fontSize="180px" />
       </Box>
@@ -46,6 +52,7 @@ function SocialCard({ item }) {
           color="whiteAlpha.700"
           transition="color 0.3s ease"
           _groupHover={{ color: item.hoverColor }}
+          sx={gradientFill}
         />
         )}
         {item.image && (
@@ -61,7 +68,7 @@ function SocialCard({ item }) {
         />
         )}
         <Text
-          fontFamily="condensed"
+          fontFamily="mono"
           fontSize="10px"
           letterSpacing="0.24em"
           textTransform="uppercase"
@@ -70,7 +77,7 @@ function SocialCard({ item }) {
         >
           {item.label}
         </Text>
-        <Text fontFamily="heading" fontSize="2xl">
+        <Text fontFamily="heading" fontSize={{base:'xl',md:"2xl"}}>
           {item.handle}
         </Text>
       </Box>
@@ -90,7 +97,8 @@ function ContactRow({ item, gold }) {
       bg="rgba(255,255,255,0.02)"
       border="1px solid"
       borderColor="whiteAlpha.100"
-      borderLeftColor= {gold ? 'brand.amber' : 'rgba(156,117,90,0.5)'}
+      borderRadius='10px'
+      borderLeftColor= {gold ? 'brand.amber' : 'brand.brownDark'}
       borderLeftWidth= '4px'
       borderLeftStyle= 'solid'
       p={{ base: 5, md: 8 }}
@@ -98,7 +106,7 @@ function ContactRow({ item, gold }) {
       role="group"
       _hover={{
         transform: 'translateY(-3px)',
-        borderColor: gold ? 'brand.amber' : 'rgba(156,117,90,0.5)',
+        borderColor: gold ? 'brand.amber' : 'brand.brown',
       }}
     >
       <Flex align="center" gap={4}>
@@ -107,9 +115,10 @@ function ContactRow({ item, gold }) {
             ml={3}
             as={Icon}
             fontSize="40px"
-            color='brand.brown'
+            color='whiteAlpha.400'
             opacity={0.4}
-            _groupHover={{ opacity: 1, color: 'rgba(156, 118, 90, 0.66)' }}
+            transition='all 0.8 ease'
+            _groupHover={{ opacity: 1, color: 'brand.brown' }}
           />
         )}
         {item.image && (
@@ -128,7 +137,7 @@ function ContactRow({ item, gold }) {
         )}
         <Box ml={gold ? '8px' : '16px'}>
           <Text
-            fontFamily="condensed"
+            fontFamily="mono"
             fontSize="10px"
             letterSpacing="0.24em"
             textTransform="uppercase"
@@ -183,15 +192,7 @@ export function ContactSection() {
     >
       <Box className="deco-grid" />
 
-      <Box
-        position="absolute"
-        top="0"
-        right="-5%"
-        w="50vw"
-        h="50vw"
-        background="radial-gradient(ellipse, rgba(156,117,90,0.06) 0%, transparent 70%)"
-        pointerEvents="none"
-      />
+    
 
       <Box position="relative" zIndex={1} maxW="1400px" mx="auto">
         {/* Header */}
@@ -210,14 +211,26 @@ export function ContactSection() {
         <Box ref={socialRef} mb={4}>
           <Text
             fontFamily="mono"
-                fontSize="11px"
-                letterSpacing="0.28em"
-                textTransform="uppercase"
-                color="whiteAlpha.600"
-                mb={5}
+            fontSize="11px"
+            letterSpacing="0.28em"
+            textTransform="uppercase"
+            color="whiteAlpha.600"
+            mb={5}
           >
             Redes sociales
           </Text>
+          {/* Definición del degradado oficial de Instagram (referenciado por fill: url(#insta-gradient)) */}
+          <Box as="svg" w={0} h={0} position="absolute" aria-hidden>
+            <defs>
+              <linearGradient id="insta-gradient" x1="0%" y1="100%" x2="100%" y2="0%">
+                <stop offset="0%"   stopColor="#f09433" />
+                <stop offset="25%"  stopColor="#e6683c" />
+                <stop offset="50%"  stopColor="#dc2743" />
+                <stop offset="75%"  stopColor="#cc2366" />
+                <stop offset="100%" stopColor="#bc1888" />
+              </linearGradient>
+            </defs>
+          </Box>
           <SimpleGrid columns={{ base: 1, sm: 2, lg: 2 }} spacing={4}>
             {playerData.socialMedia.map((s, i) => (
               <SocialCard key={i} item={s} />
