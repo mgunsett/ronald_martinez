@@ -1,12 +1,12 @@
-export function rowToMatch(row) {
+export function docToMatch(data) {
   return {
-    home:      { name: row.home_team, shield: row.home_shield },
-    away:      { name: row.away_team, shield: row.away_shield },
-    homeScore: row.home_score,
-    awayScore: row.away_score,
-    date:      row.match_date,
-    stadium:   row.stadium,
-    competition: row.competition || '',
+    home:      { name: data.home_team, shield: data.home_shield || null },
+    away:      { name: data.away_team, shield: data.away_shield || null },
+    homeScore: data.home_score ?? null,
+    awayScore: data.away_score ?? null,
+    date:      data.match_date,
+    stadium:   data.stadium || '',
+    competition: data.competition || '',
   }
 }
 

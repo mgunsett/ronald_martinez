@@ -72,7 +72,7 @@ function MatchSlot({ data, label, labelColor }) {
         </VStack>
       </Flex>
 
-      <Flex mt={2} justify="space-between" align="center">
+      <Flex mt={{base: 2 ,md: 4}} justify="space-between" align="flex-end">
         <Text fontFamily="mono" fontSize="8px" color="brand.gray" letterSpacing="wider">
           {date}
         </Text>
@@ -98,6 +98,7 @@ export function MatchBox({ last, next, variant = 'card' }) {
         backdropFilter="blur(12px)"
         border="1px solid"
         borderColor= 'brand.brownDark'
+        borderRadius={'10px'}
         p={4}
         position="relative"
         transition="transform 0.3s, border-color 0.3s"
@@ -105,12 +106,12 @@ export function MatchBox({ last, next, variant = 'card' }) {
         _before={{
           content: '""',
           position: 'absolute',
-          top: 0, left: 0,
+          top: 0, left: 2,
           w: '28px', h: '2px',
           bg: 'brand.brown',
         }}
       >
-        <VStack spacing={4} align="stretch">
+        <VStack spacing={{base:4,md:6}} align="stretch">
           <MatchSlot data={last} label="Último Resultado" labelColor="brand.amber" />
           <Box h="1px" bg="rgba(255,255,255,0.07)" />
           <MatchSlot data={next} label="Próximo Partido"  labelColor="brand.brown" />
@@ -121,7 +122,7 @@ export function MatchBox({ last, next, variant = 'card' }) {
 
   return (
     <Box
-      bg="rgba(12,7,5,0.82)"
+      bg="  "
       backdropFilter="blur(10px)"
       borderTop="1px solid"
       borderColor='brand.brown'

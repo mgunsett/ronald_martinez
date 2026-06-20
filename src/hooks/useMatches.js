@@ -1,25 +1,25 @@
 import { useState, useEffect } from 'react'
-import { supabase, isSupabaseConfigured } from '../lib/supabase'
-import { defaultMatches, rowToMatch } from '../data/matchData'
+import { doc, getDoc } from 'firebase/firestore'
+import { db, isFirebaseConfigured } from '../lib/firebase'
+import { defaultMatches, docToMatch } from '../data/matchData'
 
 export default function useMatches() {
   const [matches, setMatches] = useState(defaultMatches)
-  const [loading, setLoading] = useState(isSupabaseConfigured)
+  const [loading, setLoading] = useState(isFirebaseConfigured)
 
   useEffect(() => {
-    if (!isSupabaseConfigured) return
+    if (!isFirebaseConfigured) return
 
     const fetchMatches = async () => {
       try {
-        const { data, error } = await supabase.from('matches').select('*')
-        if (error) throw error
+        const [lastSnap, nextSnap] = await Promise.all([
+          getDoc(doc(db, 'matches', 'last')),
+          getDoc(doc(db, 'matches', 'next')),
+        ])
 
         const result = { ...defaultMatches }
-        data.forEach((row) => {
-          if (row.slot === 'last' || row.slot === 'next') {
-            result[row.slot] = rowToMatch(row)
-          }
-        })
+        if (lastSnap.exists()) result.last = docToMatch(lastSnap.data())
+        if (nextSnap.exists()) result.next = docToMatch(nextSnap.data())
         setMatches(result)
       } catch {
         // falls back to defaultMatches silently

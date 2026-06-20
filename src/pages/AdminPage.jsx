@@ -4,7 +4,12 @@ import {
   FormControl, FormLabel, Grid, GridItem, useToast,
   Divider, Spinner, Badge,
 } from '@chakra-ui/react'
-import { supabase, isSupabaseConfigured } from '../lib/supabase'
+import {
+  signInWithEmailAndPassword, signOut, onAuthStateChanged,
+} from 'firebase/auth'
+import { doc, getDoc, setDoc } from 'firebase/firestore'
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage'
+import { db, auth, storage, isFirebaseConfigured } from '../lib/firebase'
 
 const emptySlot = {
   home_team: '', away_team: '',
@@ -149,47 +154,51 @@ export default function AdminPage() {
   const toast = useToast()
 
   useEffect(() => {
-    if (!isSupabaseConfigured) { setLoading(false); return }
-    supabase.auth.getUser().then(({ data }) => {
-      setUser(data.user)
+    if (!isFirebaseConfigured) { setLoading(false); return }
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser)
       setLoading(false)
     })
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_, session) => {
-      setUser(session?.user ?? null)
-    })
-    return () => subscription.unsubscribe()
+    return () => unsubscribe()
   }, [])
 
   useEffect(() => {
     if (!user) return
-    supabase.from('matches').select('*').then(({ data }) => {
-      if (!data) return
+    const loadMatches = async () => {
+      const [lastSnap, nextSnap] = await Promise.all([
+        getDoc(doc(db, 'matches', 'last')),
+        getDoc(doc(db, 'matches', 'next')),
+      ])
       const result = {}
-      data.forEach((row) => { result[row.slot] = row })
+      if (lastSnap.exists()) result.last = lastSnap.data()
+      if (nextSnap.exists()) result.next = nextSnap.data()
       setMatchData(result)
-    })
+    }
+    loadMatches()
   }, [user])
 
   const handleLogin = async () => {
     setAuthLoading(true)
-    const { error } = await supabase.auth.signInWithPassword({ email, password })
-    if (error) toast({ title: error.message, status: 'error', duration: 4000 })
+    try {
+      await signInWithEmailAndPassword(auth, email, password)
+    } catch (err) {
+      toast({ title: err.message, status: 'error', duration: 4000 })
+    }
     setAuthLoading(false)
   }
 
   const handleLogout = async () => {
-    await supabase.auth.signOut()
+    await signOut(auth)
     setUser(null)
   }
 
   const uploadShield = async (file, name) => {
     if (!file) return null
     const ext = file.name.split('.').pop()
-    const path = `${name.replace(/\s+/g, '_').toLowerCase()}.${ext}`
-    const { error } = await supabase.storage.from('shields').upload(path, file, { upsert: true })
-    if (error) throw error
-    const { data } = supabase.storage.from('shields').getPublicUrl(path)
-    return data.publicUrl
+    const path = `shields/${name.replace(/\s+/g, '_').toLowerCase()}.${ext}`
+    const storageRef = ref(storage, path)
+    await uploadBytes(storageRef, file)
+    return getDownloadURL(storageRef)
   }
 
   const handleSave = async (slot, form, shieldFiles) => {
@@ -202,7 +211,6 @@ export default function AdminPage() {
       if (shieldFiles.away) awayShieldUrl = await uploadShield(shieldFiles.away, form.away_team || 'away')
 
       const payload = {
-        slot,
         home_team:   form.home_team,
         away_team:   form.away_team,
         home_score:  form.home_score !== '' ? Number(form.home_score) : null,
@@ -215,8 +223,7 @@ export default function AdminPage() {
         updated_at:  new Date().toISOString(),
       }
 
-      const { error } = await supabase.from('matches').upsert(payload, { onConflict: 'slot' })
-      if (error) throw error
+      await setDoc(doc(db, 'matches', slot), payload)
 
       setMatchData((prev) => ({ ...prev, [slot]: payload }))
       toast({ title: 'Partido guardado', status: 'success', duration: 3000 })
@@ -235,13 +242,13 @@ export default function AdminPage() {
     _placeholder: { color: 'brand.gray' },
   }
 
-  if (!isSupabaseConfigured) {
+  if (!isFirebaseConfigured) {
     return (
       <Box minH="100vh" bg="brand.dark" display="flex" alignItems="center" justifyContent="center" px={6}>
         <VStack spacing={3} textAlign="center">
-          <Text fontFamily="heading" fontSize="2xl" color="white">Supabase no configurado</Text>
+          <Text fontFamily="heading" fontSize="2xl" color="white">Firebase no configurado</Text>
           <Text fontFamily="mono" fontSize="sm" color="brand.gray">
-            Creá un archivo .env con VITE_SUPABASE_URL y VITE_SUPABASE_ANON_KEY.
+            Creá un archivo .env con las variables VITE_FIREBASE_ correspondientes.
           </Text>
         </VStack>
       </Box>
@@ -351,8 +358,8 @@ export default function AdminPage() {
         <Box mt={8} p={4} border="1px solid rgba(139,69,19,0.12)">
           <Text fontFamily="mono" fontSize="9px" color="brand.gray"
                 letterSpacing="widest" textTransform="uppercase">
-            Los cambios se reflejan en tiempo real en el Hero. Bucket de Supabase:{' '}
-            <Box as="span" color="brand.brownLight">shields</Box>
+            Los cambios se reflejan en tiempo real en el Hero. Storage:{' '}
+            <Box as="span" color="brand.brownLight">shields/</Box>
           </Text>
         </Box>
       </Box>

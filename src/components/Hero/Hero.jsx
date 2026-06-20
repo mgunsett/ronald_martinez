@@ -144,7 +144,7 @@ export default function Hero() {
           ref={midLayerRef}
           position="absolute"
           inset={0}
-          zIndex={2}
+          zIndex={1}
           display="flex"
           flexDir="column"
           alignItems="center"
@@ -177,7 +177,7 @@ export default function Hero() {
         <Box
           position="absolute"
           inset={0}
-          zIndex={{base: 2, md: 5,  lg:'9999999 !important'}}
+          zIndex={{base: 3, md: 5,  lg:'9999999 !important'}}
           display="flex"
           alignItems="flex-end"
           justifyContent={{ base: 'center', lg: 'center' }}
@@ -212,7 +212,7 @@ export default function Hero() {
         <Box
           position="absolute"
           inset={0}
-          zIndex={1}
+          zIndex={2}
           pointerEvents="none"
           display="flex"
           flexDir="column"
