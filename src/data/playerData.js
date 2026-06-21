@@ -201,7 +201,7 @@ export const playerData = {
       iconBg: IoMdStats,
       handle: '@ronaldo-martinez',
       url: 'https://www.transfermarkt.com.ar/ronaldo-martinez/profil/spieler/567736',
-      hoverColor: 'brand.brownDark',
+      hoverColor: 'brand.brownLight',
     },
   ],
 

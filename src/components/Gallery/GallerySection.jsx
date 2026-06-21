@@ -85,7 +85,7 @@ function GalleryCard({ photo, offset, abs, cardW, spacing, total, index, onFocus
     <MotionBox
       position="absolute"
       top="50%"
-      left="50%"
+      left={{ base: '48%', md: '50%' }}
       h={{ base: '78%', md: '86%' }}
       style={{ width: cardW, transformStyle: 'preserve-3d' }}
       initial={false}
@@ -105,7 +105,8 @@ function GalleryCard({ photo, offset, abs, cardW, spacing, total, index, onFocus
     >
       <Box
         position="relative"
-        w="100%" h="100%"
+        w={{ base: '200px', md: '100%' }} 
+        h="100%"
         overflow="hidden"
         borderRadius={{ base: '18px', md: '10px' }}
         border="1px solid"
