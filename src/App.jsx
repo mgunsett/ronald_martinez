@@ -12,7 +12,7 @@ import AdminPage from './pages/AdminPage'
 
 function Landing() {
   return (
-    <Box bg="brand.dark" overflowX="hidden">
+    <Box as="main" bg="brand.dark" overflowX="hidden">
       <Navbar />
       <Hero />
       <Box mt="-100vh" position="relative" zIndex={21}>

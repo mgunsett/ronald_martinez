@@ -58,9 +58,11 @@ function SocialCard({ item }) {
         {item.image && (
           <Image
           src={item.image}
+          alt={`Logo de ${item.label}`}
           w={'30px'}
           h={'30px'}
           mb={6}
+          loading="lazy"
           filter="brightness(0.3)"
           color="whiteAlpha.700"
           transition="all 0.3s ease"
@@ -123,10 +125,11 @@ function ContactRow({ item, gold }) {
         )}
         {item.image && (
           <Box boxSize="60px" overflow="hidden" transition="all 0.5s ease" >
-            <Image 
-            src={item.image} 
-            alt={item.label} 
+            <Image
+            src={item.image}
+            alt={`Logo de ${item.label}`}
             w="100%"
+            loading="lazy"
             filter="brightness(0.3)"
             transition="all 0.3s ease"
             _groupHover={{ 
@@ -201,7 +204,7 @@ export function ContactSection() {
                   textTransform="uppercase" letterSpacing="widest">
             #Redes
           </Text>
-          <Text fontFamily="heading" fontSize={{ base: '5xl', lg: '6xl' }}
+          <Text as="h2" fontFamily="heading" fontSize={{ base: '5xl', lg: '6xl' }}
                   color="brand.brown" lineHeight={1}>
             Contacto
           </Text>

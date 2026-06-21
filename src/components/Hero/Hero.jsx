@@ -198,7 +198,7 @@ export default function Hero() {
           >
             <Image
               src={playerData.image}
-              alt={`${playerData.name} ${playerData.fullName}`}
+              alt={`Ronaldo Martínez, delantero profesional de ${playerData.currentClub}`}
               h="100%"
               maxW={{ base: '95vw', lg: '50vw' }}
               objectFit="contain"
@@ -221,9 +221,11 @@ export default function Hero() {
           pl={{ base: 0, lg: '10%' }}
           pt={{ base: '40%', lg: '6%' }}
         >
-          <Box overflow="hidden" >
+          <Box as="h1" overflow="hidden">
             <Text
               ref={line1Ref}
+              as="span"
+              display="block"
               fontFamily="heading"
               fontSize={{ base: '25vw', md: '16vw', lg: '13vw' }}
               color="white"
@@ -234,10 +236,10 @@ export default function Hero() {
             >
               {playerData.name}
             </Text>
-          </Box>
-          <Box overflow="hidden">
             <Text
               ref={line2Ref}
+              as="span"
+              display="block"
               fontFamily="heading"
               fontSize={{ base: '34vw', md: '16vw', lg: '13vw' }}
               color="brand.brown"

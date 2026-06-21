@@ -3,9 +3,9 @@ import { FaXTwitter } from 'react-icons/fa6'
 import { IoMdStats } from 'react-icons/io'
 
 //Hero
-import ronald1 from '@assets/ronald1.png'
+import ronald1 from '@assets/ronald1.webp'
 import paraguay from '@assets/paraguay.webp'
-import talleres from '@assets/talleres.png'
+import talleres from '@assets/talleres.webp'
 //Escudos trayectoria
 import escudoTalleres from '@assets/escudos/escudo_talleres.webp'
 import escudoPlatense from '@assets/escudos/escudo_platense.webp'
@@ -16,18 +16,18 @@ import escudoCapiata from '@assets/escudos/escudo_capiata.webp'
 import escudoCerro from '@assets/escudos/escudo_cerro.webp'
 import escudoParaguay from '@assets/escudos/escudo_paraguay.webp'
 //Gallery
-import image1 from '@assets/gallery/image1.jpg'
-import image2 from '@assets/gallery/image2.jpg'
-import image3 from '@assets/gallery/image3.jpg'
-import image4 from '@assets/gallery/image4.jpg'
-import image5 from '@assets/gallery/image5.jpg'
-import image6 from '@assets/gallery/image6.jpg'
+import image1 from '@assets/gallery/image1.webp'
+import image2 from '@assets/gallery/image2.webp'
+import image3 from '@assets/gallery/image3.webp'
+import image4 from '@assets/gallery/image4.webp'
+import image5 from '@assets/gallery/image5.webp'
+import image6 from '@assets/gallery/image6.webp'
 //Video
 import photoGraph from '@assets/perfil_video.webp'
 //Prensa
-import logo1 from '@assets/logos/logo1.jpg'
-import logo2 from '@assets/logos/logo2.jpg'
-import logo3 from '@assets/logos/logo3.png'
+import logo1 from '@assets/logos/logo1.webp'
+import logo2 from '@assets/logos/logo2.webp'
+import logo3 from '@assets/logos/logo3.webp'
 //Redes
 import transfermkt from '@assets/contact2.svg'
 import ledsports from '@assets/contact3.webp'
@@ -177,12 +177,12 @@ export const playerData = {
   ],
 
   gallery: [
-    { id: 1, src: image1, alt: 'Ronaldo Martínez en acción', caption: 'Liga Profesional 2024', category: 'Partido', aspect: 'wide' },
-    { id: 2, src: image2, alt: 'Festejo de gol',            caption: 'Festejo ante Racing',    category: 'Festejo', aspect: 'tall' },
-    { id: 3, src: image3, alt: 'Entrenamiento',             caption: 'Pretemporada 2025',       category: 'Entrenamiento', aspect: 'square' },
-    { id: 4, src: image4, alt: 'Copa Argentina',            caption: 'Copa Argentina 2024',     category: 'Partido', aspect: 'wide' },
-    { id: 5, src: image5, alt: 'Con el plantel',            caption: 'Plantel Talleres 2024',   category: 'Equipo',  aspect: 'wide' },
-    { id: 6, src: image6, alt: 'Sesión fotográfica',        caption: 'Foto oficial 2024',       category: 'Retrato', aspect: 'tall' },
+    { id: 1, src: image1, alt: 'Ronaldo Martínez disputando la pelota en la Liga Profesional 2024', caption: 'Liga Profesional 2024', category: 'Partido', aspect: 'wide' },
+    { id: 2, src: image2, alt: 'Ronaldo Martínez celebrando un gol ante Racing',                   caption: 'Festejo ante Racing',    category: 'Festejo', aspect: 'tall' },
+    { id: 3, src: image3, alt: 'Ronaldo Martínez durante el entrenamiento de pretemporada 2025',    caption: 'Pretemporada 2025',       category: 'Entrenamiento', aspect: 'square' },
+    { id: 4, src: image4, alt: 'Ronaldo Martínez en partido de Copa Argentina 2024',                caption: 'Copa Argentina 2024',     category: 'Partido', aspect: 'wide' },
+    { id: 5, src: image5, alt: 'Ronaldo Martínez junto al plantel de Talleres 2024',                caption: 'Plantel Talleres 2024',   category: 'Equipo',  aspect: 'wide' },
+    { id: 6, src: image6, alt: 'Ronaldo Martínez en sesión fotográfica oficial 2024',               caption: 'Foto oficial 2024',       category: 'Retrato', aspect: 'tall' },
   ],
 
   socialMedia: [

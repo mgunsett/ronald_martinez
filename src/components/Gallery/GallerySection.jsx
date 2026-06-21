@@ -122,6 +122,7 @@ function GalleryCard({ photo, offset, abs, cardW, spacing, total, index, onFocus
           objectFit="cover"
           objectPosition="center"
           draggable={false}
+          loading="lazy"
         />
 
         {/* Velo oscuro en tarjetas laterales */}
@@ -267,6 +268,7 @@ export default function GallerySection() {
 
   return (
     <Box
+      as="section"
       id="galeria"
       ref={sectionRef}
       bg="brand.dark"
@@ -290,7 +292,7 @@ export default function GallerySection() {
                   textTransform="uppercase" letterSpacing="widest">
               Fotos
             </Text>
-            <Text fontFamily="heading" fontSize={{ base: '5xl', lg: '6xl' }}
+            <Text as="h2" fontFamily="heading" fontSize={{ base: '5xl', lg: '6xl' }}
                   color="brand.brown" lineHeight={1}>
               Galería
             </Text>

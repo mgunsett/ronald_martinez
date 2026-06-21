@@ -303,9 +303,10 @@ function ClubNode({ club, isFirst, isLast, isActive }) {
         >
           <Image
             src={club.logo}
-            alt={club.name}
+            alt={`Escudo de ${club.name}`}
             boxSize="46px"
             objectFit="contain"
+            loading="lazy"
             filter={isActive ? 'none' : 'saturate(0.85)'}
             transition="filter 0.35s"
           />
@@ -439,7 +440,7 @@ function ClubTimeline() {
                   textTransform="uppercase" letterSpacing="widest">
             Trayectoria
           </Text>
-          <Text fontFamily="heading" fontSize={{ base: '5xl', lg: '6xl' }}
+          <Text as="h2" fontFamily="heading" fontSize={{ base: '5xl', lg: '6xl' }}
                   color="brand.brown" lineHeight={1}>
             Clubes
           </Text>
@@ -503,9 +504,10 @@ export default function StatsSection() {
 
   return (
     <Box
+      as="section"
       id="estadisticas"
       ref={sectionRef}
-      bg="##050B14"
+      bg="#050B14"
       pt={{ base: 16, lg: 20 }}
       pb={{ base: 16, lg: 20 }}
       px={{ base: 5, lg: 10 }}
@@ -521,7 +523,7 @@ export default function StatsSection() {
                   textTransform="uppercase" letterSpacing="widest" >
               Temporada 2025 / 2026
             </Text>
-            <Text fontFamily="heading" fontSize={{ base: '5xl', lg: '6xl' }}
+            <Text as="h2" fontFamily="heading" fontSize={{ base: '5xl', lg: '6xl' }}
                   color="brand.brown" lineHeight={1}>
               Estadísticas
             </Text>

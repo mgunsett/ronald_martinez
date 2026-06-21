@@ -129,10 +129,11 @@ function PressCard({ article, index }) {
           {article.logo ? (
             <Image
               src={article.logo}
-              alt={article.media}
+              alt={`Logo de ${article.media}`}
               boxSize="100%"
               objectFit="cover"
               objectPosition="center"
+              loading="lazy"
             />
           ) : (
             <Text fontFamily="heading" fontSize="lg" color="white" lineHeight={1}>
@@ -166,6 +167,7 @@ export default function PressSection() {
 
   return (
     <Box
+      as="section"
       id="prensa"
       ref={sectionRef}
       bg="#050B14"
@@ -181,7 +183,7 @@ export default function PressSection() {
                   textTransform="uppercase" letterSpacing="widest">
               Testimonios
             </Text>
-            <Text fontFamily="heading" fontSize={{ base: '5xl', lg: '6xl' }}
+            <Text as="h2" fontFamily="heading" fontSize={{ base: '5xl', lg: '6xl' }}
                   color="brand.brown" lineHeight={1}>
               Prensa
             </Text>
