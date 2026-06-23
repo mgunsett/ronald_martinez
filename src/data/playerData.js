@@ -43,7 +43,7 @@ export const playerData = {
   nationalityFlag: paraguay,
   age: 30,
   height: '1.78m',
-  weight: '75kg',
+  weight: '68kg',
   foot: 'Derecho',
   birthDate: '25 / 04 / 1996',
   birthPlace: 'Eusebio Ayala, Paraguay',
