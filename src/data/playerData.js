@@ -142,7 +142,7 @@ export const playerData = {
       id: 'v1',
       title: 'Platense 2025',
       fullTitle: 'Ronaldo Martinez | Platense 2025 [Highlights]',
-      youtubeId: 'HAr4MZtD7sY',
+      youtubeId: 'HCs1s_BT7uk',
       duration: '4:01',
       season: 'Temporada',
       league: 'Liga Argentina',
