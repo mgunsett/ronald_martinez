@@ -3,15 +3,16 @@ import {
   Box, Flex, VStack, HStack, Text, Input, Button, Image,
   FormControl, FormLabel, Grid, GridItem, useToast,
   Divider, Spinner, Badge, IconButton, Tabs, TabList,
-  TabPanels, TabPanel, Tab,
+  TabPanels, TabPanel, Tab, useToken,
 } from '@chakra-ui/react'
 import { FiEdit2, FiTrash2, FiUpload, FiLogOut, FiSave } from 'react-icons/fi'
+import { playerData } from '../data/playerData'
 import {
   signInWithEmailAndPassword, signOut, onAuthStateChanged,
 } from 'firebase/auth'
-import { doc, getDoc, setDoc, deleteDoc } from 'firebase/firestore'
+import { getDoc, setDoc, deleteDoc } from 'firebase/firestore'
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage'
-import { db, auth, storage, isFirebaseConfigured } from '../lib/firebase'
+import { auth, storage, isFirebaseConfigured, playerMatchDoc, PLAYER_SLUG } from '../lib/firebase'
 
 const emptySlot = {
   home_team: '', away_team: '',
@@ -30,7 +31,7 @@ const inputStyle = {
   border: '1px solid',
   borderColor: 'brand.brownDark',
   borderRadius: 'md',
-  fontFamily: 'mono', fontSize: 'sm', color: 'white',
+  fontFamily: 'mono', fontSize: 'sm', color: 'brand.amber',
   h: '42px',
   _hover: { borderColor: 'brand.gray' },
   _focus: { borderColor: 'brand.brown', boxShadow: '0 0 0 1px rgba(30,95,168,0.4)' },
@@ -40,6 +41,7 @@ const inputStyle = {
 function ShieldUpload({ label, currentUrl, onFileChange }) {
   const inputRef = useRef(null)
   const [preview, setPreview] = useState(null)
+  const [brownLight] = useToken('colors', ['brand.brownLight'])
 
   const handleChange = (e) => {
     const file = e.target.files[0]
@@ -83,7 +85,7 @@ function ShieldUpload({ label, currentUrl, onFileChange }) {
             bg="brand.brownDark"
             borderRadius="sm"
           >
-            <FiUpload color="#4D93D6" size={16} />
+            <FiUpload color={brownLight} size={16} />
           </Flex>
         )}
         <Text fontFamily="mono" fontSize="11px" color="brand.gray">
@@ -182,7 +184,7 @@ function MatchForm({ slot, label, data, onSave, uploading }) {
 
       <Button
         mt={5} w="full"
-        bg="brand.brown" color="white"
+        bg="brand.dorado" color="white"
         fontFamily="mono" fontSize="sm" letterSpacing="widest" textTransform="uppercase"
         borderRadius="md" h="44px"
         leftIcon={<FiSave />}
@@ -213,7 +215,7 @@ function MatchPreviewCard({ slot, data, label, onEdit, onDelete }) {
               textTransform="uppercase" letterSpacing="widest" mb={2}>
           {label}
         </Text>
-        <Text fontFamily="mono" fontSize="sm" color="brand.brownDark">
+        <Text fontFamily="mono" fontSize="sm" color="brand.gray2">
           Sin datos cargados
         </Text>
       </Box>
@@ -242,7 +244,7 @@ function MatchPreviewCard({ slot, data, label, onEdit, onDelete }) {
         borderColor="brand.brownDark"
       >
         <Badge
-          fontFamily="mono" fontSize="9px"
+          fontFamily="heading" fontSize="9px"
           bg={slot === 'last' ? 'brand.amberLight' : 'brand.brownLight'}
           color={slot === 'last' ? 'brand.amber' : 'brand.brownLight'}
           border="1px solid"
@@ -291,7 +293,7 @@ function MatchPreviewCard({ slot, data, label, onEdit, onDelete }) {
               </Text>
             </Flex>
           )}
-          <Text fontFamily="mono" fontSize={{ base: '11px', md: '12px' }} color="white"
+          <Text fontFamily="mono" fontSize={{ base: '11px', md: '12px' }} color="brand.gray"
                 textTransform="uppercase" letterSpacing="wider" textAlign="center" noOfLines={1}>
             {data.home_team}
           </Text>
@@ -299,13 +301,13 @@ function MatchPreviewCard({ slot, data, label, onEdit, onDelete }) {
 
         {/* Score */}
         <HStack spacing={3} flexShrink={0}>
-          <Text fontFamily="heading" fontSize={{ base: '3xl', md: '4xl' }} color="white" lineHeight={1}>
+          <Text fontFamily="heading" fontSize={{ base: '3xl', md: '4xl' }} color="brand.amber" lineHeight={1}>
             {homeScore}
           </Text>
-          <Text fontFamily="heading" fontSize={{ base: 'lg', md: 'xl' }} color="brand.brownDark" lineHeight={1}>
+          <Text fontFamily="heading" fontSize={{ base: 'lg', md: 'xl' }} color="brand.dorado" lineHeight={1}>
             —
           </Text>
-          <Text fontFamily="heading" fontSize={{ base: '3xl', md: '4xl' }} color="white" lineHeight={1}>
+          <Text fontFamily="heading" fontSize={{ base: '3xl', md: '4xl' }} color="brand.amber" lineHeight={1}>
             {awayScore}
           </Text>
         </HStack>
@@ -322,7 +324,7 @@ function MatchPreviewCard({ slot, data, label, onEdit, onDelete }) {
               </Text>
             </Flex>
           )}
-          <Text fontFamily="mono" fontSize={{ base: '11px', md: '12px' }} color="white"
+          <Text fontFamily="mono" fontSize={{ base: '11px', md: '12px' }} color="brand.gray"
                 textTransform="uppercase" letterSpacing="wider" textAlign="center" noOfLines={1}>
             {data.away_team}
           </Text>
@@ -388,8 +390,8 @@ export default function AdminPage() {
     if (!user) return
     const loadMatches = async () => {
       const [lastSnap, nextSnap] = await Promise.all([
-        getDoc(doc(db, 'matches', 'last')),
-        getDoc(doc(db, 'matches', 'next')),
+        getDoc(playerMatchDoc('last')),
+        getDoc(playerMatchDoc('next')),
       ])
       const result = {}
       if (lastSnap.exists()) result.last = lastSnap.data()
@@ -417,7 +419,7 @@ export default function AdminPage() {
   const uploadShield = async (file, name) => {
     if (!file) return null
     const ext = file.name.split('.').pop()
-    const path = `shields/${name.replace(/\s+/g, '_').toLowerCase()}.${ext}`
+    const path = `players/${PLAYER_SLUG}/shields/${name.replace(/\s+/g, '_').toLowerCase()}.${ext}`
     const storageRef = ref(storage, path)
     await uploadBytes(storageRef, file)
     return getDownloadURL(storageRef)
@@ -445,7 +447,7 @@ export default function AdminPage() {
         updated_at:  new Date().toISOString(),
       }
 
-      await setDoc(doc(db, 'matches', slot), payload)
+      await setDoc(playerMatchDoc(slot), payload)
       setMatchData((prev) => ({ ...prev, [slot]: payload }))
       toast({ title: 'Partido guardado', status: 'success', duration: 3000 })
     } catch (err) {
@@ -457,7 +459,7 @@ export default function AdminPage() {
 
   const handleDelete = async (slot) => {
     try {
-      await deleteDoc(doc(db, 'matches', slot))
+      await deleteDoc(playerMatchDoc(slot))
       setMatchData((prev) => ({ ...prev, [slot]: {} }))
       toast({ title: 'Partido eliminado', status: 'info', duration: 3000 })
     } catch (err) {
@@ -486,7 +488,7 @@ export default function AdminPage() {
   if (loading) {
     return (
       <Box minH="100vh" bg="brand.dark" display="flex" alignItems="center" justifyContent="center">
-        <Spinner color="brand.brown" size="lg" />
+        <Spinner color="brand.brand" size="lg" />
       </Box>
     )
   }
@@ -504,7 +506,7 @@ export default function AdminPage() {
           backdropFilter="blur(10px)"
         >
           <VStack spacing={1} mb={6}>
-            <Text fontFamily="heading" fontSize="3xl" color="white">RONALDO <Text as="span" color="brand.brown">MARTINEZ</Text> _</Text>
+            <Text fontFamily="heading" fontSize="3xl" color="brand.amber">{playerData.name} <Text as="span" color="brand.amber">{playerData.fullName}</Text> _</Text>
             <Text fontFamily="mono" fontSize="10px" color="brand.gray"
                   letterSpacing="widest" textTransform="uppercase">
               Panel de administración
@@ -545,8 +547,8 @@ export default function AdminPage() {
         {/* Header */}
         <Flex align="center" justify="space-between" mb={{ base: 6, md: 8 }}>
           <Box>
-            <Text fontFamily="heading" fontSize={{ base: '2xl', md: '3xl' }} color="white" lineHeight={1}>
-              RM_ Admin
+            <Text fontFamily="heading" fontSize={{ base: '2xl', md: '3xl' }} color="brand.amber" lineHeight={1}>
+              {playerData.initials}_ Admin
             </Text>
             <HStack spacing={2} mt={2}>
               <Badge
@@ -594,9 +596,9 @@ export default function AdminPage() {
             <TabList mb={5} gap={2}>
               <Tab
                 fontFamily="mono" fontSize="11px" letterSpacing="widest"
-                textTransform="uppercase" color="brand.gray"
+                textTransform="uppercase" color="brand.gray2" color="brand.gray"
                 borderRadius="md" px={4} py={2}
-                _selected={{ color: 'white', bg: 'brand.brown' }}
+                _selected={{ color: 'white', bg: 'brand.gray' }}
                 _hover={{ color: 'white' }}
               >
                 Último Resultado
@@ -605,7 +607,7 @@ export default function AdminPage() {
                 fontFamily="mono" fontSize="11px" letterSpacing="widest"
                 textTransform="uppercase" color="brand.gray"
                 borderRadius="md" px={4} py={2}
-                _selected={{ color: 'white', bg: 'brand.brown' }}
+                _selected={{ color: 'white', bg: 'brand.gray' }}
                 _hover={{ color: 'white' }}
               >
                 Próximo Partido

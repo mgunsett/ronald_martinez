@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
-import { doc, getDoc } from 'firebase/firestore'
-import { db, isFirebaseConfigured } from '../lib/firebase'
+import { getDoc } from 'firebase/firestore'
+import { isFirebaseConfigured, playerMatchDoc } from '../lib/firebase'
 import { defaultMatches, docToMatch } from '../data/matchData'
 
 export default function useMatches() {
@@ -13,8 +13,8 @@ export default function useMatches() {
     const fetchMatches = async () => {
       try {
         const [lastSnap, nextSnap] = await Promise.all([
-          getDoc(doc(db, 'matches', 'last')),
-          getDoc(doc(db, 'matches', 'next')),
+          getDoc(playerMatchDoc('last')),
+          getDoc(playerMatchDoc('next')),
         ])
 
         const result = { ...defaultMatches }
