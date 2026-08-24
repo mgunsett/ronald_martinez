@@ -116,7 +116,7 @@ function SeasonCards() {
         color="whiteAlpha.600"
         mb={5}
       >
-        última temporada
+        Temporada 2025 / 2026
       </Text>
       <Grid templateColumns="repeat(2, 1fr)" gap={3}>
         {playerData.seasonStats.map((s, i) => (

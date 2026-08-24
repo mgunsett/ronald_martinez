@@ -22,6 +22,10 @@ import image3 from '@assets/gallery/image3.webp'
 import image4 from '@assets/gallery/image4.webp'
 import image5 from '@assets/gallery/image5.webp'
 import image6 from '@assets/gallery/image6.webp'
+import image7 from '@assets/gallery/image7.webp'
+import image8 from '@assets/gallery/image8.webp'
+import image9 from '@assets/gallery/image9.webp'
+import image10 from '@assets/gallery/image10.webp'
 //Video
 import photoGraph from '@assets/perfil_video.webp'
 //Prensa
@@ -61,12 +65,12 @@ export const playerData = {
   ],
 
   seasonStats: [
-    { label: 'Partidos',    value: 19 },
-    { label: 'Goles',       value: 3 },
-    { label: 'Asistencias', value: 2  },
-    { label: 'Tiros al árco', value: 28  },
-    { label: 'Min / Part.', value: "1,470'" },
-    { label: 'Valoración', value: 7.4  },
+    { label: 'Partidos',    value: 56 },
+    { label: 'Goles',       value: 14 },
+    { label: 'Asistencias', value: 6  },
+    { label: 'Tiros al árco', value: 48  },
+    { label: 'Min / Part.', value: "4,018'" },
+    { label: 'Valoración', value: 7.6 },
 
   ],
 
@@ -178,11 +182,15 @@ export const playerData = {
 
   gallery: [
     { id: 1, src: image1, alt: 'Ronaldo Martínez disputando la pelota en la Liga Profesional 2024', caption: 'Liga Profesional 2024', category: 'Partido', aspect: 'wide' },
-    { id: 2, src: image2, alt: 'Ronaldo Martínez celebrando un gol ante Racing',                   caption: 'Festejo ante Racing',    category: 'Festejo', aspect: 'tall' },
-    { id: 3, src: image3, alt: 'Ronaldo Martínez durante el entrenamiento de pretemporada 2025',    caption: 'Pretemporada 2025',       category: 'Entrenamiento', aspect: 'square' },
-    { id: 4, src: image4, alt: 'Ronaldo Martínez en partido de Copa Argentina 2024',                caption: 'Copa Argentina 2024',     category: 'Partido', aspect: 'wide' },
-    { id: 5, src: image5, alt: 'Ronaldo Martínez junto al plantel de Talleres 2024',                caption: 'Plantel Talleres 2024',   category: 'Equipo',  aspect: 'wide' },
-    { id: 6, src: image6, alt: 'Ronaldo Martínez en sesión fotográfica oficial 2024',               caption: 'Foto oficial 2024',       category: 'Retrato', aspect: 'tall' },
+    { id: 2, src: image2, alt: 'Ronaldo Martínez celebrando un gol ante Racing', caption: 'Festejo ante Racing', category: 'Festejo', aspect: 'tall' },
+    { id: 3, src: image3, alt: 'Ronaldo Martínez durante el entrenamiento de pretemporada 2025', caption: 'Pretemporada 2025', category: 'Entrenamiento', aspect: 'square' },
+    { id: 4, src: image4, alt: 'Ronaldo Martínez en partido de Copa Argentina 2024', caption: 'Copa Argentina 2024', category: 'Partido', aspect: 'wide' },
+    { id: 5, src: image5, alt: 'Ronaldo Martínez junto al plantel de Talleres 2024', caption: 'Plantel Talleres 2024', category: 'Equipo', aspect: 'wide' },
+    { id: 6, src: image6, alt: 'Ronaldo Martínez en sesión fotográfica oficial 2024', caption: 'Foto oficial 2024', category: 'Retrato', aspect: 'tall' },
+    { id: 7, src: image7, alt: 'Ronaldo Martínez celebrando un gol con la camiseta de Talleres', caption: 'Gol con Talleres', category: 'Festejo', aspect: 'wide' },
+    { id: 8, src: image8, alt: 'Ronaldo Martínez en acción durante un partido de la Liga Profesional', caption: 'Acción en la Liga Profesional', category: 'Partido', aspect: 'wide' },
+    { id: 9, src: image9, alt: 'Ronaldo Martínez en entrenamiento con el plantel de Talleres', caption: 'Entrenamiento con Talleres', category: 'Entrenamiento', aspect: 'square' },
+    { id: 10, src: image10, alt: 'Ronaldo Martínez celebrando un gol con la selección de Paraguay', caption: 'Gol con Paraguay', category: 'Festejo', aspect: 'wide' },
   ],
 
   socialMedia: [
