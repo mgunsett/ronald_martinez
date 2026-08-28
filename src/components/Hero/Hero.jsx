@@ -6,6 +6,8 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import MatchBox from './MatchBox'
 import { playerData } from '../../data/playerData'
 import useMatches from '../../hooks/useMatches'
+import useIsDesktop from '../../hooks/useIsDesktop'
+import { useLoading } from '../../context/LoadingContext'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -67,6 +69,8 @@ export default function Hero() {
   const line2Ref     = useRef(null)
   const vignetteRef  = useRef(null)
   const { matches }  = useMatches()
+  const isDesktop    = useIsDesktop()
+  const { isReady }  = useLoading()
 
   const handleMouseMove = useCallback((e) => {
     const xn = (e.clientX / window.innerWidth  - 0.5) * 2
@@ -75,26 +79,33 @@ export default function Hero() {
     gsap.to(midLayerRef.current, { x: xn * 14, y: yn * 7,  duration: 1.3, ease: 'power2.out' })
   }, [])
 
+  // Parallax de puntero — solo desktop: en mobile no hay mouse y el listener sobra
   useEffect(() => {
+    if (!isDesktop) return
     window.addEventListener('mousemove', handleMouseMove)
     return () => window.removeEventListener('mousemove', handleMouseMove)
-  }, [handleMouseMove])
+  }, [isDesktop, handleMouseMove])
 
+  // Entrada del Hero — solo desktop, y recién cuando el loader liberó la vista.
+  // En mobile los elementos se pintan directamente en su estado final.
   useEffect(() => {
+    if (!isDesktop || !isReady) return
     const ctx = gsap.context(() => {
       gsap.fromTo([line1Ref.current, line2Ref.current],
         { yPercent: 110, opacity: 0 },
-        { yPercent: 0, opacity: 1, duration: 1.1, stagger: 0.08, ease: 'expo.out', delay: 0.4 }
+        { yPercent: 0, opacity: 1, duration: 1.1, stagger: 0.08, ease: 'expo.out', delay: 0.15 }
       )
       gsap.fromTo(photoRef.current,
         { clipPath: 'inset(100% 0 0 0)', opacity: 0 },
-        { clipPath: 'inset(0% 0 0 0)', opacity: 1, duration: 1.5, ease: 'power3.out', delay: 0.6 }
+        { clipPath: 'inset(0% 0 0 0)', opacity: 1, duration: 1.5, ease: 'power3.out', delay: 0.3 }
       )
     }, containerRef)
     return () => ctx.revert()
-  }, [])
+  }, [isDesktop, isReady])
 
+  // Viñeta ligada al scroll — solo desktop: en mobile queda fija (ver estilo del nodo)
   useEffect(() => {
+    if (!isDesktop) return
     const ctx = gsap.context(() => {
       gsap.fromTo(vignetteRef.current,
         { opacity: 0.15 },
@@ -111,7 +122,7 @@ export default function Hero() {
       )
     }, outerRef)
     return () => ctx.revert()
-  }, [])
+  }, [isDesktop])
 
   return (
     <Box ref={outerRef} h="200vh" position="relative" zIndex={1} id= 'hero'>
@@ -194,7 +205,7 @@ export default function Hero() {
                 '@media (min-width: 62em)': { height: '94dvh' },
               },
             }}
-            style={{ clipPath: 'inset(100% 0 0 0)', opacity: 0 }}
+            style={isDesktop ? { clipPath: 'inset(100% 0 0 0)', opacity: 0 } : undefined}
           >
             <Image
               src={playerData.image}
@@ -230,7 +241,7 @@ export default function Hero() {
               fontSize={{ base: '25vw', md: '16vw', lg: '13vw' }}
               color="white"
               lineHeight={0.9}
-              style={{ opacity: 0 }}
+              style={isDesktop ? { opacity: 0 } : undefined}
               mb={-4}
               mt={6}
             >
@@ -244,7 +255,7 @@ export default function Hero() {
               fontSize={{ base: '34vw', md: '16vw', lg: '13vw' }}
               color="brand.brown"
               lineHeight={0.9}
-              style={{ opacity: 0 }}
+              style={isDesktop ? { opacity: 0 } : undefined}
             >
               {playerData.fullName}
             </Text>
@@ -284,26 +295,28 @@ export default function Hero() {
           <MatchBox last={matches.last} next={matches.next} variant="strip" />
         </Box>
 
-        {/* Scroll indicator */}
-        <MotionBox
-          position="absolute"
-          bottom="50px"
-          left="50%"
-          style={{ translateX: '-50%' }}
-          zIndex={16}
-          animate={{ y: [0, 8, 0] }}
-          transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut' }}
-          display={{ base: 'none', lg: 'flex' }}
-          flexDir="column"
-          alignItems="center"
-          gap={2}
-        >
-          <Box w="1px" h="28px" bg="rgba(255,255,255,0.25)" />
-          <Text fontFamily="mono" fontSize="9px" color="rgba(255,255,255,0.3)"
-                letterSpacing="widest" textTransform="uppercase">
-            Scroll
-          </Text>
-        </MotionBox>
+        {/* Scroll indicator — no se monta en mobile: el loop infinito no debe correr ahí */}
+        {isDesktop && (
+          <MotionBox
+            position="absolute"
+            bottom="50px"
+            left="50%"
+            style={{ translateX: '-50%' }}
+            zIndex={16}
+            animate={{ y: [0, 8, 0] }}
+            transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut' }}
+            display="flex"
+            flexDir="column"
+            alignItems="center"
+            gap={2}
+          >
+            <Box w="1px" h="28px" bg="rgba(255,255,255,0.25)" />
+            <Text fontFamily="mono" fontSize="9px" color="rgba(255,255,255,0.3)"
+                  letterSpacing="widest" textTransform="uppercase">
+              Scroll
+            </Text>
+          </MotionBox>
+        )}
 
         {/* Vignette */}
         <Box
@@ -313,7 +326,7 @@ export default function Hero() {
           zIndex={20}
           background="radial-gradient(ellipse at center, transparent 25%, rgba(0,0,0,0.65) 100%)"
           pointerEvents="none"
-          style={{ opacity: 0.15 }}
+          style={{ opacity: isDesktop ? 0.15 : 0.45 }}
         />
       </Box>
     </Box>

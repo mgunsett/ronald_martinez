@@ -9,21 +9,24 @@ import PressSection from './components/Press/PressSection'
 import ContactSection from './components/Contact/ContactSection'
 import Footer from './components/UI/Footer'
 import AdminPage from './pages/AdminPage'
+import { LoadingProvider } from './context/LoadingContext'
 
 function Landing() {
   return (
-    <Box as="main" bg="brand.dark" overflowX="hidden">
-      <Navbar />
-      <Hero />
-      <Box mt="-100vh" position="relative" zIndex={21}>
-        <StatsSection />
-        <VideosSection />
-        <GallerySection />
-        <PressSection />
-        <ContactSection />
-        <Footer />
+    <LoadingProvider>
+      <Box as="main" bg="brand.dark" overflowX="hidden">
+        <Navbar />
+        <Hero />
+        <Box mt="-100vh" position="relative" zIndex={21}>
+          <StatsSection />
+          <VideosSection />
+          <GallerySection />
+          <PressSection />
+          <ContactSection />
+          <Footer />
+        </Box>
       </Box>
-    </Box>
+    </LoadingProvider>
   )
 }
 

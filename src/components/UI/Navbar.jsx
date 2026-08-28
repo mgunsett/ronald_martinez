@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { Box, Flex, Text, HStack, VStack } from '@chakra-ui/react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { gsap } from 'gsap'
+import { useLoading } from '../../context/LoadingContext'
 
 const MotionBox = motion(Box)
 
@@ -27,13 +28,16 @@ export default function Navbar() {
   const [scrolled, setScrolled]   = useState(false)
   const [menuOpen, setMenuOpen]   = useState(false)
   const navRef                    = useRef(null)
+  const { isReady }               = useLoading()
 
+  // entra recién cuando el loader terminó de precargar el Hero
   useEffect(() => {
+    if (!isReady) return
     gsap.fromTo(navRef.current,
       { y: -60, opacity: 0 },
-      { y: 0, opacity: 1, duration: 0.9, ease: 'expo.out', delay: 0.5 }
+      { y: 0, opacity: 1, duration: 0.9, ease: 'expo.out', delay: 0.35 }
     )
-  }, [])
+  }, [isReady])
 
   useEffect(() => {
     const handler = () => setScrolled(window.scrollY > 80)
