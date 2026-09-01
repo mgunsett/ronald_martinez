@@ -5,7 +5,7 @@ import { IoMdStats } from 'react-icons/io'
 //Hero
 import ronald1 from '@assets/ronald1.webp'
 import paraguay from '@assets/paraguay.webp'
-import talleres from '@assets/talleres.webp'
+import velez from '@assets/velez.webp'
 //Escudos trayectoria
 import escudoTalleres from '@assets/escudos/escudo_talleres.webp'
 import escudoPlatense from '@assets/escudos/escudo_platense.webp'
@@ -51,8 +51,8 @@ export const playerData = {
   foot: 'Derecho',
   birthDate: '25 / 04 / 1996',
   birthPlace: 'Eusebio Ayala, Paraguay',
-  currentClub: 'Talleres',
-  logoCurrentClub: talleres,
+  currentClub: 'Vélez Sarsfield',
+  logoCurrentClub: velez,
   image: ronald1,
 
   stats: [
@@ -76,9 +76,17 @@ export const playerData = {
 
   clubs: [
     {
+      name:    'Vélez Sarsfield',
+      country: 'Argentina',
+      years:   '2026 — Actualidad',
+      logo:    velez,
+      titles:  [],
+      info:    '',
+    },
+    {
       name:    'Talleres',
       country: 'Argentina',
-      years:   '2025 — Actualidad',
+      years:   '2025 — 2026',
       logo:    escudoTalleres,
       titles:  [],
       info:    '',
