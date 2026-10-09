@@ -596,7 +596,7 @@ export default function AdminPage() {
             <TabList mb={5} gap={2}>
               <Tab
                 fontFamily="mono" fontSize="11px" letterSpacing="widest"
-                textTransform="uppercase" color="brand.gray2" color="brand.gray"
+                textTransform="uppercase" color="brand.gray2"
                 borderRadius="md" px={4} py={2}
                 _selected={{ color: 'white', bg: 'brand.gray' }}
                 _hover={{ color: 'white' }}

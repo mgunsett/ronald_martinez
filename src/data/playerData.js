@@ -57,21 +57,20 @@ export const playerData = {
 
   stats: [
     { label: 'Velocidad',      value: 91 },
-    { label: 'Definición',     value: 88 },
+    { label: 'Definición',     value: 94 },
     { label: 'Regate',         value: 84 },
-    { label: 'Juego Aéreo',    value: 75 },
+    { label: 'Juego Aéreo',    value: 90 },
     { label: 'Presión Alta',   value: 82 },
     { label: 'Visión de Juego',value: 79 },
   ],
 
   seasonStats: [
-    { label: 'Partidos',    value: 56 },
-    { label: 'Goles',       value: 14 },
-    { label: 'Asistencias', value: 6  },
-    { label: 'Tiros al árco', value: 48  },
-    { label: 'Min / Part.', value: "4,018'" },
-    { label: 'Valoración', value: 7.6 },
-
+    { label: 'Partidos',    value: 35 },
+    { label: 'Goles',       value: 20 },
+    { label: 'Asistencias', value: 8  },
+    { label: 'Tiros al árco', value: 56  },
+    { label: 'Min / Part.', value: "4,429'" },
+    { label: 'Valoración', value: 8.9 },
   ],
 
   clubs: [
