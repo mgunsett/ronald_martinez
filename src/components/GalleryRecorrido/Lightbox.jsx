@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react'
 import { Box, Image, Portal, Text } from '@chakra-ui/react'
 import { motion } from 'framer-motion'
-import { pad2 } from './galleryUtils'
+import { pad2, preload } from './galleryUtils'
 
 /**
  * Lightbox de la galería (mismo estilo que el de la galería actual):
@@ -28,6 +28,13 @@ export function Lightbox({ images, label, index, onClose, onPrev, onNext }) {
     window.addEventListener('keydown', handler)
     return () => window.removeEventListener('keydown', handler)
   }, [onClose, onPrev, onNext])
+
+  // Vecinas listas de antemano: pasar de foto no espera a la red
+  useEffect(() => {
+    const n = images.length
+    preload(images[(index + 1) % n]?.src)
+    preload(images[(index - 1 + n) % n]?.src)
+  }, [images, index])
 
   useEffect(() => {
     document.body.style.overflow = 'hidden'
@@ -72,6 +79,7 @@ export function Lightbox({ images, label, index, onClose, onPrev, onNext }) {
           key={index}
           src={photo.src}
           alt={photo.alt}
+          decoding="async"
           maxH="76vh"
           maxW="min(90vw, 1100px)"
           objectFit="contain"

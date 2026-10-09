@@ -8,7 +8,7 @@ import { keyframes } from '@emotion/react'
 import { useTournamentGallery } from '../../hooks/useTournamentGallery'
 import { GalleryGlow, GalleryHeader } from './GalleryHeader'
 import Lightbox from './Lightbox'
-import { pad2, useIsMobile } from './galleryUtils'
+import { pad2, preload, useIsMobile } from './galleryUtils'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -42,6 +42,14 @@ const RM_ = (
   </Text>
 )
 
+// Miniatura para las tarjetas (las fotos de Firebase pueden no traerla)
+const thumbOf = (p) => p.thumb ?? p.src
+
+// Atributos de carga: en mobile, diferida; en desktop el recorrido se
+// desplaza en horizontal (lazy cargaría tarde), así que se pide al
+// principio pero con prioridad baja para no competir con el hero.
+const loadProps = (mobile) => (mobile ? { loading: 'lazy', decoding: 'async' } : { decoding: 'async', fetchpriority: 'low' })
+
 // ─── FOTO ─────────────────────────────────────────────────────────
 function PhotoCard({ t, photo, index, onOpen, mobile }) {
   return (
@@ -51,6 +59,8 @@ function PhotoCard({ t, photo, index, onOpen, mobile }) {
       data-frame
       role="group"
       onClick={() => onOpen(t, index)}
+      onPointerEnter={() => preload(photo.src)}
+      onTouchStart={() => preload(photo.src)}
       aria-label={`${photo.caption}. Ampliar foto ${index + 1} de ${t.photos.length}`}
       position="relative"
       flex="0 0 auto"
@@ -69,9 +79,11 @@ function PhotoCard({ t, photo, index, onOpen, mobile }) {
     >
       <Image
         data-parallax
-        src={photo.src}
+        src={thumbOf(photo)}
+        {...loadProps(mobile)}
         alt=""
         draggable={false}
+        sx={mobile ? undefined : { willChange: 'transform' }}
         position="absolute"
         top={0}
         left={mobile ? 0 : '-15%'}
@@ -137,7 +149,8 @@ function MoreCard({ t, maxVisible, onOpen, mobile }) {
         {stack.map((p, i) => (
           <Image
             key={i}
-            src={p.src}
+            src={thumbOf(p)}
+            {...loadProps(mobile)}
             alt=""
             position="absolute"
             inset={0}
@@ -197,14 +210,38 @@ function DesktopRecorrido({ tournaments, maxVisible, onOpen, reduced }) {
     return [Math.max(0, s), Math.max(1, e)]
   }
 
-  const update = useCallback(() => {
+  // Medidas del recorrido, tomadas una vez (y en cada refresh de
+  // ScrollTrigger). En el scroll solo se hacen cuentas con estos valores:
+  // leer el layout en cada frame, intercalado con escrituras de transform,
+  // forzaba un recálculo por foto y generaba tirones.
+  const geoRef = useRef(null)
+  const measure = useCallback(() => {
     const tr = trackRef.current
     if (!tr || !chapterRefs.current.length) return
-    const p = -gsap.getProperty(tr, 'x')
+    const x = gsap.getProperty(tr, 'x')
+    geoRef.current = {
+      vw: window.innerWidth,
+      ranges: tabRefs.current.map((_, k) => range(k)),
+      // Centro de cada foto en pantalla con el recorrido en x = 0
+      frames: [...tr.querySelectorAll('[data-frame]')].map((f) => {
+        const r = f.getBoundingClientRect()
+        return { center: r.left + r.width / 2 - x, setX: gsap.quickSetter(f.querySelector('[data-parallax]'), 'x', 'px') }
+      }),
+    }
+    // range y maxX solo leen refs
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  const update = useCallback(() => {
+    const tr = trackRef.current
+    const geo = geoRef.current
+    if (!tr || !geo) return
+    const x = gsap.getProperty(tr, 'x')
+    const p = -x
     let a = 0
     tabRefs.current.forEach((tab, k) => {
-      if (!tab) return
-      const [s, e] = range(k)
+      if (!tab || !geo.ranges[k]) return
+      const [s, e] = geo.ranges[k]
       tab.style.setProperty('--p', gsap.utils.clamp(0, 1, (p - s) / (e - s)))
       if (p >= s - 1) a = k
     })
@@ -212,13 +249,8 @@ function DesktopRecorrido({ tournaments, maxVisible, onOpen, reduced }) {
       activeRef.current = a
       setActive(a)
     }
-    const vw = window.innerWidth
-    tr.querySelectorAll('[data-frame]').forEach((f) => {
-      const r = f.getBoundingClientRect()
-      gsap.set(f.querySelector('[data-parallax]'), { x: ((r.left + r.width / 2 - vw / 2) / vw) * -50 })
-    })
-    // range y maxX solo leen refs
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    const { vw } = geo
+    geo.frames.forEach(({ center, setX }) => setX(((center + x - vw / 2) / vw) * -50))
   }, [])
 
   useLayoutEffect(() => {
@@ -229,15 +261,28 @@ function DesktopRecorrido({ tournaments, maxVisible, onOpen, reduced }) {
         x: () => -maxX(),
         ease: 'none',
         onUpdate: update,
-        scrollTrigger: { trigger: pinRef.current, pin: true, start: 'top top', end: () => `+=${maxX()}`, scrub: 0.6, invalidateOnRefresh: true },
+        scrollTrigger: {
+          trigger: pinRef.current,
+          pin: true,
+          start: 'top top',
+          end: () => `+=${maxX()}`,
+          scrub: 0.6,
+          invalidateOnRefresh: true,
+          onRefresh: () => {
+            measure()
+            update()
+          },
+        },
       })
     }, pinRef)
+    measure()
     update()
     return () => {
       ctx.revert()
       tweenRef.current = null
+      geoRef.current = null
     }
-  }, [tournaments, update])
+  }, [tournaments, measure, update])
 
   // Las fotos cargan después del primer render: re-medir el recorrido
   useEffect(() => {
