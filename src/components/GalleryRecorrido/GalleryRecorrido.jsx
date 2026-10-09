@@ -19,8 +19,7 @@ gsap.registerPlugin(ScrollTrigger)
  * galerías, pero más rápido: fotos angostas y solo MAX_VISIBLE por galería.
  * Al final de cada galería, una tarjeta "+N fotos" abre todas en grande.
  * Arriba, las galerías quedan siempre a la vista como botones ("Saltar a"),
- * con el avance de cada una; cada capítulo trae además su botón para saltar
- * a la siguiente.
+ * con el avance de cada una. Cada capítulo abre con su título en vertical.
  *
  * Mobile (diseño propio): sin fijado. Pastillas fijas arriba para ir a cada
  * galería y una fila deslizable por galería, con puntos de avance, "Ver
@@ -32,8 +31,6 @@ gsap.registerPlugin(ScrollTrigger)
  */
 
 const PX = { base: 5, lg: 10 }
-const ping = keyframes`to { box-shadow: 0 0 0 8px rgba(77,147,214,0); }`
-const wheel = keyframes`0% { transform: translateY(0); opacity: 1; } 70% { transform: translateY(7px); opacity: 0; } 100% { opacity: 0; }`
 const nudge = keyframes`0%, 100% { transform: translateX(0); } 50% { transform: translateX(6px); }`
 
 const RM_ = (
@@ -79,16 +76,12 @@ function PhotoCard({ t, photo, index, onOpen, mobile }) {
         top={0}
         left={mobile ? 0 : '-15%'}
         w={mobile ? '100%' : '130%'}
+        maxW="none"
         h="100%"
         objectFit="cover"
       />
       <Box position="absolute" inset={0} bg="rgba(5,11,20,0.55)" opacity={mobile ? 0 : 0.3} transition="opacity .45s" _groupHover={{ opacity: 0 }} pointerEvents="none" />
       <Box position="absolute" inset={0} pointerEvents="none" background="linear-gradient(to top, rgba(3,6,10,0.92) 0%, transparent 42%, rgba(3,6,10,0.2) 100%)" />
-      <Flex position="absolute" top={3} right={3} px={2.5} py={1} borderRadius="full" bg="rgba(5,11,20,0.55)" backdropFilter="blur(6px)" border="1px solid" borderColor="whiteAlpha.200">
-        <Text fontFamily="mono" fontSize="10px" letterSpacing="0.15em">
-          {pad2(index + 1)} / {pad2(t.photos.length)}
-        </Text>
-      </Flex>
       <Flex
         position="absolute"
         left={0}
@@ -104,9 +97,6 @@ function PhotoCard({ t, photo, index, onOpen, mobile }) {
         _groupHover={{ opacity: 1, transform: 'none' }}
       >
         {RM_}
-        <Text fontFamily="mono" fontSize="12px" letterSpacing="0.04em" color="whiteAlpha.700" textAlign="right">
-          {photo.caption}
-        </Text>
       </Flex>
     </Box>
   )
@@ -176,48 +166,10 @@ function MoreCard({ t, maxVisible, onOpen, mobile }) {
           </>
         ) : (
           <>
-            VER EN
-            <br />
-            GRANDE
+            VER +
           </>
         )}
       </Text>
-      <Text fontFamily="mono" fontSize="11px" fontWeight="600" letterSpacing="0.16em" textTransform="uppercase" color="brand.brownLight" position="relative">
-        {extra > 0 ? `Ver las ${pad2(n)} ›` : 'Abrir galería ›'}
-      </Text>
-    </Box>
-  )
-}
-
-// ─── BOTÓN "SALTAR A" ─────────────────────────────────────────────
-function SkipButton({ children, icon, onClick }) {
-  return (
-    <Box
-      as="button"
-      type="button"
-      onClick={onClick}
-      display="inline-flex"
-      alignItems="center"
-      gap={2}
-      h="34px"
-      pl="14px"
-      pr="6px"
-      borderRadius="full"
-      border="1px solid"
-      borderColor="whiteAlpha.200"
-      fontFamily="mono"
-      fontSize="11px"
-      fontWeight="600"
-      letterSpacing="0.14em"
-      textTransform="uppercase"
-      color="whiteAlpha.800"
-      transition="all .25s"
-      _hover={{ bg: 'brand.brown', borderColor: 'brand.brown', color: 'white' }}
-    >
-      {children}
-      <Flex as="span" boxSize="24px" align="center" justify="center" borderRadius="full" bg="whiteAlpha.100" fontFamily="heading" fontSize="20px" pb="2px" aria-hidden="true">
-        {icon}
-      </Flex>
     </Box>
   )
 }
@@ -231,7 +183,6 @@ function DesktopRecorrido({ tournaments, maxVisible, onOpen, reduced }) {
   const tabRefs = useRef([])
   const tweenRef = useRef(null)
   const activeRef = useRef(0)
-  const last = tournaments.length - 1
 
   const maxX = () => {
     const tr = trackRef.current
@@ -320,11 +271,11 @@ function DesktopRecorrido({ tournaments, maxVisible, onOpen, reduced }) {
   return (
     <Flex ref={pinRef} direction="column" justify="center" position="relative" overflow="hidden" h="100vh" py={10}>
       <GalleryGlow />
-      <GalleryHeader meta={`${cur.name} · ${pad2(cur.photos.length)} fotos`} mb={4} />
+      <GalleryHeader  mb={4} />
 
       <Box maxW="1400px" mx="auto" px={PX} w="100%" position="relative">
         {/* Galerías siempre a la vista: avance + salto directo */}
-        <Flex role="tablist" aria-label="Saltar a una galería" gap="10px">
+        <Flex role="tablist" gap="10px" mb={6}>
           {tournaments.map((t, k) => {
             const on = k === active
             return (
@@ -344,11 +295,11 @@ function DesktopRecorrido({ tournaments, maxVisible, onOpen, reduced }) {
                 display="flex"
                 flexDirection="column"
                 gap={1}
-                pt={3}
+                pt={4}
                 pb={4}
                 px="18px"
                 textAlign="left"
-                borderRadius="14px"
+                borderRadius="8px"
                 border="1px solid"
                 borderColor={on ? 'brand.brown' : 'whiteAlpha.200'}
                 bg={on ? 'rgba(30,95,168,0.14)' : 'rgba(255,255,255,0.02)'}
@@ -357,22 +308,8 @@ function DesktopRecorrido({ tournaments, maxVisible, onOpen, reduced }) {
                 _hover={on ? undefined : { borderColor: 'brand.brownLight', transform: 'translateY(-2px)', '& .tab-name': { color: 'white' }, '& .tab-go': { bg: 'brand.brown', borderColor: 'brand.brown' } }}
                 _focusVisible={{ outline: '2px solid', outlineColor: 'brand.brownLight', outlineOffset: '3px' }}
               >
-                <Flex justify="space-between" align="center" gap={2} fontFamily="mono" fontSize="11px" fontWeight="600" letterSpacing="0.18em" textTransform="uppercase">
-                  <Flex as="span" align="center" gap="6px" color={on ? 'white' : 'brand.gray'}>
-                    <Box
-                      as="i"
-                      boxSize="7px"
-                      borderRadius="full"
-                      bg={on ? 'brand.brownLight' : 'currentColor'}
-                      animation={on && !reduced ? `${ping} 1.6s ease-out infinite` : undefined}
-                    />
-                    {on ? 'Viendo' : 'Saltar a'}
-                  </Flex>
-                  <Text as="span" color="brand.amber">
-                    {pad2(t.photos.length)} fotos
-                  </Text>
-                </Flex>
-                <Flex className="tab-name" align="center" justify="space-between" gap={2} fontFamily="heading" fontSize="clamp(26px, 2.6vw, 38px)" lineHeight={1} letterSpacing="0.02em" textTransform="uppercase" color={on ? 'white' : 'whiteAlpha.600'} transition="color .3s">
+                
+                <Flex className="tab-name" align="center" justify="space-between" gap={2} fontFamily="heading" fontSize="clamp(26px, 2.6vw, 28px)" lineHeight={1} letterSpacing="0.02em" textTransform="uppercase" color={on ? 'white' : 'whiteAlpha.600'} transition="color .3s">
                   {t.name}
                   <Flex
                     as="span"
@@ -385,7 +322,6 @@ function DesktopRecorrido({ tournaments, maxVisible, onOpen, reduced }) {
                     border="1px solid"
                     borderColor="whiteAlpha.200"
                     fontSize="24px"
-                    pb="2px"
                     opacity={on ? 0 : 1}
                     transition="all .3s"
                     aria-hidden="true"
@@ -406,63 +342,39 @@ function DesktopRecorrido({ tournaments, maxVisible, onOpen, reduced }) {
             )
           })}
         </Flex>
-
-        <Flex align="center" gap="10px" mt={3} mb={5} fontFamily="mono" fontSize="12px" letterSpacing="0.14em" textTransform="uppercase" color="brand.gray">
-          <Box position="relative" w="16px" h="24px" flexShrink={0} border="1.5px solid" borderColor="brand.gray" borderRadius="9px" aria-hidden="true">
-            <Box position="absolute" left="50%" top="5px" w="2px" h="5px" ml="-1px" borderRadius="2px" bg="brand.brownLight" animation={reduced ? undefined : `${wheel} 1.6s ease-in-out infinite`} />
-          </Box>
-          <span>
-            <Box as="b" color="white" fontWeight="600">
-              Bajá
-            </Box>{' '}
-            para recorrer ·{' '}
-            <Box as="b" color="white" fontWeight="600">
-              tocá una galería
-            </Box>{' '}
-            para saltar directo
-          </span>
-        </Flex>
       </Box>
 
       <Flex ref={trackRef} align="stretch" gap="14px" h="min(50vh, 470px)" px={PX} sx={{ willChange: 'transform' }}>
-        {tournaments.map((t, k) => {
-          const nk = k < last ? k + 1 : 0
-          return [
-            <Flex
-              key={`ch-${t.id}`}
-              ref={(el) => (chapterRefs.current[k] = el)}
-              direction="column"
-              justify="flex-end"
-              align="flex-start"
-              gap="10px"
-              flex="0 0 auto"
-              w="clamp(200px, 17vw, 270px)"
-              pl={k === 0 ? 0 : '22px'}
-              pr="6px"
-              pb="6px"
-              borderLeft={k === 0 ? 'none' : '1px solid'}
-              borderColor="whiteAlpha.100"
+        {tournaments.map((t, k) => [
+          <Flex
+            key={`ch-${t.id}`}
+            ref={(el) => (chapterRefs.current[k] = el)}
+            align="flex-end"
+            flex="0 0 auto"
+            pl={k === 0 ? 0 : '18px'}
+            pr="4px"
+            borderLeft={k === 0 ? 'none' : '1px solid'}
+            borderColor="whiteAlpha.100"
+          >
+            {/* Título vertical, leído de abajo hacia arriba */}
+            <Text
+              as="h3"
+              fontFamily="heading"
+              fontSize="clamp(56px, 6vw, 96px)"
+              lineHeight={0.86}
+              textTransform="uppercase"
+              whiteSpace="nowrap"
+              sx={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}
             >
-              <Text as="h3" fontFamily="heading" fontSize="clamp(56px, 6vw, 104px)" lineHeight={0.86} textTransform="uppercase">
-                {t.name}
-                <Box as="span" color="brand.brown">
-                  _
-                </Box>
-              </Text>
-              <Text fontFamily="mono" fontSize="12px" letterSpacing="0.2em" textTransform="uppercase" color="brand.gray">
-                <Box as="span" color="brand.amber" fontWeight="600">
-                  {pad2(t.photos.length)}
-                </Box>{' '}
-                fotos
-              </Text>
-              <SkipButton icon={k < last ? '›' : '‹'} onClick={() => goTo(nk)}>
-                {k < last ? `Saltar a ${tournaments[nk].name}` : `Volver a ${tournaments[0].name}`}
-              </SkipButton>
-            </Flex>,
-            ...t.photos.slice(0, maxVisible).map((p, i) => <PhotoCard key={p.id} t={t} photo={p} index={i} onOpen={onOpen} />),
-            <MoreCard key={`more-${t.id}`} t={t} maxVisible={maxVisible} onOpen={onOpen} />,
-          ]
-        })}
+              {t.name}
+              <Box as="span" color="brand.brown">
+                _
+              </Box>
+            </Text>
+          </Flex>,
+          ...t.photos.slice(0, maxVisible).map((p, i) => <PhotoCard key={p.id} t={t} photo={p} index={i} onOpen={onOpen} />),
+          <MoreCard key={`more-${t.id}`} t={t} maxVisible={maxVisible} onOpen={onOpen} />,
+        ])}
       </Flex>
     </Flex>
   )

@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react'
-import { Box, Image, Text } from '@chakra-ui/react'
+import { Box, Image, Portal, Text } from '@chakra-ui/react'
 import { motion } from 'framer-motion'
 import { pad2 } from './galleryUtils'
 
@@ -39,88 +39,106 @@ export function Lightbox({ images, label, index, onClose, onPrev, onNext }) {
   }, [])
 
   return (
-    <MotionBox
-      role="dialog"
-      aria-modal="true"
-      aria-label={`${label}: foto ampliada`}
-      position="fixed"
-      inset={0}
-      zIndex={900}
-      bg="rgba(0,0,0,0.93)"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.25 }}
-      display="flex"
-      flexDirection="column"
-      alignItems="center"
-      justifyContent="center"
-      gap="14px"
-      px={4}
-      onClick={onClose}
-      onTouchStart={(e) => {
-        touchStart.current = e.touches[0].clientX
-      }}
-      onTouchEnd={(e) => {
-        const dx = e.changedTouches[0].clientX - touchStart.current
-        if (dx > 50) onPrev()
-        if (dx < -50) onNext()
-      }}
-    >
-      <MotionImage
-        key={index}
-        src={photo.src}
-        alt={photo.alt}
-        maxH="76vh"
-        maxW="min(90vw, 1100px)"
-        objectFit="contain"
-        borderRadius="12px"
-        initial={{ scale: 0.96, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        transition={{ duration: 0.3 }}
-        onClick={(e) => e.stopPropagation()}
-        draggable={false}
-      />
-      <Text fontFamily="mono" fontSize="13px" letterSpacing="0.12em" textTransform="uppercase" color="whiteAlpha.600" textAlign="center">
-        {label} · {photo.caption} · {pad2(index + 1)} / {pad2(images.length)}
-      </Text>
+    <Portal>
+      <MotionBox
+        role="dialog"
+        aria-modal="true"
+        aria-label={`${label}: foto ampliada`}
+        position="fixed"
+        inset={0}
+        zIndex={2000}
+        bg="rgba(0,0,0,0.93)"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.25 }}
+        display="flex"
+        flexDirection="column"
+        alignItems="center"
+        justifyContent="center"
+        gap="14px"
+        px={4}
+        onClick={onClose}
+        onTouchStart={(e) => {
+          touchStart.current = e.touches[0].clientX
+        }}
+        onTouchEnd={(e) => {
+          const dx = e.changedTouches[0].clientX - touchStart.current
+          if (dx > 50) onPrev()
+          if (dx < -50) onNext()
+        }}
+      >
+        <MotionImage
+          key={index}
+          src={photo.src}
+          alt={photo.alt}
+          maxH="76vh"
+          maxW="min(90vw, 1100px)"
+          objectFit="contain"
+          borderRadius="12px"
+          initial={{ scale: 0.96, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ duration: 0.3 }}
+          onClick={(e) => e.stopPropagation()}
+          draggable={false}
+        />
 
-      {[
-        { side: 'left', fn: onPrev, icon: '‹', label: 'Foto anterior' },
-        { side: 'right', fn: onNext, icon: '›', label: 'Foto siguiente' },
-      ].map(({ side, fn, icon, label: aria }) => (
+        {[
+          { side: 'left', fn: onPrev, icon: '‹', label: 'Foto anterior' },
+          { side: 'right', fn: onNext, icon: '›', label: 'Foto siguiente' },
+        ].map(({ side, fn, icon, label: aria }) => (
+          <Box
+            key={side}
+            as="button"
+            type="button"
+            aria-label={aria}
+            position="absolute"
+            {...{ [side]: 0 }}
+            top={0}
+            bottom={0}
+            w="15%"
+            display={{ base: 'none', lg: 'flex' }}
+            alignItems="center"
+            justifyContent="center"
+            onClick={(e) => {
+              e.stopPropagation()
+              fn()
+            }}
+            opacity={0.4}
+            _hover={{ opacity: 1 }}
+            transition="opacity 0.2s"
+          >
+            <Text fontFamily="heading" fontSize="5xl" color="white">
+              {icon}
+            </Text>
+          </Box>
+        ))}
         <Box
-          key={side}
           as="button"
           type="button"
-          aria-label={aria}
+          aria-label="Cerrar"
           position="absolute"
-          {...{ [side]: 0 }}
-          top={0}
-          bottom={0}
-          w="15%"
-          display={{ base: 'none', lg: 'flex' }}
+          top={4}
+          right={6}
+          zIndex={1}
+          boxSize="44px"
+          display="flex"
           alignItems="center"
           justifyContent="center"
+          opacity={0.6}
+          _hover={{ opacity: 1, color: '#ec8496' }}
+          transition="opacity 0.2s"
           onClick={(e) => {
             e.stopPropagation()
-            fn()
+            onClose()
           }}
-          opacity={0.4}
-          _hover={{ opacity: 1 }}
-          transition="opacity 0.2s"
         >
-          <Text fontFamily="heading" fontSize="5xl" color="white">
-            {icon}
+          <Text fontFamily="heading" fontSize="2xl">
+            ✕
           </Text>
         </Box>
-      ))}
-      <Box as="button" type="button" aria-label="Cerrar" position="absolute" top={4} right={6} opacity={0.6} _hover={{ opacity: 1, color: '#ec8496' }} transition="opacity 0.2s" onClick={onClose}>
-        <Text fontFamily="heading" fontSize="2xl">
-          ✕
-        </Text>
-      </Box>
-    </MotionBox>
+      </MotionBox>
+    </Portal>
   )
 }
 
