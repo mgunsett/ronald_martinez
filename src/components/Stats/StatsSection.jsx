@@ -7,6 +7,8 @@ import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import useScrubReveal from '../../hooks/useScrubReveal'
 import { playerData } from '../../data/playerData'
+import useSeasonStats from '../../hooks/useSeasonStats'
+import { seasonTiles, seasonTitle } from '../../lib/seasonTiles'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -89,6 +91,9 @@ function BioCard() {
 
 function SeasonCards() {
   const cardRefs = useRef([])
+  // Temporada en curso desde API-Football; sin datos, los valores fijos.
+  const season = useSeasonStats()
+  const items = season ? seasonTiles(season) : playerData.seasonStats
   useEffect(() => {
     const ctx = gsap.context(() => {
       cardRefs.current.forEach((el, i) => {
@@ -104,7 +109,7 @@ function SeasonCards() {
       })
     })
     return () => ctx.revert()
-  }, [])
+  }, [season])
 
   return (
     <Box mx={2}>
@@ -116,10 +121,10 @@ function SeasonCards() {
         color="whiteAlpha.600"
         mb={5}
       >
-        Temporada 2025 / 2026
+        {seasonTitle(season, 'Temporada 2025 / 2026')}
       </Text>
       <Grid templateColumns="repeat(2, 1fr)" gap={3}>
-        {playerData.seasonStats.map((s, i) => (
+        {items.map((s, i) => (
           <Box
             key={s.label}
             ref={(el) => (cardRefs.current[i] = el)}
@@ -491,6 +496,8 @@ function ClubTimeline() {
 }
 
 export default function StatsSection() {
+  // Con totales de la API el título muestra sólo la temporada en curso.
+  const season = useSeasonStats()
   const sectionRef = useRef(null)
   const titleRef   = useRef(null)
 
@@ -521,7 +528,7 @@ export default function StatsSection() {
           <Box ref={titleRef}>
             <Text fontFamily="mono" fontSize="10px" color="white"
                   textTransform="uppercase" letterSpacing="widest" >
-              Temporada 2025 / 2026
+              {seasonTitle(season, 'Temporada 2025 / 2026')}
             </Text>
             <Text as="h2" fontFamily="heading" fontSize={{ base: '5xl', lg: '6xl' }}
                   color="brand.brown" lineHeight={1}>
