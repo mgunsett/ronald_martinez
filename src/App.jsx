@@ -17,7 +17,7 @@ function Landing() {
       <Box as="main" bg="brand.dark" overflowX="hidden">
         <Navbar />
         <Hero />
-        <Box mt="-100vh" position="relative" zIndex={21}>
+        <Box position="relative" zIndex={21}>
           <StatsSection />
           <VideosSection />
           <GallerySection />

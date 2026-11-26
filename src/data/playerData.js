@@ -6,6 +6,8 @@ import { IoMdStats } from 'react-icons/io'
 import ronald1 from '@assets/ronald1.webp'
 import paraguay from '@assets/paraguay.webp'
 import velez from '@assets/velez.webp'
+import heroFestejo from '@assets/hero/ronaldo-festejo.webp'
+import menuSelfie from '@assets/hero/ronaldo-selfie.webp'
 //Escudos trayectoria
 import escudoTalleres from '@assets/escudos/escudo_talleres.webp'
 import escudoPlatense from '@assets/escudos/escudo_platense.webp'
@@ -39,7 +41,9 @@ import ledsports from '@assets/contact3.webp'
 
 export const playerData = {
   name: 'RONALDO',
-  fullName: 'MARTINEZ',
+  fullName: 'MARTÍNEZ',
+  displayName: 'Ronaldo Martínez',
+  initials: 'RM',
   number: 77,
   position: 'Delantero',
   positionShort: 'DEL',
@@ -54,6 +58,12 @@ export const playerData = {
   currentClub: 'Vélez Sarsfield',
   logoCurrentClub: velez,
   image: ronald1,
+  // Hero "Split con ficha": recorte festejando (PNG/WebP con fondo transparente)
+  heroCutout: heroFestejo,
+  heroCutoutAlt: 'Ronaldo Martínez festeja un gol con los brazos abiertos y la camiseta de Vélez Sarsfield',
+  // Navbar "Índice a pantalla completa": foto del menú
+  menuPortrait: menuSelfie,
+  menuPortraitAlt: 'Ronaldo Martínez se saca una selfie con la pelota y la camiseta de Vélez Sarsfield',
 
   stats: [
     { label: 'Velocidad',      value: 91 },

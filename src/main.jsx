@@ -10,6 +10,7 @@ import App from './App'
 import './styles/globals.css'
 
 gsap.registerPlugin(ScrollTrigger)
+ScrollTrigger.config({ ignoreMobileResize: true })
 
 const lenis = new Lenis({
   duration:       1.2,

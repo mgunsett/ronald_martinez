@@ -5,7 +5,7 @@ import { playerData } from '../../data/playerData'
 
 // Recursos que conforman el Hero: sin ellos la primera pantalla se ve incompleta
 const CRITICAL_ASSETS = [
-  playerData.image,
+  playerData.heroCutout,
   playerData.nationalityFlag,
   playerData.logoCurrentClub,
 ]
