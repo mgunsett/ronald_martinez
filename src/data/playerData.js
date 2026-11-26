@@ -34,6 +34,9 @@ import photoGraph from '@assets/perfil_video.webp'
 import reel1 from '@assets/gallery/velez/velez7.webp'
 import reel2 from '@assets/gallery/velez/velez8.webp'
 import reel3 from '@assets/gallery/seleccion/paraguay7.webp'
+import pressPlatense from '@assets/gallery/equipos/platense1.webp'
+import pressTalleres from '@assets/gallery/equipos/talleres2.webp'
+import pressSeleccion from '@assets/gallery/seleccion/paraguay3.webp'
 //Prensa
 import logo1 from '@assets/logos/logo1.webp'
 import logo2 from '@assets/logos/logo2.webp'
@@ -196,6 +199,8 @@ export const playerData = {
       date:  'Diciembre 2025',
       excerpt: 'Platense volvió a tener al goleador del campeonato de Primera División.',
       club:  'Platense',
+      photo: pressPlatense,
+      photoAlt: 'Ronaldo Martínez en acción con la camiseta de Platense',
       url:   'https://www.elgrafico.com.ar/articulo/primera-division/95962/cuantas-veces-platense-tuvo-al-goleador-del-campeonato-de-primera-division',
     },
     {
@@ -205,6 +210,8 @@ export const playerData = {
       date:  'Enero 2026',
       excerpt: 'Figura de Talleres: el gol, la lesión y el festejo a lo Cristiano.',
       club:  'Talleres',
+      photo: pressTalleres,
+      photoAlt: 'Ronaldo Martínez festeja con la camiseta de Talleres',
       url:   'https://www.lavoz.com.ar/deportes/futbol/ronaldo-martinez-figura-de-talleres-como-esta-de-la-lesion-y-por-que-festejo-a-lo-cristiano/',
     },
     {
@@ -214,6 +221,8 @@ export const playerData = {
       date:  'Marzo 2026',
       excerpt: 'Vuelve a la Albirroja para la ventana internacional.',
       club:  'Selección Paraguay',
+      photo: pressSeleccion,
+      photoAlt: 'Ronaldo Martínez llega al estadio con la Selección de Paraguay',
       url:   'https://www.cba24n.com.ar/deportes/futbol/talleres/ronaldo-martinez--convocado-a-la-seleccion-de-paraguay-para-la-proxima-ventana-internacional_a69ac304f2128774661b1005d',
     },
   ],

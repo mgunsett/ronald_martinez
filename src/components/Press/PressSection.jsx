@@ -1,147 +1,249 @@
-import { useEffect, useRef } from 'react'
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { Box, Text } from '@chakra-ui/react'
 import { FiArrowRight } from 'react-icons/fi'
-import { gsap } from 'gsap'
-import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { playerData } from '../../data/playerData'
 
-gsap.registerPlugin(ScrollTrigger)
+// Prensa "En portada": una nota por vez en grande, con la foto de esa etapa y
+// el escudo del club, y abajo una pestaña por medio con una barra que avanza.
+// Pasa sola, pero se frena con el mouse encima, con el teclado, si la sección
+// no se ve o si la pestaña del navegador está oculta. Elegir una nota a mano
+// frena el avance: el lector decidió qué leer.
 
-// Prensa "Cronología": las notas en orden sobre una línea que se dibuja al
-// bajar. Cada nota con mes, medio, el club en el que estaba, titular y bajada.
-
-const C = { card: '#0B1626', line: 'rgba(255,255,255,0.08)', acc: '#4D93D6', gold: '#D4A84B', soft: '#C3CFDD', gray: '#7A8CA3' }
-const SHORT = { enero: 'Ene', febrero: 'Feb', marzo: 'Mar', abril: 'Abr', mayo: 'May', junio: 'Jun', julio: 'Jul', agosto: 'Ago', septiembre: 'Sep', octubre: 'Oct', noviembre: 'Nov', diciembre: 'Dic' }
-const MONTH = Object.keys(SHORT)
-
-// "Diciembre 2025" -> { m: 'Dic', y: '2025', key: 202511 } para ordenar y mostrar
-function parseDate(d = '') {
+const C = { acc: '#4D93D6', gold: '#D4A84B', soft: '#C3CFDD', gray: '#7A8CA3', card: '#0B1626', line: 'rgba(255,255,255,0.08)', dark: '#050B14' }
+const DUR = 7000
+const OUT = 'cubic-bezier(0.23,1,0.32,1)'
+const MONTH = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre']
+const dateKey = (d = '') => {
   const [mes = '', y = ''] = d.trim().split(/\s+/)
-  const i = MONTH.indexOf(mes.toLowerCase())
-  return { m: SHORT[mes.toLowerCase()] || mes, y, key: Number(y) * 100 + Math.max(i, 0) }
+  return Number(y) * 100 + Math.max(MONTH.indexOf(mes.toLowerCase()), 0)
 }
 
 export default function PressSection() {
-  const ref = useRef(null)
-  const notes = playerData.press
-    .map((n) => ({ ...n, ...parseDate(n.date), crest: playerData.clubs.find((c) => c.name === n.club)?.logo }))
-    .sort((a, b) => a.key - b.key)
-  const outlets = new Set(notes.map((n) => n.media)).size
-  const years = [...new Set(notes.map((n) => n.y.slice(2)))]
-  const period = years.length > 1 ? `${years[0]}–${years[years.length - 1]}` : years[0]
+  // La más nueva primero
+  const notes = [...playerData.press]
+    .map((n) => ({ ...n, crest: playerData.clubs.find((c) => c.name === n.club)?.logo }))
+    .sort((a, b) => dateKey(b.date) - dateKey(a.date))
+  const season = notes[0]?.date.split(/\s+/)[1]
 
-  // Una sola coreografía: la línea se dibuja y las notas entran una tras otra
-  useEffect(() => {
-    const el = ref.current
-    if (!el || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
-    const ctx = gsap.context(() => {
-      const tl = gsap.timeline({ scrollTrigger: { trigger: el, start: 'top 70%', once: true } })
-      tl.from('.pr-axis', { scaleY: 0, transformOrigin: 'top', duration: 0.9, ease: 'power3.inOut' })
-        .from('.pr-rv', { y: 12, opacity: 0, duration: 0.45, stagger: 0.11, ease: 'power3.out' }, 0.12)
-    }, el)
-    return () => ctx.revert()
+  const [cur, setCur] = useState(0) // pestaña activa
+  const [shown, setShown] = useState(0) // nota que se ve (cambia al terminar la salida)
+  const [manual, setManual] = useState(false)
+  const secRef = useRef(null)
+  const storyRef = useRef(null)
+  const picRef = useRef(null)
+  const tabRefs = useRef([])
+  const barRefs = useRef([])
+  const run = useRef(null)
+  const busy = useRef([])
+  const entering = useRef(false)
+  const st = useRef({ hover: false, focus: false, visible: false })
+  const reduce = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
+
+  const manualRef = useRef(false)
+  manualRef.current = manual
+  const paused = () => st.current.hover || st.current.focus || !st.current.visible || document.hidden || manualRef.current
+  const sync = useCallback(() => {
+    if (run.current) (paused() ? run.current.pause() : run.current.play())
   }, [])
 
+  // Cambio de nota: sale rápido con blur y entra con ease-out
+  const show = useCallback((i, instant = false) => {
+    setCur(i)
+    const s = storyRef.current, p = picRef.current
+    if (instant || reduce || !s?.animate) { busy.current.forEach((a) => a.cancel()); setShown(i); return }
+    busy.current.forEach((a) => a.cancel())
+    const a = s.animate([{ opacity: 1, filter: 'blur(0)', transform: 'none' }, { opacity: 0, filter: 'blur(4px)', transform: 'translateY(-6px)' }], { duration: 120, easing: 'ease', fill: 'forwards' })
+    const b = p.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 120, easing: 'ease', fill: 'forwards' })
+    busy.current = [a, b]
+    a.onfinish = () => { entering.current = true; setShown(i) }
+  }, [reduce])
+
+  useLayoutEffect(() => {
+    if (!entering.current) return
+    entering.current = false
+    busy.current.forEach((x) => x.cancel())
+    busy.current = [
+      storyRef.current.animate([{ opacity: 0, filter: 'blur(4px)', transform: 'translateY(8px)' }, { opacity: 1, filter: 'blur(0)', transform: 'none' }], { duration: 260, easing: OUT }),
+      picRef.current.animate([{ opacity: 0, transform: 'scale(1.03)' }, { opacity: 1, transform: 'none' }], { duration: 320, easing: OUT }),
+    ]
+  }, [shown])
+
+  // Barra de la pestaña activa: lineal, con pausa real (Web Animations)
+  useEffect(() => {
+    run.current?.cancel()
+    run.current = null
+    barRefs.current.forEach((b) => b?.getAnimations().forEach((x) => x.cancel()))
+    const bar = barRefs.current[cur]
+    if (reduce || !bar?.animate) return
+    if (manual) { bar.animate([{ transform: 'scaleX(1)' }, { transform: 'scaleX(1)' }], { duration: 1, fill: 'forwards' }); return }
+    const a = bar.animate([{ transform: 'scaleX(0)' }, { transform: 'scaleX(1)' }], { duration: DUR, easing: 'linear', fill: 'forwards' })
+    a.onfinish = () => show((cur + 1) % notes.length)
+    run.current = a
+    if (paused()) a.pause()
+    return () => a.cancel()
+  }, [cur, manual])
+
+  // Pausas: mouse encima, foco adentro, sección fuera de pantalla o pestaña oculta
+  useEffect(() => {
+    const el = secRef.current
+    if (!el) return
+    const fine = window.matchMedia('(hover: hover) and (pointer: fine)').matches
+    const on = (k, v) => () => { st.current[k] = v; sync() }
+    const enter = on('hover', true), leave = on('hover', false), fin = on('focus', true), fout = on('focus', false)
+    if (fine) { el.addEventListener('mouseenter', enter); el.addEventListener('mouseleave', leave) }
+    el.addEventListener('focusin', fin); el.addEventListener('focusout', fout)
+    document.addEventListener('visibilitychange', sync)
+    const io = new IntersectionObserver(([e]) => { st.current.visible = e.isIntersecting; sync() }, { threshold: 0.35 })
+    io.observe(el)
+    return () => {
+      el.removeEventListener('mouseenter', enter); el.removeEventListener('mouseleave', leave)
+      el.removeEventListener('focusin', fin); el.removeEventListener('focusout', fout)
+      document.removeEventListener('visibilitychange', sync)
+      io.disconnect()
+    }
+  }, [sync])
+
+  const pick = (i) => { setManual(true); if (i !== cur) show(i) }
+  const onKey = (e) => {
+    const d = { ArrowRight: 1, ArrowLeft: -1 }[e.key]
+    if (!d) return
+    e.preventDefault()
+    const n = (cur + d + notes.length) % notes.length
+    setManual(true)
+    show(n, true) // con teclado, sin animación
+    tabRefs.current[n]?.focus()
+  }
+
+  const n = notes[shown]
+  if (!n) return null
+
   return (
-    <Box as="section" id="prensa" ref={ref} bg="brand.dark" px={{ base: 5, lg: 10 }} py={{ base: 16, lg: 24 }}>
+    <Box as="section" id="prensa" ref={secRef} bg="brand.dark" px={{ base: 5, lg: 10 }} py={{ base: 16, lg: 24 }}>
       <Box maxW="1400px" mx="auto" sx={css}>
-        <div className="lay">
-          <div className="intro">
+        <div className="mast">
+          <div>
             <Text fontFamily="mono" fontSize="11px" fontWeight={700} letterSpacing="0.24em" textTransform="uppercase" color={C.gold}>
               En los medios
             </Text>
             <Text as="h2" fontFamily="heading" fontSize={{ base: '6xl', lg: '8xl' }} lineHeight={0.9} color={C.acc}>
               Prensa
             </Text>
-            <p className="lead">
-              Lo que se publicó de {playerData.displayName}, en orden: del gol que lo hizo goleador del torneo a la vuelta a la Selección.
-            </p>
-            <div className="meta">
-              <div><b>{notes.length}</b><small>Notas</small></div>
-              <div><b>{outlets}</b><small>Medios</small></div>
-              {period && <div><b>{period}</b><small>Período</small></div>}
-            </div>
           </div>
+          <div className="ed">
+            Edición N.º <b>{playerData.number}</b>
+            {season && <><br />Temporada {season}</>}
+          </div>
+        </div>
 
-          <ol className="tl">
-            <div className="ax" aria-hidden="true"><i className="pr-axis" /></div>
-            {notes.map((n) => (
-              <li key={n.url} className="it pr-rv">
-                <div className="when"><b>{n.m}</b><span>{n.y}</span></div>
-                <span className="dot" aria-hidden="true" />
-                <a className="card" href={n.url} target="_blank" rel="noopener noreferrer">
-                  <span className="src"><img src={n.logo} alt="" /><b>{n.media}</b></span>
-                  {n.club && (
-                    <span className="club">{n.crest && <img src={n.crest} alt="" />}<span>{n.club}</span></span>
-                  )}
-                  <h3>{n.title}</h3>
-                  {n.excerpt && <p>{n.excerpt}</p>}
-                  <span className="go">Leer en {n.media} <FiArrowRight aria-hidden="true" /></span>
-                </a>
-              </li>
-            ))}
-          </ol>
+        <div className="stage" id="pr-stage" role="tabpanel" aria-labelledby={`pr-tab-${cur}`} aria-live="polite">
+          <div className="story" ref={storyRef}>
+            <div>
+              <div className="src">
+                <img src={n.logo} alt="" />
+                <div><b>{n.media}</b><span>{n.date}</span></div>
+              </div>
+              <h3><q>{n.title}</q></h3>
+              {n.excerpt && <p className="lead">{n.excerpt}</p>}
+            </div>
+            <a className="go" href={n.url} target="_blank" rel="noopener noreferrer">
+              Leer la nota <FiArrowRight aria-hidden="true" />
+            </a>
+          </div>
+          <div className="pic" ref={picRef}>
+            {n.photo && <img className="ph" src={n.photo} alt={n.photoAlt || ''} loading="lazy" />}
+            {n.club && (
+              <span className="badge">{n.crest && <img src={n.crest} alt="" />}{n.club}</span>
+            )}
+          </div>
+        </div>
+
+        <div className="tabs" role="tablist" aria-label="Notas de prensa" onKeyDown={onKey}>
+          {notes.map((t, i) => (
+            <button
+              key={t.url}
+              ref={(el) => (tabRefs.current[i] = el)}
+              id={`pr-tab-${i}`}
+              className={`tab${i < cur ? ' done' : ''}`}
+              role="tab"
+              type="button"
+              aria-selected={i === cur}
+              aria-controls="pr-stage"
+              tabIndex={i === cur ? 0 : -1}
+              onClick={() => pick(i)}
+            >
+              <span className="bar"><i ref={(el) => (barRefs.current[i] = el)} /></span>
+              <small>{String(i + 1).padStart(2, '0')} · <span className="full">{t.date}</span><span className="short">{t.date.slice(0, 3)} {t.date.split(/\s+/)[1]}</span></small>
+              <b>{t.media}</b>
+            </button>
+          ))}
         </div>
       </Box>
     </Box>
   )
 }
 
-const out = 'cubic-bezier(0.23,1,0.32,1)'
 const label = { fontFamily: 'mono', fontWeight: 700, textTransform: 'uppercase' }
 
 const css = {
-  '.lay': { display: 'grid', gridTemplateColumns: { base: 'minmax(0,1fr)', lg: 'minmax(0,0.8fr) minmax(0,1.6fr)' }, gap: { base: '30px', lg: '64px' }, alignItems: 'start' },
-  '.intro': { position: { lg: 'sticky' }, top: '100px' },
-  '.intro .lead': { mt: '20px', maxW: '34ch', fontSize: { base: '16px', lg: '18px' }, lineHeight: 1.5, color: C.soft },
-  '.meta': { display: 'flex', gap: '28px', mt: '28px' },
-  '.meta b': { display: 'block', fontFamily: 'heading', fontWeight: 400, fontSize: '52px', lineHeight: 1, color: C.acc },
-  '.meta small': { ...label, fontSize: '11px', letterSpacing: '0.22em', color: C.gray },
-  // Línea de tiempo
-  '.tl': { position: 'relative', listStyle: 'none', pl: { base: '26px', lg: '150px' } },
-  '.ax': { position: 'absolute', left: { base: '5px', lg: '118px' }, top: '8px', bottom: '8px', w: '1px', bg: C.line },
-  '.ax i': { position: 'absolute', inset: 0, background: `linear-gradient(${C.gold}, ${C.acc})` },
-  '.it': { position: 'relative', mb: '22px', '&:last-of-type': { mb: 0 } },
-  '.when': {
-    position: { base: 'static', lg: 'absolute' }, left: '-150px', top: '22px', w: { lg: '96px' }, textAlign: { lg: 'right' },
-    display: { base: 'flex', lg: 'block' }, alignItems: 'baseline', gap: '10px', mb: { base: '10px', lg: 0 },
+  '.mast': {
+    display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', gap: '20px',
+    pb: '18px', borderBottom: '2px solid white', mb: { base: '22px', lg: '34px' },
   },
-  '.when b': { display: 'block', fontFamily: 'heading', fontWeight: 400, fontSize: { base: '30px', lg: '44px' }, lineHeight: 0.9, textTransform: 'uppercase' },
-  '.when span': { ...label, display: 'block', mt: { lg: '4px' }, fontSize: '13px', letterSpacing: '0.2em', color: C.gray },
-  '.dot': {
-    position: 'absolute', left: { base: '-26px', lg: '-38px' }, top: { base: '8px', lg: '30px' }, w: '13px', h: '13px',
-    borderRadius: '50%', bg: 'brand.dark', border: `2px solid ${C.gold}`,
+  '.ed': { ...label, textAlign: 'right', fontSize: '11px', letterSpacing: '0.22em', color: C.gray, lineHeight: 1.8, b: { color: C.gold } },
+  '.stage': {
+    display: 'grid', gridTemplateColumns: { base: 'minmax(0,1fr)', lg: 'minmax(0,1.15fr) minmax(0,1fr)' },
+    gap: { base: '22px', lg: '48px' }, alignItems: 'stretch', minH: { lg: '440px' },
   },
-  // Nota
-  '.card': {
-    display: 'grid', gridTemplateColumns: 'minmax(0,1fr) auto', gap: { base: '14px', lg: '18px 24px' },
-    p: { base: '18px', lg: '24px 26px' }, border: `1px solid ${C.line}`, borderRadius: '18px', bg: C.card,
-    color: 'inherit', textDecoration: 'none',
-    transition: `transform 160ms ${out}, border-color 200ms ease, background 200ms ease`,
-    '&:active': { transform: 'scale(0.985)' },
-    '&:focus-visible': { outline: `2px solid ${C.acc}`, outlineOffset: '3px' },
+  '.story': { display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: { base: '20px', lg: '26px' }, willChange: 'opacity, transform, filter' },
+  '.src': { display: 'flex', alignItems: 'center', gap: '14px' },
+  '.src img': { w: '48px', h: '48px', borderRadius: '12px', objectFit: 'cover', bg: 'white' },
+  '.src b': { ...label, display: 'block', fontSize: '14px', letterSpacing: '0.2em' },
+  '.src span': { ...label, display: 'block', mt: '4px', fontSize: '12px', letterSpacing: '0.18em', color: C.gray },
+  '.story h3': {
+    mt: { base: '16px', lg: '24px' }, fontFamily: 'heading', fontWeight: 400, textTransform: 'uppercase', lineHeight: 0.98,
+    fontSize: { base: '34px', lg: 'clamp(40px, 3.8vw, 62px)' }, textWrap: 'balance',
   },
-  '.src': { display: 'flex', alignItems: 'center', gap: '12px' },
-  '.src img': { w: '40px', h: '40px', borderRadius: '10px', objectFit: 'cover', bg: 'white' },
-  '.src b': { ...label, fontSize: '13px', letterSpacing: '0.18em' },
-  '.club': {
-    ...label, display: 'flex', alignItems: 'center', gap: '8px', alignSelf: 'start', fontSize: '11px', letterSpacing: '0.18em', color: C.gray,
-    border: `1px solid ${C.line}`, borderRadius: '999px', p: { base: '6px', lg: '6px 12px 6px 6px' },
-    img: { w: '22px', h: '22px', objectFit: 'contain' },
-    span: { display: { base: 'none', lg: 'inline' } },
-  },
-  '.card h3': {
-    gridColumn: '1 / -1', fontFamily: 'heading', fontWeight: 400, textTransform: 'uppercase', lineHeight: 1,
-    fontSize: { base: '28px', lg: 'clamp(28px, 2.4vw, 38px)' },
-  },
-  '.card p': { gridColumn: '1 / -1', mt: '-4px', fontSize: { base: '15px', lg: '16px' }, lineHeight: 1.5, color: C.soft },
+  '.story h3 q': { quotes: '"“" "”"', '&::before, &::after': { color: C.gold } },
+  '.story .lead': { mt: { base: '12px', lg: '18px' }, maxW: '46ch', fontSize: { base: '16px', lg: '18px' }, lineHeight: 1.5, color: C.soft },
   '.go': {
-    ...label, gridColumn: '1 / -1', display: 'flex', alignItems: 'center', gap: '10px', fontSize: '12px', letterSpacing: '0.2em', color: C.acc,
-    svg: { transition: `transform 200ms ${out}` },
+    ...label, alignSelf: 'flex-start', display: 'inline-flex', alignItems: 'center', gap: '12px', p: '15px 22px', borderRadius: '999px',
+    bg: C.acc, color: C.dark, textDecoration: 'none', fontSize: '13px', letterSpacing: '0.18em',
+    transition: `transform 160ms ${OUT}`,
+    svg: { transition: `transform 200ms ${OUT}` },
+    '&:active': { transform: 'scale(0.97)' },
+    '&:focus-visible': { outline: '2px solid white', outlineOffset: '3px' },
   },
+  '.pic': {
+    position: 'relative', borderRadius: '20px', overflow: 'hidden', bg: C.card, order: { base: -1, lg: 0 },
+    minH: { lg: '320px' }, aspectRatio: { base: '4 / 3', lg: 'auto' }, willChange: 'opacity, transform',
+    '&::after': { content: '""', position: 'absolute', inset: 0, background: 'linear-gradient(200deg, transparent 50%, rgba(5,11,20,.7))' },
+  },
+  '.pic .ph': { position: 'absolute', inset: 0, w: '100%', h: '100%', objectFit: 'cover' },
+  '.badge': {
+    ...label, position: 'absolute', left: '18px', bottom: '18px', zIndex: 2, display: 'flex', alignItems: 'center', gap: '10px',
+    p: '8px 14px 8px 8px', borderRadius: '999px', bg: 'rgba(5,11,20,.72)', backdropFilter: 'blur(8px)',
+    fontSize: '12px', letterSpacing: '0.16em', color: 'white',
+    img: { w: '26px', h: '26px', objectFit: 'contain' },
+  },
+  // Pestañas con barra de avance
+  '.tabs': { display: 'grid', gridTemplateColumns: `repeat(${playerData.press.length}, minmax(0,1fr))`, mt: { base: '28px', lg: '40px' }, borderTop: `1px solid ${C.line}` },
+  '.tab': {
+    position: 'relative', display: 'block', p: { base: '14px 10px 12px 0', lg: '18px 20px 16px 0' }, border: 0, bg: 'none',
+    color: C.gray, textAlign: 'left', cursor: 'pointer', transition: 'color 200ms ease',
+    '&:focus-visible': { outline: `2px solid ${C.acc}`, outlineOffset: '-2px' },
+    '&[aria-selected=true]': { color: 'white' },
+  },
+  '.tab + .tab': { pl: { base: '10px', lg: '20px' }, borderLeft: `1px solid ${C.line}` },
+  '.tab small': { ...label, display: 'block', fontSize: { base: '10px', lg: '11px' }, letterSpacing: { base: '0.14em', lg: '0.22em' } },
+  '.tab b': { display: 'block', mt: '6px', fontFamily: 'heading', fontWeight: 400, fontSize: { base: '20px', lg: '28px' }, lineHeight: 1, textTransform: 'uppercase' },
+  '.tab .full': { display: { base: 'none', md: 'inline' } },
+  '.tab .short': { display: { base: 'inline', md: 'none' } },
+  '.tab .bar': { position: 'absolute', left: 0, right: 0, top: '-1px', h: '2px', overflow: 'hidden' },
+  '.tab .bar i': { display: 'block', h: '100%', bg: C.gold, transform: 'scaleX(0)', transformOrigin: 'left' },
+  '.tab.done .bar i': { transform: 'scaleX(1)', bg: 'rgba(255,255,255,.18)' },
   '@media (hover: hover) and (pointer: fine)': {
-    '.card:hover': { borderColor: C.acc, bg: '#0E1D33' },
-    '.card:hover .go svg': { transform: 'translateX(4px)' },
+    '.tab:not([aria-selected=true]):hover': { color: '#C9D5E3' },
+    '.go:hover svg': { transform: 'translateX(4px)' },
   },
-  '@media (prefers-reduced-motion: reduce)': { '.card, .go svg': { transition: 'none' } },
+  '@media (prefers-reduced-motion: reduce)': { '.go, .go svg': { transition: 'none' } },
 }
