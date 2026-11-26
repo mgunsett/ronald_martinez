@@ -101,7 +101,7 @@ export const playerData = {
       info:    '',
     },
     {
-      name:    'Seleccion Mayor',
+      name:    'Selección Paraguay',
       country: 'Paraguay',
       years:   '2024 — 2026',
       logo:    escudoParaguay,
@@ -154,7 +154,7 @@ export const playerData = {
       years:   '2015 — 2021',
       logo:    escudoCerro,
       titles:  ['Torneo Apertura 2015', 'Torneo Clausura 2017', 'Torneo Apertura 2020'],
-      info:    'Debut profesional ',
+      info:    'Debut profesional',
     },
   ],
 
