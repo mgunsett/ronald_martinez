@@ -78,8 +78,8 @@ export const playerData = {
     { label: 'Partidos',    value: 35 },
     { label: 'Goles',       value: 20 },
     { label: 'Asistencias', value: 8  },
-    { label: 'Tiros al árco', value: 56  },
-    { label: 'Min / Part.', value: "4,429'" },
+    { label: 'Tiros al arco', value: 56  },
+    { label: 'Minutos', value: "4,429'" },
     { label: 'Valoración', value: 8.9 },
   ],
 

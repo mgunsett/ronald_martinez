@@ -1,254 +1,14 @@
-import { useRef, useEffect } from 'react'
+import { useRef } from 'react'
 import {
-  Box, Grid, GridItem, Text, Flex, VStack, HStack, Image, IconButton,
+  Box, Text, Flex, VStack, HStack, Image, IconButton,
 } from '@chakra-ui/react'
 import { FiChevronLeft, FiChevronRight } from 'react-icons/fi'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import useScrubReveal from '../../hooks/useScrubReveal'
 import { playerData } from '../../data/playerData'
-import useSeasonStats from '../../hooks/useSeasonStats'
-import { seasonTiles, seasonTitle } from '../../lib/seasonTiles'
+import StatsDossier from './StatsDossier'
 
 gsap.registerPlugin(ScrollTrigger)
-
-function BioCard() {
-  const BIO = [
-  { label: 'Edad', key: 'age' },
-  { label: 'Altura', key: 'height' },
-  { label: 'Peso', key: 'weight' },
-  { label: 'Pie', key: 'foot' },
-  { label: 'Nacimiento', key: 'birthDate' },
-  { label: 'Lugar', key: 'birthPlace' },
-]
-  return (
-          <Box>
-            <Text
-                fontFamily="mono"
-                fontSize="11px"
-                letterSpacing="0.28em"
-                textTransform="uppercase"
-                color="whiteAlpha.600"
-                mb={5}
-              >
-                Datos personales
-              </Text>
-            <Box
-              bg="#050B14"
-              border="1px solid"
-              borderColor="whiteAlpha.100"
-              borderRadius={'10px'}
-              p={{ base: 5, md: 6 }}
-              h="90%"
-              position="relative"
-              sx={{
-                '&::before': {
-                  content: '""',
-                  position: 'absolute',
-                  top: 0,
-                  left: 2,
-                  width: '36px',
-                  height: '3px',
-                  bg: 'brand.brown',
-                },
-              }}
-            >
-              <VStack align="stretch" spacing={3}>
-                {BIO.map((row) => (
-                  <Flex
-                    key={row.key}
-                    justify="space-between"
-                    align="center"
-                    borderBottom="1px solid"
-                    borderColor="whiteAlpha.50"
-                    pb={3}
-                    transition="all 0.3s ease"
-                    _hover={{ 
-                      borderColor: 'brand.brown',
-                      transform: 'translateY(-2px)',
-                    }}
-                  >
-                    <Text
-                      fontFamily="mono"
-                      fontSize="11px"
-                      letterSpacing="0.18em"
-                      textTransform="uppercase"
-                      color="whiteAlpha.600"
-                    >
-                      {row.label}
-                    </Text>
-                    <Text fontFamily="mono" fontSize="sm" fontWeight={500}>
-                      {playerData[row.key]}
-                    </Text>
-                  </Flex>
-                ))}
-              </VStack>
-            </Box>
-          </Box>
-
-  )
-}
-
-function SeasonCards() {
-  const cardRefs = useRef([])
-  // Temporada en curso desde API-Football; sin datos, los valores fijos.
-  const season = useSeasonStats()
-  const items = season ? seasonTiles(season) : playerData.seasonStats
-  useEffect(() => {
-    const ctx = gsap.context(() => {
-      cardRefs.current.forEach((el, i) => {
-        if (!el) return
-        gsap.fromTo(el,
-          { y: 28, opacity: 0 },
-          {
-            y: 0, opacity: 1,
-            scrollTrigger: { trigger: el, start: 'top 88%', once: true },
-            duration: 0.7, delay: i * 0.1, ease: 'power3.out',
-          }
-        )
-      })
-    })
-    return () => ctx.revert()
-  }, [season])
-
-  return (
-    <Box mx={2}>
-      <Text
-        fontFamily="mono"
-        fontSize="11px"
-        letterSpacing="0.28em"
-        textTransform="uppercase"
-        color="whiteAlpha.600"
-        mb={5}
-      >
-        {seasonTitle(season, 'Temporada 2025 / 2026')}
-      </Text>
-      <Grid templateColumns="repeat(2, 1fr)" gap={3}>
-        {items.map((s, i) => (
-          <Box
-            key={s.label}
-            ref={(el) => (cardRefs.current[i] = el)}
-            border="1px solid"
-            borderColor="whiteAlpha.100"
-            borderRadius={'10px'}
-            p={5}
-            position="relative"
-            cursor="default"
-            transition="border-color 0.3s, background 0.3s"
-            _hover={{
-              borderColor: 'brand.brown',
-              bg: 'rgba(19, 67, 139, 0.05)',
-            }}
-            _before={{
-              content: '""', position: 'absolute', bottom: '0px', left: '10px',
-              w: '0', h: '2px', bg: 'brand.brown', borderRadius: 'full',
-              transition: 'width 0.35s',
-            }}
-            sx={{ '&:hover::before': { width: 'calc(100% - 20px)' } }}
-          >
-            <Text fontFamily="heading" fontSize="4xl" color="white" lineHeight={1} mb={1}>
-              {s.value}
-            </Text>
-            <Text fontFamily="mono" fontSize="10px" color="brand.gray"
-              textTransform="uppercase" letterSpacing="widest">
-              {s.label}
-            </Text>
-          </Box>
-        ))}
-      </Grid>
-    </Box>
-  )
-}
-
-function StatBars() {
-  const barRefs  = useRef([])
-  const numRefs  = useRef([])
-
-  useEffect(() => {
-    const ctx = gsap.context(() => {
-      playerData.stats.forEach((s, i) => {
-        const bar = barRefs.current[i]
-        const num = numRefs.current[i]
-        if (!bar) return
-        const obj = { val: 0 }
-        gsap.fromTo(
-          bar,
-          { scaleX: 0 },
-          {
-            scaleX: s.value / 100,
-            ease: 'power2.out',
-            scrollTrigger: { trigger: bar, start: 'top 88%', once: true },
-            duration: 1.2,
-            delay: i * 0.08,
-          }
-        )
-        gsap.to(obj, {
-          val: s.value,
-          ease: 'power2.out',
-          duration: 1.2,
-          delay: i * 0.08,
-          scrollTrigger: { trigger: bar, start: 'top 88%', once: true },
-          onUpdate() { if (num) num.textContent = Math.round(obj.val) },
-        })
-      })
-    })
-    return () => ctx.revert()
-  }, [])
-
-  return (
-    <Box>
-      <Text
-        fontFamily="mono"
-        fontSize="11px"
-        letterSpacing="0.28em"
-        textTransform="uppercase"
-        color="whiteAlpha.600"
-        mb={5}
-      >
-        Hablidades
-      </Text>
-      <Box
-        border="1px solid"
-        borderColor="whiteAlpha.100"
-        borderRadius={'10px'}
-        p={6}
-        position="relative"
-        _before={{
-          content: '""', position: 'absolute', top: 0, left: 2,
-          w: '32px', h: '2px', bg: 'brand.brown',
-        }}
-      >
-        <VStack spacing={4} align="stretch">
-          {playerData.stats.map((s, i) => (
-            <Box key={s.label}>
-              <Flex justify="space-between" mb={1.5}>
-                <Text fontFamily="mono" fontSize="11px" color="white"
-                  textTransform="uppercase" letterSpacing="wider">
-                  {s.label}
-                </Text>
-                <Text ref={(el) => (numRefs.current[i] = el)}
-                  fontFamily="heading" fontSize="sm" color="brand.brownLight">
-                  0
-                </Text>
-              </Flex>
-              <Box h="3px" bg="rgba(255,255,255,0.08)" position="relative">
-                <Box
-                  ref={(el) => (barRefs.current[i] = el)}
-                  position="absolute"
-                  top={0} left={0}
-                  w="100%" h="100%"
-                  bg="linear-gradient(to right, #0b478b, #1460b1)"
-                  transformOrigin="left"
-                  transform="scaleX(0)"
-                />
-              </Box>
-            </Box>
-          ))}
-        </VStack>
-      </Box>
-    </Box>
-  )
-}
 
 function ClubNode({ club, isFirst, isLast, isActive }) {
   const NODE_W = { base: '180px', md: '220px' }
@@ -496,24 +256,10 @@ function ClubTimeline() {
 }
 
 export default function StatsSection() {
-  // Con totales de la API el título muestra sólo la temporada en curso.
-  const season = useSeasonStats()
-  const sectionRef = useRef(null)
-  const titleRef   = useRef(null)
-
-  useScrubReveal(sectionRef, {
-    elements: [
-      { ref: titleRef, fromVars: { y: 50, opacity: 0 }, vars: { y: 0, opacity: 1 } },
-    ],
-    start: 'top 80%',
-    end:   'top 40%',
-  })
-
   return (
     <Box
       as="section"
       id="estadisticas"
-      ref={sectionRef}
       bg="#050B14"
       pt={{ base: 16, lg: 20 }}
       pb={{ base: 16, lg: 20 }}
@@ -523,29 +269,7 @@ export default function StatsSection() {
       boxShadow="0 -24px 80px rgba(0,0,0,0.65)"
     >
       <Box maxW="1400px" mx="auto">
-        {/* Header */}
-        <Flex align="flex-end" justify="space-between" mb={10}>
-          <Box ref={titleRef}>
-            <Text fontFamily="mono" fontSize="10px" color="white"
-                  textTransform="uppercase" letterSpacing="widest" >
-              {seasonTitle(season, 'Temporada 2025 / 2026')}
-            </Text>
-            <Text as="h2" fontFamily="heading" fontSize={{ base: '5xl', lg: '6xl' }}
-                  color="brand.brown" lineHeight={1}>
-              Estadísticas
-            </Text>
-          </Box>
-        </Flex>
-
-        {/* 3-column grid */}
-        <Grid
-          templateColumns={{ base: '1fr', md: '1fr 1fr', lg: '1fr 1.1fr 1fr' }}
-          gap={5}
-        >
-          <GridItem><BioCard /></GridItem>
-          <GridItem><SeasonCards /></GridItem>
-          <GridItem><StatBars /></GridItem>
-        </Grid>
+        <StatsDossier />
 
         {/* Club timeline */}
         <ClubTimeline />
