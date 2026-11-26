@@ -193,6 +193,8 @@ export const playerData = {
       logo:  logo1,
       title: 'Se ha inmortalizado en los libros de récords al convertirse en el máximo goleador del Torneo Clausura 2025',
       date:  'Diciembre 2025',
+      excerpt: 'Platense volvió a tener al goleador del campeonato de Primera División.',
+      club:  'Platense',
       url:   'https://www.elgrafico.com.ar/articulo/primera-division/95962/cuantas-veces-platense-tuvo-al-goleador-del-campeonato-de-primera-division',
     },
     {
@@ -200,6 +202,8 @@ export const playerData = {
       logo:  logo2,
       title: 'El delantero paraguayo puso el 1-0 y fue clave en la noche feliz de la “T” ante Newell’s.',
       date:  'Enero 2026',
+      excerpt: 'Figura de Talleres: el gol, la lesión y el festejo a lo Cristiano.',
+      club:  'Talleres',
       url:   'https://www.lavoz.com.ar/deportes/futbol/ronaldo-martinez-figura-de-talleres-como-esta-de-la-lesion-y-por-que-festejo-a-lo-cristiano/',
     },
     {
@@ -207,6 +211,8 @@ export const playerData = {
       logo:  logo3,
       title: 'Convocado por la selección de Paraguay para participar en la próxima ventana internacional de la fecha FIFA',
       date:  'Marzo 2026',
+      excerpt: 'Vuelve a la Albirroja para la ventana internacional.',
+      club:  'Selección Paraguay',
       url:   'https://www.cba24n.com.ar/deportes/futbol/talleres/ronaldo-martinez--convocado-a-la-seleccion-de-paraguay-para-la-proxima-ventana-internacional_a69ac304f2128774661b1005d',
     },
   ],

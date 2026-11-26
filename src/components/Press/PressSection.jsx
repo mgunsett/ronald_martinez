@@ -1,202 +1,147 @@
-import { useRef, useEffect } from 'react'
-import { Box, Grid, Text, Flex, VStack, HStack, Link, Image } from '@chakra-ui/react'
-import { FaStar } from 'react-icons/fa'
+import { useEffect, useRef } from 'react'
+import { Box, Text } from '@chakra-ui/react'
+import { FiArrowRight } from 'react-icons/fi'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import useScrubReveal from '../../hooks/useScrubReveal'
 import { playerData } from '../../data/playerData'
 
 gsap.registerPlugin(ScrollTrigger)
 
-function getInitials(name = '') {
-  return name
-    .trim()
-    .split(/\s+/)
-    .slice(0, 2)
-    .map((w) => w[0])
-    .join('')
-    .toUpperCase()
-}
+// Prensa "Cronología": las notas en orden sobre una línea que se dibuja al
+// bajar. Cada nota con mes, medio, el club en el que estaba, titular y bajada.
 
-function Stars({ count = 5 }) {
-  return (
-    <HStack spacing={1}>
-      {Array.from({ length: 5 }).map((_, i) => (
-        <Box key={i} as={FaStar} boxSize="14px"
-          color={i < count ? 'brand.amber' : 'whiteAlpha.200'} />
-      ))}
-    </HStack>
-  )
-}
+const C = { card: '#0B1626', line: 'rgba(255,255,255,0.08)', acc: '#4D93D6', gold: '#D4A84B', soft: '#C3CFDD', gray: '#7A8CA3' }
+const SHORT = { enero: 'Ene', febrero: 'Feb', marzo: 'Mar', abril: 'Abr', mayo: 'May', junio: 'Jun', julio: 'Jul', agosto: 'Ago', septiembre: 'Sep', octubre: 'Oct', noviembre: 'Nov', diciembre: 'Dic' }
+const MONTH = Object.keys(SHORT)
 
-function PressCard({ article, index }) {
-  const cardRef = useRef(null)
-
-  useEffect(() => {
-    const ctx = gsap.context(() => {
-      gsap.fromTo(cardRef.current,
-        { y: 40, opacity: 0 },
-        {
-          y: 0, opacity: 1, duration: 0.8,
-          delay: index * 0.12,
-          ease: 'power3.out',
-          scrollTrigger: { trigger: cardRef.current, start: 'top 88%', once: true },
-        }
-      )
-    })
-    return () => ctx.revert()
-  }, [index])
-
-  return (
-    <Box ref={cardRef} role="group" style={{ opacity: 0 }}>
-      {/* Burbuja */}
-      <Box
-        as={Link}
-        href={article.url}
-        isExternal
-        display="block"
-        textDecoration="none"
-        bg="#070F1A"
-        border="1px solid"
-        borderColor="whiteAlpha.100"
-        borderRadius="lg"
-        p={6}
-        position="relative"
-        transition="border-color 0.35s, transform 0.35s, background 0.35s"
-        _after={{
-          content: '""', position: 'absolute', bottom: '-9px', left: 8,
-          w: 0, h: 0,
-          borderLeft: '10px solid transparent',
-          borderRight: '10px solid transparent',
-          borderTop: '10px solid #070F1A',
-          filter: 'drop-shadow(0 1px 0 rgba(255,255,255,0.06))',
-        }}
-        _groupHover={{
-          borderColor: 'rgba(30,95,168,0.5)',
-          transform: 'translateY(-4px)',
-          bg: 'brand.dark',
-          _before: { width: '40px' },
-          textDecoration: 'none',
-        }}
-      >
-        <VStack align="start" spacing={4}>
-          <Flex justify="space-between" align="center" w="100%">
-            <Stars count={article.rating ?? 5} />
-            <Box
-              px={2.5} py={1}
-              bg="rgba(30,95,168,0.10)"
-              border="1px solid rgba(30,95,168,0.28)"
-              borderRadius="sm"
-            >
-              <Text fontFamily="mono" fontSize="9px" color="brand.brownLight"
-                textTransform="uppercase" letterSpacing="0.18em">
-                {article.media}
-              </Text>
-            </Box>
-          </Flex>
-
-          <Text fontFamily="body" fontSize={{base:'xs',md:"md"}} color="boneWarm" lineHeight={1.55}>
-            “{article.title}”
-          </Text>
-
-          <Text fontFamily="mono" fontSize="11px" color="brand.brownLight"
-            textTransform="uppercase" letterSpacing="0.18em"
-            transition="color 0.25s"
-            _groupHover={{ color: 'white' }}>
-            Leer más →
-          </Text>
-        </VStack>
-      </Box>
-
-      {/* Autor */}
-      <HStack spacing={3} mt={5} pl={2}>
-        <Flex
-          boxSize="42px"
-          flexShrink={0}
-          borderRadius="full"
-          overflow="hidden"
-          align="center"
-          justify="center"
-          bg="linear-gradient(135deg, #0B2A4A, #1E5FA8)"
-          border="1px solid"
-          borderColor="whiteAlpha.200"
-          transition="border-color 0.35s, box-shadow 0.35s"
-          _groupHover={{
-            borderColor: 'brand.brown',
-            boxShadow: '0 0 0 3px rgba(30,95,168,0.16)',
-          }}
-        >
-          {article.logo ? (
-            <Image
-              src={article.logo}
-              alt={`Logo de ${article.media}`}
-              boxSize="100%"
-              objectFit="cover"
-              objectPosition="center"
-              loading="lazy"
-            />
-          ) : (
-            <Text fontFamily="heading" fontSize="lg" color="white" lineHeight={1}>
-              {getInitials(article.media)}
-            </Text>
-          )}
-        </Flex>
-        <Box>
-          <Text fontFamily="heading" fontSize="lg" color="white" lineHeight={1}>
-            {article.media}
-          </Text>
-          <Text fontFamily="mono" fontSize="10px" color="brand.gray"
-            textTransform="uppercase" letterSpacing="0.18em" mt={0.5}>
-            {article.date}
-          </Text>
-        </Box>
-      </HStack>
-    </Box>
-  )
+// "Diciembre 2025" -> { m: 'Dic', y: '2025', key: 202511 } para ordenar y mostrar
+function parseDate(d = '') {
+  const [mes = '', y = ''] = d.trim().split(/\s+/)
+  const i = MONTH.indexOf(mes.toLowerCase())
+  return { m: SHORT[mes.toLowerCase()] || mes, y, key: Number(y) * 100 + Math.max(i, 0) }
 }
 
 export default function PressSection() {
-  const sectionRef = useRef(null)
-  const titleRef   = useRef(null)
+  const ref = useRef(null)
+  const notes = playerData.press
+    .map((n) => ({ ...n, ...parseDate(n.date), crest: playerData.clubs.find((c) => c.name === n.club)?.logo }))
+    .sort((a, b) => a.key - b.key)
+  const outlets = new Set(notes.map((n) => n.media)).size
+  const years = [...new Set(notes.map((n) => n.y.slice(2)))]
+  const period = years.length > 1 ? `${years[0]}–${years[years.length - 1]}` : years[0]
 
-  useScrubReveal(sectionRef, {
-    elements: [{ ref: titleRef, fromVars: { y: 50, opacity: 0 }, vars: { y: 0, opacity: 1 } }],
-    start: 'top 80%',
-    end:   'top 40%',
-  })
+  // Una sola coreografía: la línea se dibuja y las notas entran una tras otra
+  useEffect(() => {
+    const el = ref.current
+    if (!el || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    const ctx = gsap.context(() => {
+      const tl = gsap.timeline({ scrollTrigger: { trigger: el, start: 'top 70%', once: true } })
+      tl.from('.pr-axis', { scaleY: 0, transformOrigin: 'top', duration: 0.9, ease: 'power3.inOut' })
+        .from('.pr-rv', { y: 12, opacity: 0, duration: 0.45, stagger: 0.11, ease: 'power3.out' }, 0.12)
+    }, el)
+    return () => ctx.revert()
+  }, [])
 
   return (
-    <Box
-      as="section"
-      id="prensa"
-      ref={sectionRef}
-      bg="#050B14"
-      pb={{ base: 16, lg: 20 }}
-      pt={0}
-      px={{ base: 5, lg: 10 }}
-    >
-      <Box maxW="1400px" mx="auto">
-        {/* Header */}
-        <Flex align="flex-end" justify="space-between" mb={4} ref={titleRef}>
-          <Box>
-            <Text fontFamily="mono" fontSize={{base:'12px',md:"10px"}} color="white"
-                  textTransform="uppercase" letterSpacing="widest">
-              Testimonios
+    <Box as="section" id="prensa" ref={ref} bg="brand.dark" px={{ base: 5, lg: 10 }} py={{ base: 16, lg: 24 }}>
+      <Box maxW="1400px" mx="auto" sx={css}>
+        <div className="lay">
+          <div className="intro">
+            <Text fontFamily="mono" fontSize="11px" fontWeight={700} letterSpacing="0.24em" textTransform="uppercase" color={C.gold}>
+              En los medios
             </Text>
-            <Text as="h2" fontFamily="heading" fontSize={{ base: '5xl', lg: '6xl' }}
-                  color="brand.brown" lineHeight={1}>
+            <Text as="h2" fontFamily="heading" fontSize={{ base: '6xl', lg: '8xl' }} lineHeight={0.9} color={C.acc}>
               Prensa
             </Text>
-          </Box>
-        </Flex>
+            <p>
+              Lo que se publicó de {playerData.displayName}, en orden: del gol que lo hizo goleador del torneo a la vuelta a la Selección.
+            </p>
+            <div className="meta">
+              <div><b>{notes.length}</b><small>Notas</small></div>
+              <div><b>{outlets}</b><small>Medios</small></div>
+              {period && <div><b>{period}</b><small>Período</small></div>}
+            </div>
+          </div>
 
-        {/* Cards */}
-        <Grid templateColumns={{ base: '1fr', md: 'repeat(3, 1fr)' }} gap={6} mb={4}>
-          {playerData.press.map((article, i) => (
-            <PressCard key={article.title} article={article} index={i} />
-          ))}
-        </Grid>
+          <ol className="tl">
+            <div className="ax" aria-hidden="true"><i className="pr-axis" /></div>
+            {notes.map((n) => (
+              <li key={n.url} className="it pr-rv">
+                <div className="when"><b>{n.m}</b><span>{n.y}</span></div>
+                <span className="dot" aria-hidden="true" />
+                <a className="card" href={n.url} target="_blank" rel="noopener noreferrer">
+                  <span className="src"><img src={n.logo} alt="" /><b>{n.media}</b></span>
+                  {n.club && (
+                    <span className="club">{n.crest && <img src={n.crest} alt="" />}<span>{n.club}</span></span>
+                  )}
+                  <h3>{n.title}</h3>
+                  {n.excerpt && <p>{n.excerpt}</p>}
+                  <span className="go">Leer en {n.media} <FiArrowRight aria-hidden="true" /></span>
+                </a>
+              </li>
+            ))}
+          </ol>
+        </div>
       </Box>
     </Box>
   )
+}
+
+const out = 'cubic-bezier(0.23,1,0.32,1)'
+const label = { fontFamily: 'mono', fontWeight: 700, textTransform: 'uppercase' }
+
+const css = {
+  '.lay': { display: 'grid', gridTemplateColumns: { base: 'minmax(0,1fr)', lg: 'minmax(0,0.8fr) minmax(0,1.6fr)' }, gap: { base: '30px', lg: '64px' }, alignItems: 'start' },
+  '.intro': { position: { lg: 'sticky' }, top: '100px' },
+  '.intro p': { mt: '20px', maxW: '34ch', fontSize: { base: '16px', lg: '18px' }, lineHeight: 1.5, color: C.soft },
+  '.meta': { display: 'flex', gap: '28px', mt: '28px' },
+  '.meta b': { display: 'block', fontFamily: 'heading', fontWeight: 400, fontSize: '52px', lineHeight: 1, color: C.acc },
+  '.meta small': { ...label, fontSize: '11px', letterSpacing: '0.22em', color: C.gray },
+  // Línea de tiempo
+  '.tl': { position: 'relative', listStyle: 'none', pl: { base: '26px', lg: '150px' } },
+  '.ax': { position: 'absolute', left: { base: '5px', lg: '118px' }, top: '8px', bottom: '8px', w: '1px', bg: C.line },
+  '.ax i': { position: 'absolute', inset: 0, background: `linear-gradient(${C.gold}, ${C.acc})` },
+  '.it': { position: 'relative', mb: '22px', '&:last-of-type': { mb: 0 } },
+  '.when': {
+    position: { base: 'static', lg: 'absolute' }, left: '-150px', top: '22px', w: { lg: '96px' }, textAlign: { lg: 'right' },
+    display: { base: 'flex', lg: 'block' }, alignItems: 'baseline', gap: '10px', mb: { base: '10px', lg: 0 },
+  },
+  '.when b': { display: 'block', fontFamily: 'heading', fontWeight: 400, fontSize: { base: '30px', lg: '44px' }, lineHeight: 0.9, textTransform: 'uppercase' },
+  '.when span': { ...label, display: 'block', mt: { lg: '4px' }, fontSize: '13px', letterSpacing: '0.2em', color: C.gray },
+  '.dot': {
+    position: 'absolute', left: { base: '-26px', lg: '-38px' }, top: { base: '8px', lg: '30px' }, w: '13px', h: '13px',
+    borderRadius: '50%', bg: 'brand.dark', border: `2px solid ${C.gold}`,
+  },
+  // Nota
+  '.card': {
+    display: 'grid', gridTemplateColumns: 'minmax(0,1fr) auto', gap: { base: '14px', lg: '18px 24px' },
+    p: { base: '18px', lg: '24px 26px' }, border: `1px solid ${C.line}`, borderRadius: '18px', bg: C.card,
+    color: 'inherit', textDecoration: 'none',
+    transition: `transform 160ms ${out}, border-color 200ms ease, background 200ms ease`,
+    '&:active': { transform: 'scale(0.985)' },
+    '&:focus-visible': { outline: `2px solid ${C.acc}`, outlineOffset: '3px' },
+  },
+  '.src': { display: 'flex', alignItems: 'center', gap: '12px' },
+  '.src img': { w: '40px', h: '40px', borderRadius: '10px', objectFit: 'cover', bg: 'white' },
+  '.src b': { ...label, fontSize: '13px', letterSpacing: '0.18em' },
+  '.club': {
+    ...label, display: 'flex', alignItems: 'center', gap: '8px', alignSelf: 'start', fontSize: '11px', letterSpacing: '0.18em', color: C.gray,
+    border: `1px solid ${C.line}`, borderRadius: '999px', p: { base: '6px', lg: '6px 12px 6px 6px' },
+    img: { w: '22px', h: '22px', objectFit: 'contain' },
+    span: { display: { base: 'none', lg: 'inline' } },
+  },
+  '.card h3': {
+    gridColumn: '1 / -1', fontFamily: 'heading', fontWeight: 400, textTransform: 'uppercase', lineHeight: 1,
+    fontSize: { base: '28px', lg: 'clamp(28px, 2.4vw, 38px)' },
+  },
+  '.card p': { gridColumn: '1 / -1', mt: '-4px', fontSize: { base: '15px', lg: '16px' }, lineHeight: 1.5, color: C.soft },
+  '.go': {
+    ...label, gridColumn: '1 / -1', display: 'flex', alignItems: 'center', gap: '10px', fontSize: '12px', letterSpacing: '0.2em', color: C.acc,
+    svg: { transition: `transform 200ms ${out}` },
+  },
+  '@media (hover: hover) and (pointer: fine)': {
+    '.card:hover': { borderColor: C.acc, bg: '#0E1D33' },
+    '.card:hover .go svg': { transform: 'translateX(4px)' },
+  },
+  '@media (prefers-reduced-motion: reduce)': { '.card, .go svg': { transition: 'none' } },
 }
