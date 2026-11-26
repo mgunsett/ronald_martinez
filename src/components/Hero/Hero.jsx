@@ -205,11 +205,11 @@ export default function Hero() {
 
         <Box as="h1" mt={{ base: '14px', lg: '22px' }} fontFamily="heading" fontWeight="400" lineHeight={0.86}>
           <Text as="span" className="hs-rv" display="block" color="brand.gray" letterSpacing="0.08em"
-            fontSize={{ base: '9vw', lg: 'clamp(36px, 4.2vw, 72px)' }}>
+            fontFamily="body" fontWeight={500} fontSize={{ base: '6.5vw', lg: 'clamp(30px, 3.6vw, 60px)' }}>
             {playerData.name}
           </Text>
           <Text as="span" className="hs-rv" display="block" color={C.accent} ml="-0.03em" whiteSpace="nowrap"
-            fontSize={{ base: '22vw', lg: 'clamp(96px, 11vw, 200px)' }}>
+            fontSize={{ base: '15.5vw', lg: 'clamp(72px, 8.8vw, 160px)' }}>
             {playerData.fullName}
           </Text>
         </Box>

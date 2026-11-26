@@ -225,7 +225,7 @@ export default function Navbar() {
                 aria-current={on ? 'true' : undefined}
                 display="flex" alignItems="baseline" gap={{ base: '14px', lg: '22px' }} overflow="hidden"
                 color={C.ink} fontFamily="heading" textTransform="uppercase" lineHeight={1}
-                fontSize={{ base: '14vw', lg: 'clamp(52px, 7vw, 116px)' }} _hover={{ textDecoration: 'none' }}
+                fontSize={{ base: '10.5vw', lg: 'clamp(44px, 5vw, 88px)' }} _hover={{ textDecoration: 'none' }}
                 _focusVisible={{ outline: '2px solid', outlineColor: C.gold, outlineOffset: '2px' }}
                 style={{ '--d': `${0.35 + i * 0.06}s` }}>
                 <Text as="small" className="ix-num" fontFamily="mono" fontSize="13px" letterSpacing="0.16em" color={C.gold}

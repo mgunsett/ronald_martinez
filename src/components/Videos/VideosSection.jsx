@@ -71,7 +71,7 @@ export default function VideosSection() {
             <Text fontFamily="mono" fontSize="11px" fontWeight={700} letterSpacing="0.24em" textTransform="uppercase" color={C.gold}>
               Highlights
             </Text>
-            <Text as="h2" fontFamily="heading" fontSize={{ base: '6xl', lg: '8xl' }} lineHeight={0.9} color={C.acc}>
+            <Text as="h2" fontFamily="heading" fontSize={{ base: '44px', md: 'clamp(44px, 5.4vw, 84px)' }} lineHeight={0.9} color={C.acc}>
               Videos
             </Text>
           </Box>

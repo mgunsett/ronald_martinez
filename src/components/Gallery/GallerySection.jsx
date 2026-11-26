@@ -292,7 +292,7 @@ export default function GallerySection() {
                   textTransform="uppercase" letterSpacing="widest">
               Fotos
             </Text>
-            <Text as="h2" fontFamily="heading" fontSize={{ base: '5xl', lg: '6xl' }}
+            <Text as="h2" fontFamily="heading" fontSize={{ base: '44px', md: 'clamp(44px, 5.4vw, 84px)' }}
                   color="brand.brown" lineHeight={1}>
               Galería
             </Text>

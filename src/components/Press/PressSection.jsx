@@ -125,7 +125,7 @@ export default function PressSection() {
             <Text fontFamily="mono" fontSize="11px" fontWeight={700} letterSpacing="0.24em" textTransform="uppercase" color={C.gold}>
               En los medios
             </Text>
-            <Text as="h2" fontFamily="heading" fontSize={{ base: '6xl', lg: '8xl' }} lineHeight={0.9} color={C.acc}>
+            <Text as="h2" fontFamily="heading" fontSize={{ base: '44px', md: 'clamp(44px, 5.4vw, 84px)' }} lineHeight={0.9} color={C.acc}>
               Prensa
             </Text>
           </div>
@@ -201,7 +201,7 @@ const css = {
   '.src span': { ...label, display: 'block', mt: '4px', fontSize: '12px', letterSpacing: '0.18em', color: C.gray },
   '.story h3': {
     mt: { base: '16px', lg: '24px' }, fontFamily: 'heading', fontWeight: 400, textTransform: 'uppercase', lineHeight: 0.98,
-    fontSize: { base: '34px', lg: 'clamp(40px, 3.8vw, 62px)' }, textWrap: 'balance',
+    fontSize: { base: '26px', lg: 'clamp(34px, 3.2vw, 52px)' }, textWrap: 'balance',
   },
   '.story h3 q': { quotes: '"“" "”"', '&::before, &::after': { color: C.gold } },
   '.story .lead': { mt: { base: '12px', lg: '18px' }, maxW: '46ch', fontSize: { base: '16px', lg: '18px' }, lineHeight: 1.5, color: C.soft },
@@ -235,7 +235,7 @@ const css = {
   },
   '.tab + .tab': { pl: { base: '10px', lg: '20px' }, borderLeft: `1px solid ${C.line}` },
   '.tab small': { ...label, display: 'block', fontSize: { base: '10px', lg: '11px' }, letterSpacing: { base: '0.14em', lg: '0.22em' } },
-  '.tab b': { display: 'block', mt: '6px', fontFamily: 'heading', fontWeight: 400, fontSize: { base: '20px', lg: '28px' }, lineHeight: 1, textTransform: 'uppercase' },
+  '.tab b': { display: 'block', mt: '6px', fontFamily: 'heading', fontWeight: 400, fontSize: { base: '15px', lg: '22px' }, lineHeight: 1.1, textTransform: 'uppercase' },
   '.tab .full': { display: { base: 'none', md: 'inline' } },
   '.tab .short': { display: { base: 'inline', md: 'none' } },
   '.tab .bar': { position: 'absolute', left: 0, right: 0, top: '-1px', h: '2px', overflow: 'hidden' },

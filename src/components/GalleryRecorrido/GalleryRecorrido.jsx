@@ -168,7 +168,7 @@ function MoreCard({ t, maxVisible, onOpen, mobile }) {
           />
         ))}
       </Box>
-      <Text fontFamily="heading" fontSize={mobile ? '38px' : '44px'} lineHeight={0.9} position="relative">
+      <Text fontFamily="heading" fontSize={mobile ? '30px' : '32px'} lineHeight={0.9} position="relative">
         {extra > 0 ? (
           <>
             <Box as="span" color="brand.amber">
@@ -405,7 +405,7 @@ function DesktopRecorrido({ tournaments, maxVisible, onOpen, reduced }) {
             <Text
               as="h3"
               fontFamily="heading"
-              fontSize="clamp(56px, 6vw, 96px)"
+              fontSize="clamp(34px, 3.4vw, 52px)"
               lineHeight={0.86}
               textTransform="uppercase"
               whiteSpace="nowrap"
@@ -443,7 +443,7 @@ function MobileRow({ t, first, maxVisible, onOpen, rowRef }) {
     <Box ref={rowRef} data-row={t.id} pt="22px" pb={2}>
       <Flex align="flex-end" justify="space-between" gap={3} px={5} mb={3}>
         <Box>
-          <Text as="h3" fontFamily="heading" fontSize="44px" lineHeight={0.9} textTransform="uppercase">
+          <Text as="h3" fontFamily="heading" fontSize="32px" lineHeight={0.9} textTransform="uppercase">
             {t.name}
             <Box as="span" color="brand.brown">
               _

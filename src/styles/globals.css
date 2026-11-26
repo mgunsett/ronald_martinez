@@ -1,3 +1,14 @@
+/* Nippo: la tipografía de los diseños (titulares en Bold, texto en Regular/Medium) */
+@font-face { font-family: 'Nippo'; font-weight: 300; font-display: swap; src: url('/fonts/Nippo-Light.woff2') format('woff2'); }
+@font-face { font-family: 'Nippo'; font-weight: 400; font-display: swap; src: url('/fonts/Nippo-Regular.woff2') format('woff2'); }
+@font-face { font-family: 'Nippo'; font-weight: 500; font-display: swap; src: url('/fonts/Nippo-Medium.woff2') format('woff2'); }
+@font-face { font-family: 'Nippo'; font-weight: 600 900; font-display: swap; src: url('/fonts/Nippo-Bold.woff2') format('woff2'); }
+/* Los titulares van en mayúsculas, como en los diseños */
+h1, h2, h3 { text-transform: uppercase; }
+
+/* Titulares: siempre Bold, aunque el componente pida peso 400 */
+@font-face { font-family: 'Nippo Display'; font-weight: 100 900; font-display: swap; src: url('/fonts/Nippo-Bold.woff2') format('woff2'); }
+
 @keyframes marquee {
   from { transform: translateX(0); }
   to   { transform: translateX(-50%); }

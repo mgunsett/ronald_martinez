@@ -91,7 +91,7 @@ export default function StatsDossier() {
           textTransform="uppercase" color={C.B} mb={1}>
           Informe de la temporada
         </Text>
-        <Text as="h2" fontFamily="heading" fontSize={{ base: '6xl', lg: '8xl' }} lineHeight={0.9} color={C.A}>
+        <Text as="h2" fontFamily="heading" fontSize={{ base: '44px', md: 'clamp(44px, 5.4vw, 84px)' }} lineHeight={0.9} color={C.A}>
           Estadísticas
         </Text>
       </Box>

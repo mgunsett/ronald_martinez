@@ -14,9 +14,9 @@ const theme = extendTheme({
     },
   },
   fonts: {
-    heading:   `'Bebas Neue', sans-serif`,
-    body:      `'Barlow', sans-serif`,
-    mono:      `'Barlow Condensed', sans-serif`,
+    heading:   `'Nippo Display', 'Nippo', system-ui, sans-serif`,
+    body:      `'Nippo', system-ui, sans-serif`,
+    mono:      `'Nippo', system-ui, sans-serif`,
   },
   styles: {
     global: {

@@ -154,7 +154,7 @@ export function ClubsGrid() {
         <Text fontFamily="mono" fontSize="11px" fontWeight={700} color="brand.amber" textTransform="uppercase" letterSpacing="0.24em">
           Trayectoria
         </Text>
-        <Text as="h2" id="clubes-title" fontFamily="heading" fontSize={{ base: '6xl', lg: '8xl' }} color={ACC} lineHeight={0.9}>
+        <Text as="h2" id="clubes-title" fontFamily="heading" fontSize={{ base: '44px', md: 'clamp(44px, 5.4vw, 84px)' }} color={ACC} lineHeight={0.9}>
           Clubes
         </Text>
       </Box>
