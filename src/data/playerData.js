@@ -30,6 +30,10 @@ import image9 from '@assets/gallery/image9.webp'
 import image10 from '@assets/gallery/image10.webp'
 //Video
 import photoGraph from '@assets/perfil_video.webp'
+// Reels de Instagram (de ejemplo hasta tener los links): portadas de la galería
+import reel1 from '@assets/gallery/velez/velez7.webp'
+import reel2 from '@assets/gallery/velez/velez8.webp'
+import reel3 from '@assets/gallery/seleccion/paraguay7.webp'
 //Prensa
 import logo1 from '@assets/logos/logo1.webp'
 import logo2 from '@assets/logos/logo2.webp'
@@ -170,7 +174,17 @@ export const playerData = {
       thumbnail: photoGraph,
       cover: photoGraph,
       category: 'Highlights',
+      club: 'Platense',
+      crest: escudoPlatense,
     },
+  ],
+
+  // Reels de Instagram debajo del video principal. Con "url" vacío abren el perfil.
+  // Son de ejemplo: reemplazar título, club, portada y url por los reels reales.
+  reels: [
+    { title: 'Gol ante Racing',  club: 'Vélez Sarsfield',    cover: reel1, url: '' },
+    { title: 'Día de partido',   club: 'Vélez Sarsfield',    cover: reel2, url: '' },
+    { title: 'Con la Albirroja', club: 'Selección Paraguay', cover: reel3, url: '' },
   ],
 
   press: [

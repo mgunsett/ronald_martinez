@@ -1,479 +1,247 @@
-import { useRef, useEffect, useState } from 'react'
-import { Box, Flex, Text, AspectRatio } from '@chakra-ui/react'
-import { keyframes } from '@emotion/react'
-import { AnimatePresence, motion } from 'framer-motion'
-import { FiPlay, FiX, FiArrowUpRight } from 'react-icons/fi'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { Box, Text } from '@chakra-ui/react'
+import { FiPlay } from 'react-icons/fi'
+import { FaInstagram } from 'react-icons/fa'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-
 import { playerData } from '../../data/playerData'
-import useScrubReveal from '../../hooks/useScrubReveal'
+import useSeasonStats from '../../hooks/useSeasonStats'
+import { seasonTiles } from '../../lib/seasonTiles'
 
 gsap.registerPlugin(ScrollTrigger)
 
-const MotionBox = motion(Box)
+// Videos "Destacado + reels": el highlight de YouTube grande arriba, que se
+// reproduce en el lugar, y abajo los reels 9:16 de Instagram. En mobile los
+// reels son un carrusel con snap y puntos.
 
-// Pulso del anillo del botón play
-const pulse = keyframes`
-  0%   { transform: scale(1);   opacity: 0.5; }
-  70%  { transform: scale(1.7); opacity: 0; }
-  100% { transform: scale(1.7); opacity: 0; }
-`
-
-// Barrido de brillo diagonal al hover
-const sheen = keyframes`
-  0%   { transform: translateX(-130%) skewX(-18deg); opacity: 0; }
-  35%  { opacity: 0.5; }
-  100% { transform: translateX(230%) skewX(-18deg); opacity: 0; }
-`
-
-// Anillo cónico que gira alrededor del play
-const spin = keyframes`
-  from { transform: rotate(0deg); }
-  to   { transform: rotate(360deg); }
-`
-
-// Parpadeo del punto REC
-const blink = keyframes`
-  0%, 100% { opacity: 1; }
-  50%      { opacity: 0.2; }
-`
-
-// Marco biselado (esquina superior derecha cortada)
-const NOTCH = 'polygon(0 0, calc(100% - 46px) 0, 100% 46px, 100% 100%, 0 100%)'
+const C = { card: '#0B1626', line: 'rgba(255,255,255,0.08)', acc: '#4D93D6', gold: '#D4A84B', soft: '#C3CFDD', gray: '#7A8CA3' }
+const norm = (s) => String(s).normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase()
+const igProfile = playerData.socialMedia.find((s) => s.label === 'Instagram')
+const IG_URL = igProfile?.url || 'https://www.instagram.com/'
+const IG_HANDLE = `@${IG_URL.replace(/\/$/, '').split('/').pop()}`
 
 export default function VideosSection() {
   const video = playerData.videos[0]
+  const reels = playerData.reels || []
+  const season = useSeasonStats()
+  const [playing, setPlaying] = useState(false)
+  const [dot, setDot] = useState(0)
+  const ref = useRef(null)
+  const railRef = useRef(null)
 
-  const ghostRef = useRef(null)
-  const wrapRef = useRef(null)
-  const revealRef = useRef(null)
-  const [hovered, setHovered] = useState(false)
-  const [open, setOpen] = useState(false)
+  // Goles y valoración de la temporada (API-Football o valores fijos)
+  const facts = useMemo(() => {
+    const items = season ? seasonTiles(season) : playerData.seasonStats
+    const by = (re) => items.find((s) => re.test(norm(s.label)))?.value
+    const year = season?.temporada || '2026'
+    return [[by(/^goles$/), `Goles en ${year}`], [by(/valoracion/), 'Valoración']].filter(([v]) => v != null)
+  }, [season])
 
-  const sectionRef = useRef(null)
-  const headerRef   = useRef(null)
-  
-  useScrubReveal(sectionRef, {
-    elements: [{ ref: headerRef, fromVars: { y: 50, opacity: 0 }, vars: { y: 0, opacity: 1 } }],
-    start: 'top 80%',
-    end: 'top 40%',
-  })
-
+  // Una sola entrada escalonada al llegar a la sección
   useEffect(() => {
-    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    const el = ref.current
+    if (!el || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
     const ctx = gsap.context(() => {
-      gsap.fromTo(
-        headerRef.current,
-        { y: 40, opacity: 0 },
-        {
-          y: 0,
-          opacity: 1,
-          duration: 0.9,
-          ease: 'power3.out',
-          scrollTrigger: { trigger: headerRef.current, start: 'top 85%', once: true },
-        }
-      )
-      if (!reduced && revealRef.current) {
-        gsap.fromTo(
-          revealRef.current,
-          { y: 60, autoAlpha: 0, rotateX: 8, transformPerspective: 1200 },
-          {
-            y: 0,
-            autoAlpha: 1,
-            rotateX: 0,
-            duration: 1.2,
-            ease: 'power3.out',
-            scrollTrigger: { trigger: wrapRef.current, start: 'top 82%', once: true },
-          }
-        )
-      }
-      if (!reduced && ghostRef.current) {
-        gsap.to(ghostRef.current, {
-          yPercent: -18,
-          ease: 'none',
-          scrollTrigger: {
-            trigger: sectionRef.current,
-            start: 'top bottom',
-            end: 'bottom top',
-            scrub: true,
-          },
-        })
-      }
-    }, sectionRef)
+      gsap.from('.dv-rv', {
+        y: 12, opacity: 0, duration: 0.5, ease: 'power3.out', stagger: 0.06,
+        scrollTrigger: { trigger: el, start: 'top 75%', once: true },
+      })
+    }, el)
     return () => ctx.revert()
   }, [])
 
-  useEffect(() => {
-    if (!open) return
-    const onKey = (e) => e.key === 'Escape' && setOpen(false)
-    window.addEventListener('keydown', onKey)
-    return () => window.removeEventListener('keydown', onKey)
-  }, [open])
-
-  if (!video) return null
+  const onRailScroll = () => {
+    const rail = railRef.current
+    if (!rail) return
+    const mid = rail.scrollLeft + rail.clientWidth / 2
+    let best = 0
+    let dist = Infinity
+    ;[...rail.children].forEach((li, i) => {
+      const d = Math.abs(li.offsetLeft + li.offsetWidth / 2 - mid)
+      if (d < dist) { dist = d; best = i }
+    })
+    setDot(best)
+  }
 
   return (
-    <Box
-      as="section"
-      id="videos"
-      ref={sectionRef}
-      position="relative"
-      minH="100vh"
-      bg="brand.dark"
-      px={{ base: 5, md: 12, lg: 40 }}
-      pt={{ base: 20, md: '10%' }}
-      pb={{base: 12, md: '10%'}}
-      overflow="hidden"
-    >
-      {/* glows ambientales */}
-      <Box
-        position="absolute"
-        top={{base:'10%',md:"-5%"}}
-        right="-12%"
-        w="55vw"
-        h="55vw"
-        background="radial-gradient(ellipse, rgba(30,95,168,0.16) 0%, transparent 70%)"
-        pointerEvents="none"
-      />
-
-      {/* número fantasma gigante (dorsal) */}
-      <Text
-        ref={ghostRef}
-        aria-hidden
-        position="absolute"
-        top={{ base: '10%', md: '12%' }}
-        right={{ base: '-6%', md: '2%' }}
-        fontFamily="heading"
-        fontSize={{ base: '40vw', md: '30vw' }}
-        lineHeight={0.8}
-        color="transparent"
-        pointerEvents="none"
-        userSelect="none"
-        zIndex={0}
-        sx={{ WebkitTextStroke: '1.5px rgba(30,95,168,0.14)' }}
-      >
-        {playerData.number}
-      </Text>
-    
-      <Box maxW="1240px" mx="auto" position="relative" zIndex={1}>
-
-        {/* ── Header ── */}
-        <Flex direction={'column'} align="flex-start" justify="flex-start" ref={headerRef} mb={{ base: 8, md: 10 }} ml={{base:0 , md:'-30px', lg:'-90px'}}>
-           <Text fontFamily="mono" fontSize="10px" color="white"
-              textTransform="uppercase" letterSpacing="widest">
-              HIGHLIGHTS
+    <Box as="section" id="videos" ref={ref} bg="brand.dark" px={{ base: 5, lg: 10 }} py={{ base: 16, lg: 24 }} position="relative" zIndex={1}>
+      <Box maxW="1400px" mx="auto" sx={css}>
+        <div className="head">
+          <Box className="dv-rv">
+            <Text fontFamily="mono" fontSize="11px" fontWeight={700} letterSpacing="0.24em" textTransform="uppercase" color={C.gold}>
+              Highlights
             </Text>
-            <Text as="h2" fontFamily="heading" fontSize={{ base: '5xl', lg: '6xl' }}
-              color="brand.brown" lineHeight={1}>
+            <Text as="h2" fontFamily="heading" fontSize={{ base: '6xl', lg: '8xl' }} lineHeight={0.9} color={C.acc}>
               Videos
             </Text>
-        </Flex>
-
-        {/* ── Player ── */}
-        <Box ref={wrapRef} position="relative">
-          {/* riel vertical (solo desktop grande) */}
-          
-          <Flex
-            display={{ base: 'none', lg: 'flex' }}
-            position="absolute"
-            left="-52px"
-            top="0"
-            bottom="0"
-            align="center"
-            justify="center"
-            zIndex={2}
-          >
-            <Text
-              fontFamily="mono"
-              fontSize="11px"
-              letterSpacing="0.4em"
-              textTransform="uppercase"
-              color="whiteAlpha.500"
-              sx={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}
-            >
-              {video.season} — {playerData.name} {playerData.fullName}
-            </Text>
-          </Flex>
-          
-          {/* wrapper con sombra que sigue el bisel */}
-          <Box
-            ref={revealRef}
-            position="relative"
-            cursor="pointer"
-            role="group"
-            onMouseEnter={() => setHovered(true)}
-            onMouseLeave={() => setHovered(false)}
-            onClick={() => setOpen(true)}
-            transition="transform 0.5s ease, filter 0.5s ease"
-            transform={hovered ? 'translateY(-6px)' : 'translateY(0)'}
-            sx={{
-              filter: hovered
-                ? 'drop-shadow(0 45px 80px rgba(0,0,0,0.6))'
-                : 'drop-shadow(0 28px 60px rgba(0,0,0,0.5))',
-            }}
-          >
-            
-            <AspectRatio ratio={{ base: 4 / 5, md: 15 / 7 }}>
-              <Box
-                position="relative"
-                overflow="hidden"
-                bg="#03060A"
-                boxShadow="inset 0 0 0 1px rgba(255,255,255,0.08)"
-                sx={{ clipPath: NOTCH }}
-              >
-                {/* cover */}
-                <Box
-                  as="img"
-                  src={video.cover}
-                  alt={video.title}
-                  position="absolute"
-                  inset={0}
-                  w="100%"
-                  h="100%"
-                  borderRadius={'10px'}
-                  objectFit="cover"
-                  objectPosition="center 38%"
-                  opacity={hovered ? 0 : 1}
-                  transition="opacity 0.5s ease, transform 0.7s ease"
-                  transform={hovered ? 'scale(1.05)' : 'scale(1)'}
-                />
-
-                {/* preview YouTube muteado al hover */}
-                {hovered && (
-                  <Box
-                    as="iframe"
-                    src={`https://www.youtube.com/embed/${video.youtubeId}?autoplay=1&mute=1&loop=1&playlist=${video.youtubeId}&controls=0&modestbranding=1&rel=0&playsinline=1&disablekb=1&fs=0&start=8`}
-                    title={video.title}
-                    allow="autoplay; encrypted-media"
-                    position="absolute"
-                    top="50%"
-                    left="50%"
-                    border="none"
-                    pointerEvents="none"
-                    sx={{
-                      transform: 'translate(-50%, -50%)',
-                      minWidth: '100%',
-                      minHeight: '100%',
-                      aspectRatio: '16 / 9',
-                    }}
-                  />
-                )}
-
-                {/* gradiente + viñeta */}
-                <Box
-                  position="absolute"
-                  inset={0}
-                  pointerEvents="none"
-                  bg="linear-gradient(180deg, rgba(5,11,20,0.2) 0%, rgba(5,11,20,0.15) 40%, rgba(5,11,20,0.85) 100%)"
-                />
-                <Box
-                  position="absolute"
-                  inset={0}
-                  pointerEvents="none"
-                  background="radial-gradient(ellipse at center, transparent 42%, rgba(3,6,10,0.8) 125%)"
-                  opacity={hovered ? 1 : 0.4}
-                  transition="opacity 0.5s ease"
-                />
-
-                {/* scanlines sutiles tipo señal de video */}
-                <Box
-                  position="absolute"
-                  inset={0}
-                  pointerEvents="none"
-                  zIndex={2}
-                  opacity={hovered ? 0.5 : 0.25}
-                  transition="opacity 0.5s ease"
-                  sx={{
-                    background:
-                      'repeating-linear-gradient(180deg, rgba(255,255,255,0.03) 0px, rgba(255,255,255,0.03) 1px, transparent 2px, transparent 4px)',
-                  }}
-                />
-
-                {/* letterbox al hover */}
-                <Box position="absolute" top={0} left={0} right={0} h={hovered ? { base: '20px', md: '32px' } : '0px'} bg="rgba(3,6,10,0.95)" transition="height 0.5s cubic-bezier(0.22,1,0.36,1)" pointerEvents="none" zIndex={2} />
-                <Box position="absolute" bottom={0} left={0} right={0} h={hovered ? { base: '20px', md: '32px' } : '0px'} bg="rgba(3,6,10,0.95)" transition="height 0.5s cubic-bezier(0.22,1,0.36,1)" pointerEvents="none" zIndex={2} />
-
-                {/* badge REC + categoría */}
-                <Flex
-                  position="absolute"
-                  top={{ base: 4, md: 6 }}
-                  left={{ base: 4, md: 6 }}
-                  align="center"
-                  gap={2}
-                  bg="rgba(5,11,20,0.55)"
-                  backdropFilter="blur(6px)"
-                  border="1px solid"
-                  borderColor="rgba(30,95,168,0.55)"
-                  px={3}
-                  py="6px"
-                  zIndex={4}
-                >
-                  <Box w="7px" h="7px" borderRadius="full" bg="#E5484D" animation={`${blink} 1.6s ease-in-out infinite`} />
-                  <Text fontFamily="mono" fontSize="10px" letterSpacing="0.26em" textTransform="uppercase" color="white">
-                    {video.category}
-                  </Text>
-                </Flex>
-
-                {/* botón play central */}
-                <Flex position="absolute" inset={0} align="center" justify="center" zIndex={5}>
-                  <Box
-                    position="relative"
-                    w={{ base: '76px', md: '110px' }}
-                    h={{ base: '76px', md: '110px' }}
-                    transition="transform 0.45s cubic-bezier(0.22,1,0.36,1)"
-                    transform={hovered ? 'scale(1.12)' : 'scale(1)'}
-                  >
-                    <Box position="absolute" inset={0} borderRadius="full" border="1px solid" borderColor="brand.brown" animation={`${pulse} 2.8s ease-out infinite`} />
-                    <Box position="absolute" inset={0} borderRadius="full" border="1px solid" borderColor="brand.brown" animation={`${pulse} 2.8s ease-out infinite 1.4s`} />
-                    <Box
-                      position="absolute"
-                      inset="-8px"
-                      borderRadius="full"
-                      opacity={hovered ? 1 : 0}
-                      transition="opacity 0.4s ease"
-                      sx={{
-                        background:
-                          'conic-gradient(from 0deg, transparent 0deg, rgba(77,147,214,0.95) 80deg, rgba(30,95,168,1) 150deg, transparent 220deg, transparent 360deg)',
-                        WebkitMask: 'radial-gradient(farthest-side, transparent calc(100% - 2px), #000 calc(100% - 2px))',
-                        mask: 'radial-gradient(farthest-side, transparent calc(100% - 2px), #000 calc(100% - 2px))',
-                      }}
-                      animation={`${spin} 4s linear infinite`}
-                    />
-                    <Box position="absolute" inset="-8px" borderRadius="full" border="1px solid" borderColor="whiteAlpha.200" />
-                    <Flex
-                      position="absolute"
-                      inset={0}
-                      align="center"
-                      justify="center"
-                      borderRadius="full"
-                      border="1px solid"
-                      borderColor="whiteAlpha.700"
-                      bg="rgba(5,11,20,0.4)"
-                      backdropFilter="blur(10px)"
-                      transition="all 0.4s ease"
-                      boxShadow={hovered ? '0 0 36px rgba(30,95,168,0.6)' : 'none'}
-                      _groupHover={{ bg: 'rgba(30,95,168,0.5)', borderColor: 'white' }}
-                    >
-                      <Box as={FiPlay} fontSize={{ base: '26px', md: '38px' }} ml="4px" color="white" />
-                    </Flex>
-                  </Box>
-                </Flex>
-
-                {/* título al hover (sube desde abajo) */}
-                <Box
-                  position="absolute"
-                  bottom={{ base: 5, md: 8 }}
-                  left={{ base: 5, md: 8 }}
-                  right={{ base: 5, md: 8 }}
-                  zIndex={4}
-                  opacity={hovered ? 1 : 0}
-                  transform={hovered ? 'translateY(0)' : 'translateY(16px)'}
-                  transition="opacity 0.45s ease 0.05s, transform 0.45s cubic-bezier(0.22,1,0.36,1) 0.05s"
-                  pointerEvents="none"
-                >
-                  <Text fontFamily="mono" fontSize={{base:'8px',md:"10px"}} letterSpacing="0.28em" textTransform="uppercase" color="brand.brownLight" mb={1}>
-                    Jugadas destacadas
-                  </Text>
-                  <Text fontFamily="heading" fontSize={{ base: '3xl', md: '4xl' }} lineHeight={1} color="white" letterSpacing="0.01em" noOfLines={1}>
-                    {video.season}
-                  </Text>
-                </Box>
-
-                {/* sheen diagonal */}
-                <Box position="absolute" inset={0} overflow="hidden" pointerEvents="none" zIndex={2}>
-                  {hovered && (
-                    <Box position="absolute" top={0} bottom={0} left={0} w="40%" background="linear-gradient(90deg, transparent, rgba(255,255,255,0.16), transparent)" animation={`${sheen} 1.1s ease-out`} />
-                  )}
-                </Box>
-              </Box>
-            </AspectRatio>
           </Box>
-        </Box>
+          <a className="ig dv-rv" href={IG_URL} target="_blank" rel="noopener noreferrer" aria-label={`Instagram de ${playerData.displayName} (${IG_HANDLE})`}>
+            <FaInstagram aria-hidden="true" /><span>{IG_HANDLE}</span>
+          </a>
+        </div>
 
-        {/* ── Línea de tiempo / footer broadcast ── */}
-        <Flex
-          mt={{ base: 6, md: 8 }}
-          justifyContent={'flex-end'}
-          align="center"
-          gap={{ base: 4, md: 8 }}
-        >
-          <Flex
-            as="button"
-            onClick={() => setOpen(true)}
-            align="center"
-            gap={2}
-            flexShrink={0}
-            role="group"
-            alignSelf={{ base: 'flex-end', md: 'auto' }}
-            color="whiteAlpha.800"
-            transition="color 0.3s ease"
-            _hover={{ color: 'brand.brownLight' }}
-          >
-            <Text fontFamily="mono" fontSize="xs" letterSpacing="0.24em" textTransform="uppercase">
-              Ver completo
-            </Text>
-            <Box as={FiArrowUpRight} fontSize="18px" transition="transform 0.3s ease" _groupHover={{ transform: 'translate(3px, -3px)' }} />
-          </Flex>
-        </Flex>
-      </Box>
+        <article className="main dv-rv">
+          <div className={`player${playing ? ' on' : ''}`}>
+            {playing ? (
+              <iframe
+                src={`https://www.youtube-nocookie.com/embed/${video.youtubeId}?autoplay=1&rel=0&playsinline=1`}
+                title={video.fullTitle}
+                allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
+                allowFullScreen
+              />
+            ) : (
+              <>
+                <img src={video.cover} alt={`Portada del video ${video.fullTitle}`} />
+                {/* El reproductor recién se carga al tocar play */}
+                <button type="button" className="play" onClick={() => setPlaying(true)} aria-label={`Reproducir ${video.fullTitle}`}>
+                  <span><FiPlay aria-hidden="true" /></span>
+                </button>
+                <span className="dur">YouTube · {video.duration}</span>
+              </>
+            )}
+          </div>
+          <div className="info">
+            <div>
+              <div className="kk">Video principal</div>
+              <h3>Highlights {video.title}</h3>
+              <div className="club">
+                {video.crest && <img src={video.crest} alt="" />}
+                {[video.club, video.league].filter(Boolean).join(' · ')}
+              </div>
+            </div>
+            {facts.length > 0 && (
+              <div className="facts">
+                {facts.map(([v, l]) => <div key={l}><b>{v}</b><small>{l}</small></div>)}
+              </div>
+            )}
+          </div>
+        </article>
 
-      {/* ── Modal fullscreen ── */}
-      <AnimatePresence>
-        {open && (
-          <MotionBox
-            position="fixed"
-            inset={0}
-            zIndex={2000}
-            bg="rgba(3,6,10,0.95)"
-            backdropFilter="blur(12px)"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            display="flex"
-            alignItems="center"
-            justifyContent="center"
-            p={{ base: 4, md: 12 }}
-            onClick={() => setOpen(false)}
-          >
-            <Box
-              as="button"
-              position="absolute"
-              top={{ base: 4, md: 6 }}
-              right={{ base: 4, md: 6 }}
-              color="white"
-              onClick={() => setOpen(false)}
-              transition="color 0.3s ease, transform 0.3s ease"
-              _hover={{ color: 'brand.brownLight', transform: 'rotate(90deg)' }}
-            >
-              <Box as={FiX} fontSize="32px" />
-            </Box>
-            <MotionBox
-              w="100%"
-              maxW="1100px"
-              initial={{ scale: 0.95, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.95, opacity: 0 }}
-              onClick={(e) => e.stopPropagation()}
-              boxShadow="0 40px 120px rgba(0,0,0,0.7)"
-            >
-              <AspectRatio ratio={16 / 9}>
-                <Box
-                  as="iframe"
-                  src={`https://www.youtube.com/embed/${video.youtubeId}?autoplay=1&rel=0`}
-                  title={video.fullTitle}
-                  border="none"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                  referrerPolicy="strict-origin-when-cross-origin"
-                  allowFullScreen
-                  w="100%"
-                  h="100%"
-                />
-              </AspectRatio>
-            </MotionBox>
-          </MotionBox>
+        {reels.length > 0 && (
+          <>
+            <div className="rh dv-rv"><b>Reels de Instagram</b><small>{reels.length} reels</small></div>
+            <ul className="reels" ref={railRef} onScroll={onRailScroll}>
+              {reels.map((r, i) => (
+                <li key={r.title} className="dv-rv">
+                  <a className="reel" href={r.url || IG_URL} target="_blank" rel="noopener noreferrer" aria-label={`Ver reel: ${r.title}, en Instagram`}>
+                    <img src={r.cover} alt="" loading="lazy" />
+                    <span className="tp"><span>Reel {String(i + 1).padStart(2, '0')}</span><FaInstagram aria-hidden="true" /></span>
+                    <span className="pl"><FiPlay aria-hidden="true" /></span>
+                    <span className="bt"><b>{r.title}</b><small>{r.club}</small></span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+            <div className="dots" aria-hidden="true">
+              {reels.map((r, i) => <i key={r.title} className={i === dot ? 'on' : ''} />)}
+            </div>
+          </>
         )}
-      </AnimatePresence>
+      </Box>
     </Box>
   )
+}
+
+const out = 'cubic-bezier(0.23,1,0.32,1)'
+const label = { fontFamily: 'mono', fontWeight: 700, textTransform: 'uppercase' }
+
+const css = {
+  '.head': { display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', gap: '24px', mb: { base: '22px', lg: '36px' } },
+  '.ig': {
+    ...label, display: 'inline-flex', alignItems: 'center', gap: '10px', color: 'white', fontSize: '13px', letterSpacing: '0.16em',
+    p: { base: '11px', md: '12px 18px' }, border: `1px solid ${C.line}`, borderRadius: '999px',
+    transition: `transform 140ms ${out}, border-color 200ms ease`,
+    svg: { w: '18px', h: '18px' },
+    span: { display: { base: 'none', md: 'inline' } },
+    '&:active': { transform: 'scale(0.97)' },
+  },
+  // Video principal
+  '.main': {
+    display: 'grid', gridTemplateColumns: { base: '1fr', lg: 'minmax(0,1.9fr) minmax(0,1fr)' },
+    border: `1px solid ${C.line}`, borderRadius: { base: '16px', md: '22px' }, overflow: 'hidden', bg: C.card,
+  },
+  '.player': { position: 'relative', aspectRatio: '16 / 9', bg: '#000', overflow: 'hidden' },
+  '.player img, .player iframe': { position: 'absolute', inset: 0, w: '100%', h: '100%', border: 0, objectFit: 'cover' },
+  '.player img': { transition: `transform 600ms ${out}` },
+  '.player:not(.on)::after': {
+    content: '""', position: 'absolute', inset: 0, pointerEvents: 'none',
+    background: 'linear-gradient(180deg, transparent 55%, rgba(5,11,20,0.7))',
+  },
+  '.play': { position: 'absolute', inset: 0, zIndex: 2, display: 'grid', placeItems: 'center', border: 0, bg: 'none', cursor: 'pointer', color: '#050B14' },
+  '.play span': {
+    display: 'grid', placeItems: 'center', w: { base: '66px', md: '84px' }, h: { base: '66px', md: '84px' }, borderRadius: '50%',
+    bg: C.gold, boxShadow: '0 0 0 10px rgba(212,168,75,0.18)', transition: `transform 160ms ${out}, box-shadow 200ms ease`,
+    svg: { w: { base: '24px', md: '30px' }, h: { base: '24px', md: '30px' }, ml: '4px', fill: 'currentColor' },
+  },
+  '.play:active span': { transform: 'scale(0.94)' },
+  '.play:focus-visible span': { outline: '2px solid white', outlineOffset: '4px' },
+  '.dur': {
+    ...label, position: 'absolute', left: '18px', bottom: '16px', zIndex: 2, fontSize: '12px', letterSpacing: '0.2em',
+    bg: 'rgba(5,11,20,0.6)', p: '7px 10px', borderRadius: '8px',
+  },
+  '.info': { display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: { base: '20px', lg: '26px' }, p: { base: '24px 22px', lg: '34px 34px 30px' } },
+  '.kk': { ...label, fontSize: '11px', letterSpacing: '0.24em', color: C.gold },
+  '.info h3': { mt: '12px', fontFamily: 'heading', fontWeight: 400, fontSize: { base: '40px', lg: 'clamp(40px, 3.6vw, 60px)' }, lineHeight: 0.92, textTransform: 'uppercase' },
+  '.club': {
+    ...label, display: 'flex', alignItems: 'center', gap: '12px', mt: '16px', fontSize: '14px', letterSpacing: '0.12em', color: C.soft,
+    img: { w: '34px', h: '34px', objectFit: 'contain' },
+  },
+  '.facts': { display: 'grid', gridTemplateColumns: '1fr 1fr', borderTop: `1px solid ${C.line}` },
+  '.facts div': { pt: '16px' },
+  '.facts div + div': { pl: '18px', borderLeft: `1px solid ${C.line}` },
+  '.facts b': { display: 'block', fontFamily: 'heading', fontWeight: 400, fontSize: '44px', lineHeight: 1, color: C.acc },
+  '.facts small': { ...label, display: 'block', mt: '4px', fontSize: '11px', letterSpacing: '0.2em', color: C.gray },
+  // Reels
+  '.rh': {
+    display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', mt: { base: '34px', lg: '46px' }, mb: { base: '14px', lg: '18px' },
+    b: { ...label, fontSize: '14px', letterSpacing: '0.22em' },
+    small: { ...label, fontSize: '12px', letterSpacing: '0.18em', color: C.gray },
+  },
+  '.reels': {
+    listStyle: 'none',
+    display: { base: 'flex', md: 'grid' }, gridTemplateColumns: 'repeat(3, minmax(0,1fr))', gap: { base: '12px', md: '18px' },
+    overflowX: { base: 'auto', md: 'visible' }, scrollSnapType: { base: 'x mandatory', md: 'none' },
+    mx: { base: '-20px', md: 0 }, px: { base: '20px', md: 0 }, pb: { base: '6px', md: 0 },
+    scrollbarWidth: 'none', '&::-webkit-scrollbar': { display: 'none' },
+  },
+  '.reels li': { flex: 'none', w: { base: '68%', md: 'auto' }, scrollSnapAlign: 'center' },
+  '.reel': {
+    position: 'relative', display: 'block', aspectRatio: '9 / 16', maxH: '560px', w: '100%', borderRadius: '18px', overflow: 'hidden',
+    bg: '#000', color: 'white', textDecoration: 'none', transition: `transform 160ms ${out}`,
+    '&:active': { transform: 'scale(0.98)' },
+    '&:focus-visible': { outline: `2px solid ${C.acc}`, outlineOffset: '3px' },
+    '&::after': {
+      content: '""', position: 'absolute', inset: 0,
+      background: 'linear-gradient(180deg, rgba(5,11,20,0.35), transparent 30%, transparent 50%, rgba(5,11,20,0.92))',
+    },
+  },
+  '.reel img': { position: 'absolute', inset: 0, w: '100%', h: '100%', objectFit: 'cover', transition: `transform 500ms ${out}` },
+  '.reel .tp': {
+    position: 'absolute', top: '14px', left: '14px', right: '14px', zIndex: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+    span: { ...label, fontSize: '11px', letterSpacing: '0.2em', bg: 'rgba(5,11,20,0.55)', p: '6px 9px', borderRadius: '7px' },
+    svg: { w: '22px', h: '22px' },
+  },
+  '.reel .pl': {
+    position: 'absolute', left: '50%', top: '50%', zIndex: 2, display: 'grid', placeItems: 'center', w: '58px', h: '58px', m: '-29px 0 0 -29px',
+    borderRadius: '50%', bg: 'rgba(255,255,255,0.16)', backdropFilter: 'blur(6px)', transition: `transform 200ms ${out}, background 200ms ease`,
+    svg: { ml: '3px', w: '22px', h: '22px', fill: 'currentColor' },
+  },
+  '.reel .bt': {
+    position: 'absolute', left: '16px', right: '16px', bottom: '16px', zIndex: 2,
+    b: { display: 'block', fontFamily: 'heading', fontWeight: 400, fontSize: '28px', lineHeight: 1, textTransform: 'uppercase' },
+    small: { ...label, display: 'block', mt: '6px', fontSize: '12px', letterSpacing: '0.16em', color: C.soft },
+  },
+  '.dots': {
+    display: { base: 'flex', md: 'none' }, justifyContent: 'center', gap: '6px', mt: '14px',
+    i: { w: '6px', h: '6px', borderRadius: '3px', bg: C.line, transition: `width 200ms ${out}, background 200ms ease` },
+    'i.on': { w: '18px', bg: C.acc },
+  },
+  '@media (hover: hover) and (pointer: fine)': {
+    '.ig:hover': { borderColor: C.acc },
+    '.play:hover span': { transform: 'scale(1.05)', boxShadow: '0 0 0 14px rgba(212,168,75,0.2)' },
+    '.player:hover img': { transform: 'scale(1.02)' },
+    '.reel:hover img': { transform: 'scale(1.04)' },
+    '.reel:hover .pl': { transform: 'scale(1.08)', bg: C.gold, color: '#050B14' },
+  },
+  '@media (prefers-reduced-motion: reduce)': { '*': { transitionDuration: '0ms !important' } },
 }
