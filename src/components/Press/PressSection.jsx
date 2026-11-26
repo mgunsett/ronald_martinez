@@ -53,7 +53,7 @@ export default function PressSection() {
             <Text as="h2" fontFamily="heading" fontSize={{ base: '6xl', lg: '8xl' }} lineHeight={0.9} color={C.acc}>
               Prensa
             </Text>
-            <p>
+            <p className="lead">
               Lo que se publicó de {playerData.displayName}, en orden: del gol que lo hizo goleador del torneo a la vuelta a la Selección.
             </p>
             <div className="meta">
@@ -93,7 +93,7 @@ const label = { fontFamily: 'mono', fontWeight: 700, textTransform: 'uppercase' 
 const css = {
   '.lay': { display: 'grid', gridTemplateColumns: { base: 'minmax(0,1fr)', lg: 'minmax(0,0.8fr) minmax(0,1.6fr)' }, gap: { base: '30px', lg: '64px' }, alignItems: 'start' },
   '.intro': { position: { lg: 'sticky' }, top: '100px' },
-  '.intro p': { mt: '20px', maxW: '34ch', fontSize: { base: '16px', lg: '18px' }, lineHeight: 1.5, color: C.soft },
+  '.intro .lead': { mt: '20px', maxW: '34ch', fontSize: { base: '16px', lg: '18px' }, lineHeight: 1.5, color: C.soft },
   '.meta': { display: 'flex', gap: '28px', mt: '28px' },
   '.meta b': { display: 'block', fontFamily: 'heading', fontWeight: 400, fontSize: '52px', lineHeight: 1, color: C.acc },
   '.meta small': { ...label, fontSize: '11px', letterSpacing: '0.22em', color: C.gray },

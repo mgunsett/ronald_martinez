@@ -1,286 +1,130 @@
-import { useRef } from 'react'
-import { Box, Flex, Text, SimpleGrid, Grid, Image } from '@chakra-ui/react'
+import { useEffect, useRef } from 'react'
+import { Box, Text } from '@chakra-ui/react'
+import { FaInstagram } from 'react-icons/fa'
+import { FiArrowUpRight } from 'react-icons/fi'
+import { gsap } from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { playerData } from '../../data/playerData'
-import { useScrubReveal } from '../../hooks/useScrubReveal'
 
-function SocialCard({ item }) {
-  const Icon = item.iconBg
-  const gradientFill = item.hoverGradient
-    ? { '[role=group]:hover & path': { fill: `url(#${item.hoverGradient})` } }
-    : undefined
-  return (
-    <Box
-      as="a"
-      href={item.url}
-      target={item.url?.startsWith('http') ? '_blank' : undefined}
-      rel="noopener noreferrer"
-      position="relative"
-      overflow="hidden"
-      bg="rgba(255,255,255,0.02)"
-      border="1px solid"
-      borderColor="whiteAlpha.100"
-      borderRadius={'10px'}
-      p={{ base: 6, md: 8 }}
-      transition="all 0.3s ease"
-      role="group"
-      _hover={{
-        transform: 'translateY(-3px)',
-          borderColor: 'brand.brownDark',
-          bg: 'brand.dark'
-      }}
-    >
-      {/* watermark gigante */}
-      <Box
-        position="absolute"
-        right="-10px"
-        bottom="-40px"
-        opacity={0.05}
-        transition="all 0.4s ease"
-        _groupHover={{ opacity: 0.18, color: (item.hoverColor) }}
-        color="white"
-        pointerEvents="none"
-        sx={gradientFill}
-      >
-        <Box as={Icon} fontSize="180px" />
-      </Box>
-      <Box position="relative">
-        {item.icon && (
-        <Box
-          as={Icon}
-          fontSize="28px"
-          mb={6}
-          color="whiteAlpha.700"
-          transition="color 0.3s ease"
-          _groupHover={{ color: item.hoverColor }}
-          sx={gradientFill}
-        />
-        )}
-        {item.image && (
-          <Image
-          src={item.image}
-          alt={`Logo de ${item.label}`}
-          w={'30px'}
-          h={'30px'}
-          mb={6}
-          loading="lazy"
-          filter="brightness(0.3)"
-          color="whiteAlpha.700"
-          transition="all 0.3s ease"
-          _groupHover={{ color: item.hoverColor, filter:"brightness(0.9)"}}
-        />
-        )}
-        <Text
-          fontFamily="mono"
-          fontSize="10px"
-          letterSpacing="0.24em"
-          textTransform="uppercase"
-          color="whiteAlpha.500"
-          mb={1}
-        >
-          {item.label}
-        </Text>
-        <Text fontFamily="heading" fontSize={{base:'xl',md:"2xl"}}>
-          {item.handle}
-        </Text>
-      </Box>
-    </Box>
-  )
-}
+gsap.registerPlugin(ScrollTrigger)
 
-function ContactRow({ item, gold }) {
-  const Icon = item.icon
-  return (
-    <Box
-      as="a"
-      href={item.url}
-      target={item.url?.startsWith('http') ? '_blank' : undefined}
-      rel="noopener noreferrer"
-      display="block"
-      bg="rgba(255,255,255,0.02)"
-      border="1px solid"
-      borderColor="whiteAlpha.100"
-      borderRadius='10px'
-      borderLeftColor= {gold ? 'brand.amber' : 'brand.brownDark'}
-      borderLeftWidth= '4px'
-      borderLeftStyle= 'solid'
-      p={{ base: 5, md: 8 }}
-      transition="all 0.3s ease"
-      role="group"
-      _hover={{
-        transform: 'translateY(-3px)',
-        borderColor: gold ? 'brand.amber' : 'brand.brown',
-      }}
-    >
-      <Flex align="center" gap={4}>
-        {item.icon && (
-          <Box
-            ml={3}
-            as={Icon}
-            fontSize="40px"
-            color='whiteAlpha.400'
-            opacity={0.4}
-            transition='all 0.8 ease'
-            _groupHover={{ opacity: 1, color: 'brand.brown' }}
-          />
-        )}
-        {item.image && (
-          <Box boxSize="60px" overflow="hidden" transition="all 0.5s ease" >
-            <Image
-            src={item.image}
-            alt={`Logo de ${item.label}`}
-            w="100%"
-            loading="lazy"
-            filter="brightness(0.3)"
-            transition="all 0.3s ease"
-            _groupHover={{ 
-              filter: 'brightness(0.9)',
-             }}
-             />
-          </Box>
-        )}
-        <Box ml={gold ? '8px' : '16px'}>
-          <Text
-            fontFamily="mono"
-            fontSize="10px"
-            letterSpacing="0.24em"
-            textTransform="uppercase"
-            color="whiteAlpha.500"
-          >
-            {item.label}
-          </Text>
-          <Text fontFamily="heading" fontSize="2xl" fontWeight={500}>
-            {item.handle}
-          </Text>
-        </Box>
-      </Flex>
-    </Box>
-  )
-}
+// Contacto "Directorio": a la izquierda el texto y Transfermarkt; a la derecha
+// una fila por contacto (representante, marketing e Instagram personal).
+
+const C = { line: 'rgba(77,147,214,0.25)', acc: '#4D93D6', gold: '#D4A84B', soft: '#D6E0EC', gray: '#7A8CA3', disc: '#131D2B' }
 
 export function ContactSection() {
-  const professional = playerData.contact.filter(
-    (c) => c.title === 'Representante Deportivo'
-  )
-  const representative = playerData.contact.filter(
-    (c) => c.title === 'Contacto Marketing'
-  )
+  const ref = useRef(null)
+  const ig = playerData.socialMedia.find((s) => s.label === 'Instagram')
+  const tm = playerData.socialMedia.find((s) => /transfermarkt/i.test(s.label))
+  const first = playerData.displayName.split(' ')[0]
 
-  const sectionRef = useRef(null)
-  const headerRef  = useRef(null)
-  const socialRef  = useRef(null)
-  const proRef     = useRef(null)
-  const repRef     = useRef(null)
+  const rows = [
+    ...playerData.contact.map((c) => ({ role: c.title, name: c.label, handle: c.handle, url: c.url, for: c.for, image: c.image })),
+    ig && { role: `Directo con ${first}`, name: 'Instagram personal', handle: ig.handle, url: ig.url, for: 'Saludos, prensa y colaboraciones', isIg: true },
+  ].filter(Boolean)
 
-  useScrubReveal(sectionRef, {
-    elements: [
-      { ref: headerRef, fromVars: { y: 50, opacity: 0 }, vars: { y: 0, opacity: 1 } },
-      { ref: socialRef, fromVars: { y: 40, opacity: 0 }, vars: { y: 0, opacity: 1 } },
-      { ref: proRef,    fromVars: { y: 40, opacity: 0 }, vars: { y: 0, opacity: 1 } },
-      { ref: repRef,    fromVars: { y: 40, opacity: 0 }, vars: { y: 0, opacity: 1 } },
-    ],
-    start: 'top 80%',
-    end:   'top 35%',
-  })
+  useEffect(() => {
+    const el = ref.current
+    if (!el || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    const ctx = gsap.context(() => {
+      gsap.from('.ct-rv', {
+        y: 16, opacity: 0, duration: 0.6, ease: 'power3.out', stagger: 0.08,
+        scrollTrigger: { trigger: el, start: 'top 75%', once: true },
+      })
+    }, el)
+    return () => ctx.revert()
+  }, [])
 
   return (
-    <Box
-      as="section"
-      id="contact"
-      ref={sectionRef}
-      position="relative"
-      bg="#080C12"
-      px={{ base: 6, md: 12, lg: 20 }}
-      py={{ base: 20, md: 28 }}
-      overflow="hidden"
-    >
-      <Box className="deco-grid" />
+    <Box as="section" id="contact" ref={ref} bg="brand.dark" px={{ base: 5, lg: 10 }} py={{ base: 16, lg: 24 }}>
+      <Box maxW="1400px" mx="auto" sx={css}>
+        <div className="g">
+          <div className="intro ct-rv">
+            <Text fontFamily="mono" fontSize="11px" fontWeight={700} letterSpacing="0.24em" textTransform="uppercase" color={C.gold}>
+              Hablemos
+            </Text>
+            <Text as="h2" fontFamily="heading" fontSize={{ base: '6xl', lg: '8xl' }} lineHeight={0.9} color={C.acc}>
+              Contacto
+            </Text>
+            <p className="lead">Para clubes, marcas o prensa: elegí con quién hablar y escribí directo por Instagram.</p>
+            {tm && (
+              <div className="soc">
+                <a href={tm.url} target="_blank" rel="noopener noreferrer">
+                  {tm.image && <img src={tm.image} alt="" />}Transfermarkt <FiArrowUpRight aria-hidden="true" />
+                </a>
+              </div>
+            )}
+          </div>
 
-    
-
-      <Box position="relative" zIndex={1} maxW="1400px" mx="auto">
-        {/* Header */}
-        <Box ref={headerRef} mb={{ base: 8, md: 10 }}>
-          <Text fontFamily="mono" fontSize="10px" color="white"
-                  textTransform="uppercase" letterSpacing="widest">
-            #Redes
-          </Text>
-          <Text as="h2" fontFamily="heading" fontSize={{ base: '5xl', lg: '6xl' }}
-                  color="brand.brown" lineHeight={1}>
-            Contacto
-          </Text>
-        </Box>
-
-        {/* Social media */}
-        <Box ref={socialRef} mb={4}>
-          <Text
-            fontFamily="mono"
-            fontSize="11px"
-            letterSpacing="0.28em"
-            textTransform="uppercase"
-            color="whiteAlpha.600"
-            mb={5}
-          >
-            Redes sociales
-          </Text>
-          {/* Definición del degradado oficial de Instagram (referenciado por fill: url(#insta-gradient)) */}
-          <Box as="svg" w={0} h={0} position="absolute" aria-hidden>
-            <defs>
-              <linearGradient id="insta-gradient" x1="0%" y1="100%" x2="100%" y2="0%">
-                <stop offset="0%"   stopColor="#f09433" />
-                <stop offset="25%"  stopColor="#e6683c" />
-                <stop offset="50%"  stopColor="#dc2743" />
-                <stop offset="75%"  stopColor="#cc2366" />
-                <stop offset="100%" stopColor="#bc1888" />
-              </linearGradient>
-            </defs>
-          </Box>
-          <SimpleGrid columns={{ base: 1, sm: 2, lg: 2 }} spacing={4}>
-            {playerData.socialMedia.map((s, i) => (
-              <SocialCard key={i} item={s} />
+          <ul>
+            {rows.map((r) => (
+              <li key={r.url} className="ct-rv">
+                <a href={r.url} target="_blank" rel="noopener noreferrer" aria-label={`${r.role}: ${r.name} (${r.handle}), abre Instagram`}>
+                  <span className={`lg${r.isIg ? ' ig' : ''}`}>
+                    {r.isIg ? <FaInstagram aria-hidden="true" /> : r.image ? <img src={r.image} alt="" /> : null}
+                  </span>
+                  <div>
+                    <div className="r">{r.role}</div>
+                    <h3>{r.name}</h3>
+                    <div className="f">{[r.handle, r.for].filter(Boolean).join(' · ')}</div>
+                  </div>
+                  <span className="cta"><span>Escribir</span><i aria-hidden="true"><FiArrowUpRight /></i></span>
+                </a>
+              </li>
             ))}
-          </SimpleGrid>
-        </Box>
-
-        {/* Contacto profesional */}
-        <Box ref={proRef} mb={4}>
-          <Text
-            fontFamily="mono"
-                fontSize="11px"
-                letterSpacing="0.28em"
-                textTransform="uppercase"
-                color="whiteAlpha.600"
-                mb={5}
-          >
-            Representante Deportivo
-          </Text>
-          <Grid templateColumns={{ base: '1fr', md: '1fr' }} gap={4}>
-            {professional.map((c, i) => (
-              <ContactRow key={i} item={c} />
-            ))}
-          </Grid>
-        </Box>
-
-        {/* Representante */}
-        <Box ref={repRef}>
-          <Text
-            fontFamily="mono"
-                fontSize="11px"
-                letterSpacing="0.28em"
-                textTransform="uppercase"
-                color="brand.amber"
-                mb={5}
-          >
-            Representante de marketing
-          </Text>
-          <Grid templateColumns={{ base: '1fr', md: '1fr' }} gap={4}>
-            {representative.map((c, i) => (
-              <ContactRow key={i} item={c} gold />
-            ))}
-          </Grid>
-        </Box>
+          </ul>
+        </div>
       </Box>
     </Box>
   )
+}
+
+const out = 'cubic-bezier(0.23,1,0.32,1)'
+const label = { fontFamily: 'mono', fontWeight: 700, textTransform: 'uppercase' }
+
+const css = {
+  '.g': { display: 'grid', gridTemplateColumns: { base: 'minmax(0,1fr)', lg: 'minmax(0,1fr) minmax(0,1.6fr)' }, gap: { base: '28px', lg: '60px' } },
+  '.intro .lead': { mt: '20px', fontSize: { base: '16px', lg: '18px' }, lineHeight: 1.55, color: C.soft, maxW: '34ch' },
+  '.soc': { display: 'flex', gap: '10px', mt: '28px', flexWrap: 'wrap' },
+  '.soc a': {
+    ...label, display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', letterSpacing: '0.14em', color: C.acc,
+    textDecoration: 'none', border: `1.5px solid ${C.acc}`, p: '11px 16px', borderRadius: '999px',
+    transition: `transform 140ms ${out}, background 200ms ease, color 200ms ease`,
+    img: { w: '16px', h: '16px' },
+    '&:active': { transform: 'scale(0.97)' },
+    '&:focus-visible': { outline: `2px solid ${C.gold}`, outlineOffset: '2px' },
+  },
+  ul: { listStyle: 'none', borderTop: `1px solid ${C.line}` },
+  'li a': {
+    display: 'grid', gridTemplateColumns: { base: '56px 1fr', md: '72px 1fr auto' }, gap: { base: '16px', md: '24px' }, alignItems: 'center',
+    py: { base: '20px', md: '26px' }, borderBottom: `1px solid ${C.line}`, color: 'white', textDecoration: 'none',
+    transition: `transform 220ms ${out}`,
+    '&:focus-visible': { outline: `2px solid ${C.gold}`, outlineOffset: '2px' },
+  },
+  '.lg': {
+    w: { base: '56px', md: '72px' }, h: { base: '56px', md: '72px' }, borderRadius: '50%', bg: C.disc, display: 'grid', placeItems: 'center', overflow: 'hidden',
+    img: { w: '80%', h: '80%', objectFit: 'contain' },
+  },
+  '.lg.ig': { color: C.acc, fontSize: { base: '24px', md: '30px' } },
+  '.r': { ...label, fontSize: '11px', letterSpacing: '0.22em', color: C.gold },
+  'li h3': { mt: '4px', fontFamily: 'heading', fontWeight: 400, fontSize: { base: '30px', lg: 'clamp(32px, 2.8vw, 44px)' }, textTransform: 'uppercase', lineHeight: 1 },
+  '.f': { mt: '6px', fontSize: '14px', color: C.gray },
+  '.cta': {
+    ...label, gridColumn: { base: '2', md: 'auto' }, display: 'flex', alignItems: 'center', gap: '10px', fontSize: '13px', letterSpacing: '0.16em',
+    color: C.acc, whiteSpace: 'nowrap',
+  },
+  '.cta i': {
+    fontStyle: 'normal', w: '44px', h: '44px', borderRadius: '50%', border: `1.5px solid ${C.acc}`, display: 'grid', placeItems: 'center', fontSize: '18px',
+    transition: `background 200ms ease, color 200ms ease, transform 140ms ${out}`,
+  },
+  'li a:active .cta i': { transform: 'scale(0.94)' },
+  '@media (hover: hover) and (pointer: fine)': {
+    'li a:hover': { transform: 'translateX(14px)' },
+    'li a:hover .cta i': { bg: C.acc, color: '#050B14' },
+    '.soc a:hover': { bg: C.acc, color: '#050B14' },
+  },
+  '@media (prefers-reduced-motion: reduce)': { 'li a, .cta i, .soc a': { transition: 'none' } },
 }
 
 export default ContactSection

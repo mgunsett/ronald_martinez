@@ -41,6 +41,7 @@ import logo3 from '@assets/logos/logo3.webp'
 //Redes
 import transfermkt from '@assets/contact2.svg'
 import ledsports from '@assets/contact3.webp'
+import twentytwo from '@assets/contact-u22.webp'
 
 
 export const playerData = {
@@ -255,14 +256,17 @@ export const playerData = {
       title:      'Representante Deportivo',
       label:      'Universal Twenty Two',
       icon:       FaEnvelope,
+      image:      twentytwo,
+      for:        'Clubes y transferencias',
       handle:     '@twentytwo_sm',
       url:        'https://www.instagram.com/twentytwo_sm/',
       hoverColor: 'rgba(139,69,19,0.18)',
     },
     {
       title:      'Contacto Marketing',
-      label:      'led sports marketing',
+      label:      'LED Sports Marketing',
       image: ledsports,
+      for:        'Marcas y acciones comerciales',
       handle:     '@_ledsports',
       url:        'https://www.instagram.com/_ledsports/',
       hoverColor: 'rgba(212,168,75,0.18)',
